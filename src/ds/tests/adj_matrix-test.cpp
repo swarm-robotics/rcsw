@@ -1,0 +1,165 @@
+/**
+ * @file adj_matrix-test.cpp
+ *
+ * Test of adjacency matrix (static only at the moment...)
+ *
+ * @copyright 2017 John Harwell, All rights reserved.
+ *
+ * This file is part of RCSW.
+ *
+ * RCSW is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * RCSW is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * RCSW.  If not, see <http://www.gnu.org/licenses/
+ */
+
+/*******************************************************************************
+ * Includes
+ ******************************************************************************/
+#include <stdlib.h>
+#include <limits.h>
+#define CATCH_CONFIG_MAIN
+#define CATCH_CONFIG_PREFIX_ALL
+#include <catch.hpp>
+#include "rcsw/ds/adj_matrixs.h"
+#include "rcsw/common/dbg.h"
+#include "tests/ds_test.h"
+
+/*******************************************************************************
+ * Test Functions
+ ******************************************************************************/
+/* test functions */
+void static_edge_add_test(struct ds_params* params);
+void static_edge_remove_test(struct ds_params* params);
+void static_transpose_test(struct ds_params* params);
+
+/*******************************************************************************
+ * Test Helper Functions
+ ******************************************************************************/
+void test_runner(void (*test)(struct ds_params *params)) {
+  dbg_init();
+  dbg_insmod(M_TESTING, "Testing");
+  dbg_insmod(M_DS_ADJ_MATRIX, "ADJ_MATRIX");
+  dbg_mod_lvl_set(M_DS_ADJ_MATRIX, DBG_V);
+  struct ds_params params;
+  params.tag = DS_ADJ_MATRIX;
+  params.flags = 0;
+  params.el_size = sizeof(struct element);
+
+  for (size_t m = 0; m < 2; ++m) {
+    params.type.adjm.is_directed = (bool_t)m;
+    for (size_t k = 0; k < 2; ++k) {
+      params.type.adjm.is_weighted = (bool_t)k;
+      params.type.adjm.n_vertices = NUM_ITEMS;
+
+      params.flags = DS_APP_DOMAIN_HANDLE;
+
+      /* cannot have matrix that is weighted but undirected */
+      if (k && !m) {
+        continue;
+      }
+      test(&params);
+
+      CATCH_REQUIRE(th_ds_init(&params) == OK);
+      params.flags = DS_APP_DOMAIN_DATA;
+      test(&params);
+      th_ds_shutdown(&params);
+    } /* for(k..) */
+  } /* for(m..) */
+} /* test_runner() */
+
+/*******************************************************************************
+ * Test Cases
+ ******************************************************************************/
+CATCH_TEST_CASE("Static Edge Add Test", "[adj_matrixs]") { test_runner(static_edge_add_test); }
+CATCH_TEST_CASE("Static Edge Remove Test", "[adj_matrixs]") { test_runner(static_edge_remove_test); }
+CATCH_TEST_CASE("Static Transpose Test", "[adj_matrixs]") { test_runner(static_transpose_test); }
+
+void static_edge_add_test(struct ds_params* params) {
+  struct adj_matrixs *matrix;
+  struct adj_matrixs mymatrix;
+
+  matrix = adj_matrixs_init(&mymatrix, params);
+  CATCH_REQUIRE(NULL != matrix);
+  for (size_t i = 1; i < params->type.adjm.n_vertices; ++i) {
+    if (matrix->is_directed) {
+      double val = rand() % 10 + 1;
+      CATCH_REQUIRE(OK == adj_matrixs_edge_addd(matrix, i-1, i, &val));
+    } else {
+      CATCH_REQUIRE(OK == adj_matrixs_edge_addu(matrix, i-1, i));
+    }
+    CATCH_REQUIRE(TRUE == adj_matrixs_edge_query(matrix, i-1, i));
+    if (!matrix->is_directed) {
+      CATCH_REQUIRE(TRUE == adj_matrixs_edge_query(matrix, i, i-1));
+    }
+  } /* for(i..) */
+  adj_matrixs_destroy(matrix);
+}
+void static_edge_remove_test(struct ds_params* params) {
+  struct adj_matrixs *matrix;
+  struct adj_matrixs mymatrix;
+
+  matrix = adj_matrixs_init(&mymatrix, params);
+  CATCH_REQUIRE(NULL != matrix);
+
+  size_t max = params->type.adjm.n_vertices;
+  for (size_t i = 1; i < max; ++i) {
+    if (matrix->is_directed) {
+      double val = rand() % 10 + 1;
+      CATCH_REQUIRE(OK == adj_matrixs_edge_addd(matrix, i-1, i, &val));
+    } else {
+      CATCH_REQUIRE(OK == adj_matrixs_edge_addu(matrix, i-1, i));
+    }
+    CATCH_REQUIRE(TRUE == adj_matrixs_edge_query(matrix, i-1, i));
+    if (!matrix->is_directed) {
+      CATCH_REQUIRE(TRUE == adj_matrixs_edge_query(matrix, i, i-1));
+    }
+  } /* for(i..) */
+
+
+  while (!adj_matrixs_isempty(matrix)) {
+    size_t u = rand() % max;
+    size_t v = rand() % max;
+    if (adj_matrixs_edge_query(matrix, u, v)) {
+      CATCH_REQUIRE(OK == adj_matrixs_edge_remove(matrix, u, v));
+      CATCH_REQUIRE(FALSE == adj_matrixs_edge_query(matrix, u, v));
+      if (!matrix->is_directed) {
+        CATCH_REQUIRE(FALSE == adj_matrixs_edge_query(matrix, v, u));
+      }
+    }
+  } /* while() */
+
+  adj_matrixs_destroy(matrix);
+}
+void static_transpose_test(struct ds_params* params) {
+  struct adj_matrixs *matrix;
+  struct adj_matrixs mymatrix;
+
+  matrix = adj_matrixs_init(&mymatrix, params);
+  CATCH_REQUIRE(NULL != matrix);
+
+  size_t max = params->type.adjm.n_vertices;
+  for (size_t i = 1; i < max; ++i) {
+    if (matrix->is_directed) {
+      double val = rand() % 10 + 1;
+      CATCH_REQUIRE(OK == adj_matrixs_edge_addd(matrix, i-1, i, &val));
+    } else {
+      CATCH_REQUIRE(OK == adj_matrixs_edge_addu(matrix, i-1, i));
+    }
+  } /* for(i..) */
+
+  CATCH_REQUIRE(OK == adj_matrixs_transpose(matrix));
+
+  for (size_t i = 1; i < max; ++i) {
+    CATCH_REQUIRE(TRUE == adj_matrixs_edge_query(matrix, i, i-1));
+  } /* for(i..) */
+
+  adj_matrixs_destroy(matrix);
+}
