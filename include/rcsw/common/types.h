@@ -52,7 +52,7 @@ typedef char int8_t;
 extern uint32_t errno;
 
 /* includes */
-#elif defined(__linux__)
+#elif defined(__linux__) || defined(__apple__)
 
 #include <errno.h>
 #include <stddef.h>
@@ -61,6 +61,9 @@ extern uint32_t errno;
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+
+#else
+#error UNKNOWN OS! __nos__, __linux__, __apple__ supported.
 #endif
 
 /*******************************************************************************
