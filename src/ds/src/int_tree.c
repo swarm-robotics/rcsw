@@ -92,11 +92,6 @@ int_tree_overlap_search(const struct bstree *tree, struct int_tree_node *root,
   }
 } /* int_tree_overlap_search() */
 
-void int_tree_node_update_max(struct int_tree_node *node) {
-  node->max_high = MAX3(node->left->max_high, node->right->max_high,
-                        ((struct interval_data *)node->data)->high);
-} /* int_tree_node_update_max() */
-
 void int_tree_high_fixup(const struct bstree *tree,
                          struct int_tree_node *node) {
   node->max_high = ((struct interval_data *)node->data)->high;
