@@ -4,6 +4,32 @@ the C++ STL. Unless otherwise stated, everything in here is for programming on a
 Linux platform (it might work on Windows, but I haven't tested it even a little
 bit).
 
+## Basic Setup
+
+Before starting, you will need a recent version of the following programs:
+
+- cmake
+- make
+- gcc
+
+### Pre-cloning
+1. Set up an ssh key for password-less connection to github (this is for the
+   cmake config). Yes I know that it can be done without ssh, but I set it up
+   this way so I don't have to type my github password ever.
+
+### Post-cloning
+After cloning this repo, you will need to:
+
+1. Pull in the cmake config:
+
+        git submodule update --init --recursive
+
+Then you can build via:
+
+    mkdir build && cd build
+    cmake ..
+    make
+
 # Modules Summary
 RCSW is built around the idea of modules to help organize the code, and to
 provide logical segmentation between (un)complementary areas of
@@ -107,26 +133,6 @@ A PUbLisher SubscribEr system, in which any number of
 tasks/threads/processes/etc. can send arbitrarily sized packets to each other
 using a distributed FIFO system. There is no centralized controller, meaning
 each publishing thread does the work of its publish().
-
-## Basic Setup
-
-Before starting, you will need a recent version of the following programs:
-
-- cmake
-- make
-- gcc
-
-After cloning this repo, you will need to:
-
-1. Pull in the cmake config:
-
-        git submodule update --init --recursive
-
-Then you can build via:
-
-    mkdir build && cd build
-    cmake ..
-    make
 
 # Style
 I have tried to code this library according to google C++ style, ignoring the
