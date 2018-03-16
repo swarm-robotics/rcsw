@@ -45,7 +45,7 @@ set(${target}_LIBS
   )
 
 if (NOT TARGET ${target})
-  add_library(${target}
+  add_library(${target} STATIC
     $<TARGET_OBJECTS:${target}-adapter>
     $<TARGET_OBJECTS:${target}-algorithm>
     $<TARGET_OBJECTS:${target}-common>
