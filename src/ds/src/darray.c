@@ -399,7 +399,7 @@ struct darray *darray_copy(const struct darray *const arr,
    * Copy items into new list. Don't use ds_elt_copy(), as that does not work
    * if the source list is empty.
    *
-  */
+   */
   memcpy(carr->elements, arr->elements, arr->current * arr->el_size);
 
   DBGD("%zu %zu-byte elements\n", arr->current, arr->el_size);

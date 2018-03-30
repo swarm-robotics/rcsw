@@ -289,8 +289,9 @@ status_t pulse_unsubscribe(struct pulse_inst *pulse, struct mt_queue *queue,
   /* find index for insertion of new subscription */
   struct pulse_sub_ent sub = {.pid = pid, .subscriber = queue};
   struct llist_node *node = llist_node_query(pulse->sub_list, &sub);
-  SOFT_ASSERT(NULL != node, "ERROR: Could not unsubscribe RXQ %zu from PID "
-                            "0x%08X: PID no such subscription\n",
+  SOFT_ASSERT(NULL != node,
+              "ERROR: Could not unsubscribe RXQ %zu from PID "
+              "0x%08X: PID no such subscription\n",
               queue - pulse->rx_queues, pid);
   CHECK(OK == llist_delete(pulse->sub_list, node, NULL));
   rstat = OK;

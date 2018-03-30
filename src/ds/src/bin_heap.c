@@ -138,7 +138,8 @@ status_t bin_heap_make(struct bin_heap *const heap, const void *const data,
   DBGD("Making heap from %zu %zu-byte elements\n", n_elts, heap->arr.el_size);
   for (size_t i = 0; i < n_elts; ++i) {
     CHECK(OK == darray_insert(&heap->arr,
-                              (uint8_t *)data + heap->arr.el_size * i, i + 1));
+                              (const uint8_t *)data + heap->arr.el_size * i,
+                              i + 1));
   } /* for(i..) */
   CHECK(OK == darray_set_n_elts(&heap->arr, n_elts + 1));
 

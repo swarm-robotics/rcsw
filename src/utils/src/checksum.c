@@ -103,7 +103,8 @@ __pure uint8_t xchks8(const uint8_t *const buf, size_t n_bytes, uint8_t seed) {
   return chks8;
 } /* xchks8() */
 
-__pure uint16_t xchks16(const uint16_t *const buf, size_t n_bytes, uint16_t seed) {
+__pure uint16_t xchks16(const uint16_t *const buf, size_t n_bytes,
+                        uint16_t seed) {
   FPC_CHECK(-1, buf != NULL, IS_MEM_ALIGNED(buf, sizeof(uint16_t)),
             IS_SIZE_ALIGNED(n_bytes, sizeof(uint16_t)));
 
@@ -119,7 +120,8 @@ __pure uint16_t xchks16(const uint16_t *const buf, size_t n_bytes, uint16_t seed
   return chks16;
 } /* xchks16() */
 
-__pure uint32_t xchks32(const uint32_t *const buf, size_t n_bytes, uint32_t seed) {
+__pure uint32_t xchks32(const uint32_t *const buf, size_t n_bytes,
+                        uint32_t seed) {
   FPC_CHECK(-1, buf != NULL, IS_MEM_ALIGNED(buf, sizeof(uint32_t)),
             IS_SIZE_ALIGNED(n_bytes, sizeof(uint32_t)));
 
@@ -147,7 +149,8 @@ __pure uint8_t achks8(const uint8_t *const buf, size_t n_bytes, uint8_t seed) {
   return chks8;
 } /* achks8() */
 
-__pure uint16_t achks8_16(const uint8_t *const buf, size_t n_bytes, uint8_t seed) {
+__pure uint16_t achks8_16(const uint8_t *const buf, size_t n_bytes,
+                          uint8_t seed) {
   FPC_CHECK(-1, buf != NULL);
 
   uint16_t chks16 = seed;
@@ -159,7 +162,8 @@ __pure uint16_t achks8_16(const uint8_t *const buf, size_t n_bytes, uint8_t seed
   return chks16;
 } /* achks8_16() */
 
-__pure uint16_t achks16(const uint16_t *const buf, size_t n_bytes, uint16_t seed) {
+__pure uint16_t achks16(const uint16_t *const buf, size_t n_bytes,
+                        uint16_t seed) {
   FPC_CHECK(-1, buf != NULL, IS_MEM_ALIGNED(buf, sizeof(uint16_t)),
             IS_SIZE_ALIGNED(n_bytes, sizeof(uint16_t)));
 
@@ -170,7 +174,8 @@ __pure uint16_t achks16(const uint16_t *const buf, size_t n_bytes, uint16_t seed
   return chks16;
 } /* achks16() */
 
-__pure uint32_t achks16_32(const uint16_t *const buf, size_t n_bytes, uint16_t seed) {
+__pure uint32_t achks16_32(const uint16_t *const buf, size_t n_bytes,
+                           uint16_t seed) {
   FPC_CHECK(-1, buf != NULL, IS_MEM_ALIGNED(buf, sizeof(uint16_t)),
             IS_SIZE_ALIGNED(n_bytes, sizeof(uint16_t)));
 
@@ -181,7 +186,8 @@ __pure uint32_t achks16_32(const uint16_t *const buf, size_t n_bytes, uint16_t s
   return chks32;
 } /* achks16_32() */
 
-__pure uint32_t achks32(const uint32_t *const buf, size_t n_bytes, uint32_t seed) {
+__pure uint32_t achks32(const uint32_t *const buf, size_t n_bytes,
+                        uint32_t seed) {
   FPC_CHECK(-1, buf != NULL, IS_MEM_ALIGNED(buf, sizeof(uint32_t)),
             IS_SIZE_ALIGNED(n_bytes, sizeof(uint32_t)));
 

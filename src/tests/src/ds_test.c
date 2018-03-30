@@ -135,7 +135,7 @@ void th_ds_shutdown(const struct ds_params *const params) {
   }
 } /* th_ds_shutdown() */
 
-int th_leak_check_data(const struct ds_params *params) {
+__pure int th_leak_check_data(const struct ds_params *params) {
   int i;
   int len;
   if (params->tag == DS_BSTREE) {
@@ -157,7 +157,7 @@ error:
   return 1;
 } /* th_leak_check_data() */
 
-int th_leak_check_nodes(const struct ds_params *params) {
+__pure int th_leak_check_nodes(const struct ds_params *params) {
   int i;
   int len;
   if (params->tag == DS_BSTREE) {
@@ -185,19 +185,19 @@ error:
   return 1;
 } /* th_leak_check_nodes() */
 
-bool_t th_filter_func(const void *const e) {
+__pure bool_t th_filter_func(const void *const e) {
   const struct element *q = e;
   return (q->value1 % 2 == 0);
 } /* th_filter_func() */
 
-int th_key_cmp(const void *a, const void *b) {
+__pure int th_key_cmp(const void *a, const void *b) {
   if (a == NULL && b == NULL)
     return 0;
   if (a == NULL)
     return -1;
   if (b == NULL)
     return 1;
-  return *(int *)a - *(int *)b; // strcmp(a, b);
+  return *(const int *)a - *(const int *)b; // strcmp(a, b);
 } /* th_key_cmp() */
 
 void th_printe(const void *e) {
@@ -206,7 +206,7 @@ void th_printe(const void *e) {
   PRINTF("%d\n", el->value2);
 } /* th_printe() */
 
-int th_cmpe(const void *const e1, const void *const e2) {
+__pure int th_cmpe(const void *const e1, const void *const e2) {
   const struct element *q1 = (const struct element *)e1;
   const struct element *q2 = (const struct element *)e2;
 
@@ -224,7 +224,7 @@ void th_printn(const void *node) {
          (const char *)hashnode->key, hashnode->hash, *(int *)hashnode->data);
 } /* th_printn() */
 
-int th_data_cmp(const void *a, const void *b) {
+__pure int th_data_cmp(const void *a, const void *b) {
   const struct hashnode *q1 = a;
   const struct hashnode *q2 = b;
   return *(int *)q1->data - *(int *)q2->data;
@@ -241,7 +241,7 @@ void th_map_func(void *e) {
   e1->value1--;
 } /* th_map_func() */
 
-bool_t th_iter_func(void *e) {
+__pure bool_t th_iter_func(void *e) {
   return (((struct element *)e)->value1 % 2 == 0);
 } /* th_iter_func() */
 

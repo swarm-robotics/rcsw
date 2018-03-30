@@ -25,10 +25,14 @@
  ******************************************************************************/
 #include <stdlib.h>
 #include <limits.h>
+
+extern "C" {
 #include "rcsw/ds/bin_heap.h"
 #include "rcsw/utils/utils.h"
 #include "rcsw/utils/mem.h"
 #include "tests/ds_test.h"
+}
+
 #define CATCH_CONFIG_MAIN
 #define CATCH_CONFIG_PREFIX_ALL
 #include <catch.hpp>

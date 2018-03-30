@@ -470,13 +470,13 @@ static void csmatrix_entry_print(const struct csmatrix *const matrix,
                                  const void *const e1) {
   switch (matrix->type) {
   case CSMATRIX_INT:
-    printf("%d", *(int *)e1);
+    printf("%d", *(const int *)e1);
     break;
   case CSMATRIX_FLOAT:
-    printf("%f", *(float *)e1);
+    printf("%f", *(const float *)e1);
     break;
   case CSMATRIX_DOUBLE:
-    printf("%f", *(double *)e1);
+    printf("%f", *(const double *)e1);
     break;
   default:
     break;
@@ -487,13 +487,13 @@ static double csmatrix_entry_mult(const struct csmatrix *const matrix,
                                   const void *const e1, const void *const e2) {
   switch (matrix->type) {
   case CSMATRIX_INT:
-    return *(int *)e1 * *(int *)e2;
+    return *(const int *)e1 * *(const int *)e2;
     break;
   case CSMATRIX_FLOAT:
-    return *(float *)e1 * *(float *)e2;
+    return *(const float *)e1 * *(const float *)e2;
     break;
   case CSMATRIX_DOUBLE:
-    return *(double *)e1 * *(double *)e2;
+    return *(const double *)e1 * *(const double *)e2;
     break;
   default:
     return -1;
@@ -504,13 +504,13 @@ static double csmatrix_entry_div(const struct csmatrix *const matrix,
                                  const void *const e1, const void *const e2) {
   switch (matrix->type) {
   case CSMATRIX_INT:
-    return *(int *)e1 / *(int *)e2;
+    return *(const int *)e1 / *(const int *)e2;
     break;
   case CSMATRIX_FLOAT:
-    return *(float *)e1 / *(float *)e2;
+    return *(const float *)e1 / *(const float *)e2;
     break;
   case CSMATRIX_DOUBLE:
-    return *(double *)e1 / *(double *)e2;
+    return *(const double *)e1 / *(const double *)e2;
     break;
   default:
     return -1;
@@ -518,6 +518,7 @@ static double csmatrix_entry_div(const struct csmatrix *const matrix,
 } /* csmatrix_entry_div() */
 
 static int csmatrix_col_cmpe(const void *const e1, const void *const e2) {
-  return ((struct col_pair *)e1)->row - ((struct col_pair *)e2)->row;
+  return ((const struct col_pair *)e1)->row -
+         ((const struct col_pair *)e2)->row;
 } /* csmatrix_col_cmpe() */
 END_C_DECLS

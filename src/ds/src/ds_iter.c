@@ -71,6 +71,7 @@ struct ds_iterator *ds_iter_init(enum ds_tag tag, void *const ds,
   case DS_ADJ_MATRIX:
   case DS_STATIC_MATRIX:
   case DS_DYNAMIC_MATRIX:
+  default:
     break;
   } /* switch() */
 
@@ -101,15 +102,14 @@ void *ds_iter_next(struct ds_iterator *const iter) {
     break;
   case DS_RBUFFER:
     while (iter->index < iter->rb->current) {
-      if (iter->classify &&
-          !iter->classify(rbuffer_data_get(iter->rb,
-                                           (iter->rb->start + iter->index) %
-                                               iter->rb->max_elts))) {
+      if (iter->classify && !iter->classify(rbuffer_data_get(
+                                iter->rb, (iter->rb->start + iter->index) %
+                                              iter->rb->max_elts))) {
         iter->index++;
         continue;
       }
-      return rbuffer_data_get(
-          iter->rb, (iter->rb->start + iter->index++) % iter->rb->max_elts);
+      return rbuffer_data_get(iter->rb, (iter->rb->start + iter->index++) %
+                                            iter->rb->max_elts);
     } /* while() */
     break;
   case DS_HASHMAP:
@@ -119,6 +119,7 @@ void *ds_iter_next(struct ds_iterator *const iter) {
   case DS_ADJ_MATRIX:
   case DS_STATIC_MATRIX:
   case DS_DYNAMIC_MATRIX:
+  default:
     break;
   } /* switch() */
 

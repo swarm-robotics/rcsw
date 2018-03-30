@@ -238,9 +238,8 @@ status_t bstree_insert_internal(struct bstree *const tree, void *const key,
     /* Verify properties of RB Tree still hold */
     FPC_CHECK(ERROR, !tree->root->red);
     FPC_CHECK(ERROR, !tree->nil->red);
-    FPC_CHECK(ERROR,
-              rbtree_node_black_height(tree->root->left->left) ==
-                  rbtree_node_black_height(tree->root->left->right));
+    FPC_CHECK(ERROR, rbtree_node_black_height(tree->root->left->left) ==
+                         rbtree_node_black_height(tree->root->left->right));
   }
   tree->current++;
 
@@ -329,9 +328,8 @@ status_t bstree_delete(struct bstree *const tree, struct bstree_node *z,
     /* Verify properties of RB Tree still hold */
     FPC_CHECK(ERROR, !tree->root->red);
     FPC_CHECK(ERROR, !tree->nil->red);
-    FPC_CHECK(ERROR,
-              rbtree_node_black_height(tree->root->left->left) ==
-                  rbtree_node_black_height(tree->root->left->right));
+    FPC_CHECK(ERROR, rbtree_node_black_height(tree->root->left->left) ==
+                         rbtree_node_black_height(tree->root->left->right));
   }
   if (NULL != e) {
     ds_elt_copy(e, z->data, tree->el_size);
@@ -354,8 +352,9 @@ void bstree_print(struct bstree *const tree) {
   }
 
   bstree_traverse_nodes_inorder(
-      tree, tree->root, (int (*)(const struct bstree *const,
-                                 struct bstree_node *))bstree_node_print);
+      tree, tree->root,
+      (int (*)(const struct bstree *const,
+               struct bstree_node *))bstree_node_print);
 } /* bstree_print() */
 
 END_C_DECLS
