@@ -132,6 +132,8 @@ static inline size_t csmatrix_type_size(const struct csmatrix* const matrix) {
     case CSMATRIX_DOUBLE:
         return sizeof(double);
         break;
+    default:
+      break;
     } /* switch() */
   return 0;
 } /* csmatrix_type_size() */

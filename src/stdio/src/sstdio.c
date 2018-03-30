@@ -25,6 +25,7 @@
 #include "rcsw/stdio/sstring.h"
 
 #if !defined(__nos__)
+#include <assert.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -94,7 +95,8 @@ int sstdio_printf(const char *fmt, ...) {
 } /* sstdio_printf() */
 
 int sstdio_vprintf(const char *fmt, va_list argp) {
-  char *p, *s;
+  const char *p;
+  const char *s;
   int i, n_digits;
   int c, val;
   double dval;
@@ -124,7 +126,7 @@ int sstdio_vprintf(const char *fmt, va_list argp) {
    */
   char fmt_block[16];
 
-  for (p = (char *)fmt, c = 0; *p != '\0'; p++, c++) {
+  for (p = (const char *)fmt, c = 0; *p != '\0'; p++, c++) {
     if (*p != '%') { /* just a regular char */
       sstdio_putchar(*p);
       continue;
@@ -384,6 +386,9 @@ int sstdio_vprintf(const char *fmt, va_list argp) {
         sstdio_itoax((int)val2, fmt_buf);
         sstdio_puts("0x");
         sstdio_puts(fmt_buf);
+        break;
+      default:
+        assert(0);
         break;
       } /* end switch */
     }   /* end for() */

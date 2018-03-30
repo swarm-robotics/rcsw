@@ -69,7 +69,7 @@ size_t rawfifo_enq(struct rawfifo *const fifo, const void *const elts,
 
   for (i = 0; i < n_elts; i++) {
     ds_elt_copy(fifo->elements + (fifo->to_i + i) % fifo->max_elts,
-                (uint8_t *)elts + i, fifo->el_size);
+                (const uint8_t *)elts + i, fifo->el_size);
   } /* for() */
   fifo->to_i = (fifo->to_i + i) % fifo->max_elts;
 

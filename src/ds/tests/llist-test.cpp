@@ -24,9 +24,13 @@
  * Includes
  ******************************************************************************/
 #include <stdlib.h>
+
+extern "C" {
 #include "rcsw/ds/llist.h"
 #include "rcsw/common/dbg.h"
 #include "tests/ds_test.h"
+}
+
 #define CATCH_CONFIG_MAIN
 #define CATCH_CONFIG_PREFIX_ALL
 #include <catch.hpp>

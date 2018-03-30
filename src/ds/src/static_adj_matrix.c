@@ -189,11 +189,11 @@ error:
  * Static Functions
  ******************************************************************************/
 static void static_adj_matrix_printeu(const void *const e) {
-  printf("%d", *(int *)e);
+  printf("%d", *(const int *)e);
 } /* static_adj_matrix_printeu() */
 
 static void static_adj_matrix_printew(const void *const e) {
-  printf("%f", *(double *)e);
+  printf("%f", *(const double *)e);
 } /* static_adj_matrix_printew() */
 
 END_C_DECLS

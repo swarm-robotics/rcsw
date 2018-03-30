@@ -39,7 +39,7 @@ void *mem_cpy32(void *const __restrict__ dest,
             IS_SIZE_ALIGNED(n_bytes, sizeof(uint32_t)));
   size_t i;
   for (i = 0; i < n_bytes / sizeof(uint32_t); ++i) {
-    ((volatile uint32_t *)dest)[i] = ((volatile uint32_t *)src)[i];
+    ((volatile uint32_t *)dest)[i] = ((const volatile uint32_t *)src)[i];
   } /* for() */
   return dest;
 } /* mem_cpy32() */

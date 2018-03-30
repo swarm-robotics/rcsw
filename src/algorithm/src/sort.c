@@ -130,10 +130,9 @@ struct llist_node *mergesort_rec(struct llist_node *list,
 
   struct llist_node *right =
       list; /* points to start of upper/2nd half of the current list */
-  struct llist_node *temp = list; /* used to find the middle of the list */
-  struct llist_node *last =
-      list; /* used as a placeholder to indicate the boundary
-             * between the two sublists */
+  struct llist_node *temp = list;   /* used to find the middle of the list */
+  struct llist_node *last = list;   /* used as a placeholder to indicate the
+                                     * boundary   between the two sublists */
   struct llist_node *result = NULL; /* points to start of sorted list */
 
   /* these two pointers are used in list merging */
@@ -305,9 +304,8 @@ void insertion_sort(void *arr, size_t n_elts, size_t el_size,
    */
   for (size_t j = 1; j < n_elts - 1; ++j) {
     size_t i = j - 1;
-    while (i != 0 &&
-           cmpe((uint8_t *)arr + (i * el_size),
-                (uint8_t *)arr + (j * el_size)) > 0) {
+    while (i != 0 && cmpe((uint8_t *)arr + (i * el_size),
+                          (uint8_t *)arr + (j * el_size)) > 0) {
       memmove((uint8_t *)arr + ((i + 1) * el_size),
               (uint8_t *)arr + (i * el_size), el_size);
       --i;
@@ -377,9 +375,9 @@ status_t radix_counting_sort(size_t *const arr, size_t *const tmp,
 /*******************************************************************************
  * Static Functions
  ******************************************************************************/
-static size_t partition(void *const a, int min_index, int max_index,
-                        size_t el_size, int (*cmpe)(const void *const e1,
-                                                    const void *const e2)) {
+static size_t
+partition(void *const a, int min_index, int max_index, size_t el_size,
+          int (*cmpe)(const void *const e1, const void *const e2)) {
   int left;  /* index starts at min_index and increases */
   int right; /* index starts and max_index and decreases */
 

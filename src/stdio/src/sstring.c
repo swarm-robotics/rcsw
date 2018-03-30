@@ -91,26 +91,26 @@ __pure size_t sstring_strlen(const char *const s) {
   return (size_t)(p - s);
 } /* sstring_strlen() */
 
-__pure char *sstring_strchr(const char *haystack, char needle) {
+__pure const char *sstring_strchr(const char *haystack, char needle) {
   while (haystack != NULL && *haystack) {
     if (*haystack == needle) {
-      return (char *)haystack;
+      return (const char *)haystack;
     }
     haystack++;
   }
   return NULL;
 } /* sstring_strchr() */
 
-char *sstring_strstr(const char *const __restrict__ haystack,
-                     const char *const __restrict__ needle) {
-  char *p1 = (char *)haystack;
+__pure const char *sstring_strstr(const char *const __restrict__ haystack,
+                                  const char *const __restrict__ needle) {
+  const char *p1 = (const char *)haystack;
   if (!*needle) { /* null string */
     return p1;
   }
 
   while (*p1) { /* while there are chars left to check in haystack */
-    char *p1_curr = p1;
-    char *p2 = (char *)needle;
+    const char *p1_curr = p1;
+    const char *p2 = (const char *)needle;
     while (*p1 && *p2 && *p1 == *p2) { /* superimpose substring on current
                                         * position and check char by char */
       p1++;
@@ -152,9 +152,9 @@ char *sstring_strcpy(char *__restrict__ dest,
   return (char *)dest;
 } /* sstring_strcpy() */
 
-int sstring_strcmp(const char *const s1, const char *const s2) {
-  char *t1 = (char *)s1;
-  char *t2 = (char *)s2;
+__pure int sstring_strcmp(const char *const s1, const char *const s2) {
+  const char *t1 = (const char *)s1;
+  const char *t2 = (const char *)s2;
   while (*t1 == *t2) {
     if (*t1 == '\0') {
       return 0;
@@ -168,8 +168,8 @@ int sstring_strcmp(const char *const s1, const char *const s2) {
 __pure int sstring_strncmp(const char *const s1, const char *const s2,
                            size_t len) {
   size_t i = 0;
-  char *t1 = (char *)s1;
-  char *t2 = (char *)s2;
+  const char *t1 = (const char *)s1;
+  const char *t2 = (const char *)s2;
 
   /* special case: if len == 0, then by definition all strings are equivalent
    * up to the zeroth character */

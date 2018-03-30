@@ -128,8 +128,8 @@ void sstring_strrev(char *s, size_t len);
  * @return: The first occurence of the needle, or NULL if the substring was not
  *          found.
  */
-char *sstring_strstr(const char * haystack,
-                     const char * needle);
+const char *sstring_strstr(const char * haystack,
+                           const char * needle);
 
 /**
  * @brief Search a string for a character.
@@ -146,7 +146,7 @@ char *sstring_strstr(const char * haystack,
  * @return Pointer to the first occurence of the needle, or NULL if the
  *         char was not found.
  */
-char *sstring_strchr(const char * haystack, char needle);
+const char *sstring_strchr(const char * haystack, char needle);
 
 /**
  * @brief Copy one string over another.

@@ -45,8 +45,9 @@ status_t simple_image_clamp_rgb(simple_image_t *const image) {
   float minv = 255.;
   float maxv = 0.;
 
-#pragma omp parallel for schedule(static) reduction(min : minv)                \
-    reduction(max : maxv)
+#pragma omp parallel for schedule(static) reduction(min                        \
+                                                    : minv) reduction(max      \
+                                                                      : maxv)
   for (int x = 0; x < width * height; ++x) {
     minv = MIN(minv, red[x]);
     minv = MIN(minv, green[x]);

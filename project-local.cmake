@@ -28,6 +28,10 @@ endif()
 
 foreach(d ${${target}_SUBDIRS})
   add_subdirectory(src/${d})
+  # The include directory for common tests bits needs to be added to
+  # each target
+  target_include_directories(${target}-${d} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/tests/include)
+
   target_include_directories(${target}-${d} PUBLIC "${${target}_INC_PATH}")
   target_include_directories(${target}-${d} SYSTEM PUBLIC ext)
 endforeach()
