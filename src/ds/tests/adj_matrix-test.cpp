@@ -30,7 +30,7 @@
 #include <catch.hpp>
 
 extern "C" {
-#include "rcsw/ds/adj_matrixs.h"
+#include "rcsw/ds/static_adj_matrix.h"
 #include "rcsw/common/dbg.h"
 #include "tests/ds_test.h"
 }
@@ -49,8 +49,8 @@ void static_transpose_test(struct ds_params* params);
 void test_runner(void (*test)(struct ds_params *params)) {
   dbg_init();
   dbg_insmod(M_TESTING, "Testing");
-  dbg_insmod(M_DS_ADJ_MATRIX, "ADJ_MATRIX");
-  dbg_mod_lvl_set(M_DS_ADJ_MATRIX, DBG_V);
+  dbg_insmod(M_DS_STATIC_ADJ_MATRIX, "STATIC_adj_matrix");
+  dbg_mod_lvl_set(M_DS_STATIC_ADJ_MATRIX, DBG_V);
   struct ds_params params;
   params.tag = DS_ADJ_MATRIX;
   params.flags = 0;
@@ -81,88 +81,88 @@ void test_runner(void (*test)(struct ds_params *params)) {
 /*******************************************************************************
  * Test Cases
  ******************************************************************************/
-CATCH_TEST_CASE("Static Edge Add Test", "[adj_matrixs]") { test_runner(static_edge_add_test); }
-CATCH_TEST_CASE("Static Edge Remove Test", "[adj_matrixs]") { test_runner(static_edge_remove_test); }
-CATCH_TEST_CASE("Static Transpose Test", "[adj_matrixs]") { test_runner(static_transpose_test); }
+CATCH_TEST_CASE("Static Edge Add Test", "[static_adj_matrix]") { test_runner(static_edge_add_test); }
+CATCH_TEST_CASE("Static Edge Remove Test", "[static_adj_matrix]") { test_runner(static_edge_remove_test); }
+CATCH_TEST_CASE("Static Transpose Test", "[static_adj_matrix]") { test_runner(static_transpose_test); }
 
 void static_edge_add_test(struct ds_params* params) {
-  struct adj_matrixs *matrix;
-  struct adj_matrixs mymatrix;
+  struct static_adj_matrix *matrix;
+  struct static_adj_matrix mymatrix;
 
-  matrix = adj_matrixs_init(&mymatrix, params);
+  matrix = static_adj_matrix_init(&mymatrix, params);
   CATCH_REQUIRE(NULL != matrix);
   for (size_t i = 1; i < params->type.adjm.n_vertices; ++i) {
     if (matrix->is_directed) {
       double val = rand() % 10 + 1;
-      CATCH_REQUIRE(OK == adj_matrixs_edge_addd(matrix, i-1, i, &val));
+      CATCH_REQUIRE(OK == static_adj_matrix_edge_addd(matrix, i-1, i, &val));
     } else {
-      CATCH_REQUIRE(OK == adj_matrixs_edge_addu(matrix, i-1, i));
+      CATCH_REQUIRE(OK == static_adj_matrix_edge_addu(matrix, i-1, i));
     }
-    CATCH_REQUIRE(TRUE == adj_matrixs_edge_query(matrix, i-1, i));
+    CATCH_REQUIRE(TRUE == static_adj_matrix_edge_query(matrix, i-1, i));
     if (!matrix->is_directed) {
-      CATCH_REQUIRE(TRUE == adj_matrixs_edge_query(matrix, i, i-1));
+      CATCH_REQUIRE(TRUE == static_adj_matrix_edge_query(matrix, i, i-1));
     }
   } /* for(i..) */
-  adj_matrixs_destroy(matrix);
+  static_adj_matrix_destroy(matrix);
 }
 void static_edge_remove_test(struct ds_params* params) {
-  struct adj_matrixs *matrix;
-  struct adj_matrixs mymatrix;
+  struct static_adj_matrix *matrix;
+  struct static_adj_matrix mymatrix;
 
-  matrix = adj_matrixs_init(&mymatrix, params);
+  matrix = static_adj_matrix_init(&mymatrix, params);
   CATCH_REQUIRE(NULL != matrix);
 
   size_t max = params->type.adjm.n_vertices;
   for (size_t i = 1; i < max; ++i) {
     if (matrix->is_directed) {
       double val = rand() % 10 + 1;
-      CATCH_REQUIRE(OK == adj_matrixs_edge_addd(matrix, i-1, i, &val));
+      CATCH_REQUIRE(OK == static_adj_matrix_edge_addd(matrix, i-1, i, &val));
     } else {
-      CATCH_REQUIRE(OK == adj_matrixs_edge_addu(matrix, i-1, i));
+      CATCH_REQUIRE(OK == static_adj_matrix_edge_addu(matrix, i-1, i));
     }
-    CATCH_REQUIRE(TRUE == adj_matrixs_edge_query(matrix, i-1, i));
+    CATCH_REQUIRE(TRUE == static_adj_matrix_edge_query(matrix, i-1, i));
     if (!matrix->is_directed) {
-      CATCH_REQUIRE(TRUE == adj_matrixs_edge_query(matrix, i, i-1));
+      CATCH_REQUIRE(TRUE == static_adj_matrix_edge_query(matrix, i, i-1));
     }
   } /* for(i..) */
 
 
-  while (!adj_matrixs_isempty(matrix)) {
+  while (!static_adj_matrix_isempty(matrix)) {
     size_t u = rand() % max;
     size_t v = rand() % max;
-    if (adj_matrixs_edge_query(matrix, u, v)) {
-      CATCH_REQUIRE(OK == adj_matrixs_edge_remove(matrix, u, v));
-      CATCH_REQUIRE(FALSE == adj_matrixs_edge_query(matrix, u, v));
+    if (static_adj_matrix_edge_query(matrix, u, v)) {
+      CATCH_REQUIRE(OK == static_adj_matrix_edge_remove(matrix, u, v));
+      CATCH_REQUIRE(FALSE == static_adj_matrix_edge_query(matrix, u, v));
       if (!matrix->is_directed) {
-        CATCH_REQUIRE(FALSE == adj_matrixs_edge_query(matrix, v, u));
+        CATCH_REQUIRE(FALSE == static_adj_matrix_edge_query(matrix, v, u));
       }
     }
   } /* while() */
 
-  adj_matrixs_destroy(matrix);
+  static_adj_matrix_destroy(matrix);
 }
 void static_transpose_test(struct ds_params* params) {
-  struct adj_matrixs *matrix;
-  struct adj_matrixs mymatrix;
+  struct static_adj_matrix *matrix;
+  struct static_adj_matrix mymatrix;
 
-  matrix = adj_matrixs_init(&mymatrix, params);
+  matrix = static_adj_matrix_init(&mymatrix, params);
   CATCH_REQUIRE(NULL != matrix);
 
   size_t max = params->type.adjm.n_vertices;
   for (size_t i = 1; i < max; ++i) {
     if (matrix->is_directed) {
       double val = rand() % 10 + 1;
-      CATCH_REQUIRE(OK == adj_matrixs_edge_addd(matrix, i-1, i, &val));
+      CATCH_REQUIRE(OK == static_adj_matrix_edge_addd(matrix, i-1, i, &val));
     } else {
-      CATCH_REQUIRE(OK == adj_matrixs_edge_addu(matrix, i-1, i));
+      CATCH_REQUIRE(OK == static_adj_matrix_edge_addu(matrix, i-1, i));
     }
   } /* for(i..) */
 
-  CATCH_REQUIRE(OK == adj_matrixs_transpose(matrix));
+  CATCH_REQUIRE(OK == static_adj_matrix_transpose(matrix));
 
   for (size_t i = 1; i < max; ++i) {
-    CATCH_REQUIRE(TRUE == adj_matrixs_edge_query(matrix, i, i-1));
+    CATCH_REQUIRE(TRUE == static_adj_matrix_edge_query(matrix, i, i-1));
   } /* for(i..) */
 
-  adj_matrixs_destroy(matrix);
+  static_adj_matrix_destroy(matrix);
 }

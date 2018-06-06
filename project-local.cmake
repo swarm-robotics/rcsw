@@ -9,7 +9,7 @@ set(${target}_CHECK_LANGUAGE "C")
 set(${target}_HAS_RECURSIVE_DIRS YES)
 
 # Must be first in list to get linking dependencies right
-if (BUILD_TESTS)
+if (WITH_TESTS)
   list(APPEND ${target}_SUBDIRS tests)
 endif()
 
