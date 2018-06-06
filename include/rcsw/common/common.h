@@ -511,11 +511,11 @@
 
 #ifdef __cplusplus
 #ifndef BEGIN_C_DECLS
-#error "Compiler does not define BEGIN_C_DECLS!"
+#define BEGIN_C_DECLS extern "C" {
 #endif
 
 #ifndef END_C_DECLS
-#error "Compiler does not define END_C_DECLS!"
+#define END_C_DECLS }
 #endif
 
 #else
