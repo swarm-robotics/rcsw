@@ -12,14 +12,9 @@ bit).
    platform requirements for that project and install any needed
    packages/libraries.
 
-2. Set up an ssh key for password-less connection to github (this is for the
-   [cmake config](https://github.com/jharwell/cmake-config) submodule). Yes I
-   know that it can be done without ssh, but I set it up this way so I don't
-   have to type my github password ever.
-
 ## Post-cloning
 
-1. Pull in the cmake config:
+1. Pull in the cmake config and other submodules:
 
         git submodule update --init --recursive
 
