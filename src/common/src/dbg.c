@@ -109,7 +109,7 @@ error:
   return ERROR;
 } /* dbg_mod_lvl_set() */
 
-__pure int64_t dbg_mod_id_get(const char *const name) {
+__rcsw_pure int64_t dbg_mod_id_get(const char *const name) {
   LLIST_FOREACH(dbg_g.modules_, next, curr) {
     struct dbg_module *mod = (struct dbg_module *)curr->data;
     if (0 != strncmp(name, mod->name_, sizeof(mod->name_))) {

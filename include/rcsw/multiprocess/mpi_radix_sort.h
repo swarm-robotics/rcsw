@@ -75,7 +75,7 @@ BEGIN_C_DECLS
  * @return The initialized sorter, or NULL if an error occurred.
  */
 struct mpi_radix_sorter* mpi_radix_sorter_init(
-    const struct mpi_radix_sorter_params* const params) __check_return;
+    const struct mpi_radix_sorter_params* const params) __rcsw_check_return;
 
 /**
  * @brief Deallocate/destroy a sorter after use.

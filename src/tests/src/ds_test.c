@@ -135,7 +135,7 @@ void th_ds_shutdown(const struct ds_params *const params) {
   }
 } /* th_ds_shutdown() */
 
-__pure int th_leak_check_data(const struct ds_params *params) {
+__rcsw_pure int th_leak_check_data(const struct ds_params *params) {
   int i;
   int len;
   if (params->tag == DS_BSTREE) {
@@ -157,7 +157,7 @@ error:
   return 1;
 } /* th_leak_check_data() */
 
-__pure int th_leak_check_nodes(const struct ds_params *params) {
+__rcsw_pure int th_leak_check_nodes(const struct ds_params *params) {
   int i;
   int len;
   if (params->tag == DS_BSTREE) {
@@ -185,12 +185,12 @@ error:
   return 1;
 } /* th_leak_check_nodes() */
 
-__pure bool_t th_filter_func(const void *const e) {
+__rcsw_pure bool_t th_filter_func(const void *const e) {
   const struct element *q = e;
   return (q->value1 % 2 == 0);
 } /* th_filter_func() */
 
-__pure int th_key_cmp(const void *a, const void *b) {
+__rcsw_pure int th_key_cmp(const void *a, const void *b) {
   if (a == NULL && b == NULL)
     return 0;
   if (a == NULL)
@@ -206,7 +206,7 @@ void th_printe(const void *e) {
   PRINTF("%d\n", el->value2);
 } /* th_printe() */
 
-__pure int th_cmpe(const void *const e1, const void *const e2) {
+__rcsw_pure int th_cmpe(const void *const e1, const void *const e2) {
   const struct element *q1 = (const struct element *)e1;
   const struct element *q2 = (const struct element *)e2;
 
@@ -224,7 +224,7 @@ void th_printn(const void *node) {
          (const char *)hashnode->key, hashnode->hash, *(int *)hashnode->data);
 } /* th_printn() */
 
-__pure int th_data_cmp(const void *a, const void *b) {
+__rcsw_pure int th_data_cmp(const void *a, const void *b) {
   const struct hashnode *q1 = a;
   const struct hashnode *q2 = b;
   return *(int *)q1->data - *(int *)q2->data;
@@ -241,7 +241,7 @@ void th_map_func(void *e) {
   e1->value1--;
 } /* th_map_func() */
 
-__pure bool_t th_iter_func(void *e) {
+__rcsw_pure bool_t th_iter_func(void *e) {
   return (((struct element *)e)->value1 % 2 == 0);
 } /* th_iter_func() */
 

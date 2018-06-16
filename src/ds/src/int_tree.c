@@ -47,7 +47,7 @@ static bool_t int_tree_cmp_overlap(const void *a, const void *b);
 /*******************************************************************************
  * API Functions
  ******************************************************************************/
-__pure int int_tree_cmp_key(const void *a, const void *b) {
+__rcsw_pure int int_tree_cmp_key(const void *a, const void *b) {
   const int *a_p = a;
   const int *b_p = b;
   return (*a_p - *b_p);

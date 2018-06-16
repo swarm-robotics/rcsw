@@ -29,7 +29,6 @@
 #include "rcsw/common/common.h"
 #include "rcsw/common/fpc.h"
 #include "rcsw/utils/utils.h"
-#include "rcsw/common/dbg.h"
 
 /*******************************************************************************
  * Inline Functions

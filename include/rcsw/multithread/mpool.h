@@ -167,7 +167,7 @@ BEGIN_C_DECLS
  * @return The initialized pool, or NULL if an error occurred.
  */
 struct mpool*mpool_init(struct mpool * pool_in,
-                        const struct mpool_params * params) __check_return;
+                        const struct mpool_params * params) __rcsw_check_return;
 
 /**
  * @brief Deallocate a memory pool. Any further use of the pool handle after

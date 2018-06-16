@@ -132,7 +132,7 @@ BEGIN_C_DECLS
  * @return The initialized ringbuffer, or NULL if an error occurred.
  */
 struct rbuffer *rbuffer_init(struct rbuffer *rb_in,
-    const struct ds_params * params) __check_return;
+    const struct ds_params * params) __rcsw_check_return;
 
 /**
  * @brief Delete a ringbuffer.

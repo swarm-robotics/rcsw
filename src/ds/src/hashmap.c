@@ -473,7 +473,7 @@ error:
   return;
 } /* hashmap_print() */
 
-__const void hashmap_print_distribution(const struct hashmap *const map) {
+__rcsw_const void hashmap_print_distribution(const struct hashmap *const map) {
   if (NULL == map) {
     DPRINTF("Hashmap: < NULL hashmap >\n");
     return;
