@@ -26,6 +26,7 @@
 /*******************************************************************************
  * Includes
  ******************************************************************************/
+#include <sys/cdefs.h>
 #include "rcsw/common/types.h"
 
 /*******************************************************************************
@@ -162,11 +163,6 @@
 /*******************************************************************************
  * Other Macros
  ******************************************************************************/
-/* g++ does not define this for some reason... */
-#ifndef isnan
-#define isnan(d) __builtin_isnan(d)
-#endif
-
 /**
  * @def LIKELY(x)
  *
@@ -460,78 +456,66 @@
 /*******************************************************************************
  * Attribute Macros
  ******************************************************************************/
-#if defined(__unused)
-#undef __unused
-#endif /* __unused */
-
+#if defined(__rcsw_unused)
+#error "Compiler defines __rcsw_unused!"
+#endif
 /**
- * @def __unused Shorthand for declaring something unused (I'm lazy).
+ * @def __rcsw_unused Shorthand for declaring something unused (I'm lazy). We
+ * only need it to stop spurious compiler warnings when optimizations are
+ * on. When they are not, then such warnings are not spurious, and should be
+ * addressed.
  */
-#define __unused __attribute__((unused))
+#if defined(NDEBUG)
+#define __rcsw_unused __attribute__((__rcsw_unused__))
+#else
+#define __rcsw_unused
+#endif /* NDEBUG */
 
-#if defined(__check_return)
-#undef __check_return
-#endif /* __check_return */
-
-/**
- * @def __check_return Shorthand for enhancing compile checking of return value usage.
- */
-#define __check_return __attribute__((warn_unused_result))
-
-#if defined(__deprecated)
-#undef __deprecated
-#endif /* __deprecated */
-
-/**
- * @def __deprecated Shorthand for marking a function as deprecated so that
- * compile warning is issued if it is used.
- */
-#define __deprecated __attribute__((deprecated))
-
-#if defined(__const)
-#undef __const
-#endif /* __const */
-
-/**
- * @def __const Shorthand for marked a function as purely function of its input
- * parameters only (no global memory access allowed).
- */
-#define __const __attribute__((const))
-
-#if defined(__pure)
-#undef __pure
-#endif /* __pure */
-
-/**
- * @def __pure Shorthand for marked a function as purely function of its input
- * parameters and (possibly) global data.
- */
-#define __pure __attribute__((pure))
-
-#if defined(__noreturn)
-#undef __noreturn
-#endif /* __noreturn */
-
-/**
- * @def __noreturn Shorthand for marked a function as one that will not return.
- */
-#define __noreturn __attribute__((noreturn))
-
-#ifdef __cplusplus
-/**
- * @def BEGIN_C_DECLS Convenience macros for wrapping all C function, variable
- * declarations for C/C++ interoperability.
- */
-#ifndef BEGIN_C_DECLS
-#define BEGIN_C_DECLS extern "C" {
+#if defined(__rcsw_check_return)
+#error "Compiler defines __rcsw_check_return!"
 #endif
 
-/***
- * @def END_C_DECLS Convenience macros for wrapping all C function, variable
- * declarations for C/C++ interoperability.
+/**
+ * @def __rcsw_check_return Shorthand for enhancing compile checking of return
+ * value usage.
  */
+#define __rcsw_check_return __attribute__((warn_unused_result))
+
+#if defined(__rcsw_const)
+#error "Compiler defines __rcsw_const!"
+#endif
+
+/**
+ * @def __rcsw_const Shorthand for marked a function as purely function of its
+ * input parameters only (no global memory access allowed).
+ */
+#define __rcsw_const __attribute__((__const__))
+
+#if defined(__rcsw_pure)
+#error "Compiler defines __rcsw_pure!"
+#endif
+/**
+ * @def __rcsw_pure Shorthand for marked a function as purely function of its input
+ * parameters and (possibly) global data.
+ */
+#define __rcsw_pure __attribute__((pure))
+
+#if defined(__rcsw_dead)
+#error "Compiler defines __rcsw_dead!"
+#endif
+
+/**
+ * @def __rcsw_dead Shorthand for marked a function as one that will not return.
+ */
+#define __rcsw_dead __attribute__((noreturn))
+
+#ifdef __cplusplus
+#ifndef BEGIN_C_DECLS
+#error "Compiler does not define BEGIN_C_DECLS!"
+#endif
+
 #ifndef END_C_DECLS
-#define END_C_DECLS }
+#error "Compiler does not define END_C_DECLS!"
 #endif
 
 #else

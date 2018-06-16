@@ -77,7 +77,7 @@ status_t simple_image_clamp_rgb(simple_image_t *const image) {
   return OK;
 } /* simple_image_clamp_rgb() */
 
-__pure size_t simple_image_kernel2d_flops(simple_image_t const *const image,
+__rcsw_pure size_t simple_image_kernel2d_flops(simple_image_t const *const image,
                                           size_t kernel_dim) {
   size_t flops_per_pixel = kernel_dim * kernel_dim * 2;
   size_t n_pixels = 3 * image->width * image->height; /* 3 accounts for RGB */

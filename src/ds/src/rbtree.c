@@ -151,7 +151,7 @@ void rbtree_delete_fixup(struct bstree *const tree, struct bstree_node *node) {
   node->red = FALSE;
 } /* rbtree_delete_fixup() */
 
-__pure int rbtree_node_black_height(const struct bstree_node *const node) {
+__rcsw_pure int rbtree_node_black_height(const struct bstree_node *const node) {
   /*
    * Sentinel to detect when we have fallen off the tree
    */

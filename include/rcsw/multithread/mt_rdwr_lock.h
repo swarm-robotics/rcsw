@@ -60,7 +60,7 @@ BEGIN_C_DECLS
  * @return The initialized RDWR lock, or NULL if an ERROR occurred.
  */
 status_t mt_rdwr_lock_init(mt_rdwr_lock_t *const rdwr_in,
-                           uint32_t flags) __check_return;
+                           uint32_t flags) __rcsw_check_return;
 
 /**
  * @brief Destroy a reader/writer fair lock

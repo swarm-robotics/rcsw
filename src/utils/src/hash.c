@@ -37,7 +37,7 @@
  ******************************************************************************/
 BEGIN_C_DECLS
 
-__pure uint32_t hash_default(const void *const data, size_t len) {
+__rcsw_pure uint32_t hash_default(const void *const data, size_t len) {
   FPC_CHECK(0, NULL != data, len > 0);
 
   const char *const key = data;
@@ -56,7 +56,7 @@ __pure uint32_t hash_default(const void *const data, size_t len) {
   return hash;
 } /* hash_default()  */
 
-__pure uint32_t hash_fnv1a(const void *const data, size_t len) {
+__rcsw_pure uint32_t hash_fnv1a(const void *const data, size_t len) {
   FPC_CHECK(0, NULL != data, len > 0);
   const char *const key = data;
   uint32_t hash = FNV_OFFSET_BASIS;
@@ -68,7 +68,7 @@ __pure uint32_t hash_fnv1a(const void *const data, size_t len) {
   return hash;
 } /* hash_fnv1a() */
 
-__pure uint32_t hash_djb(const void *const data, size_t len) {
+__rcsw_pure uint32_t hash_djb(const void *const data, size_t len) {
   FPC_CHECK(0, NULL != data, len > 0);
 
   const char *const key = data;

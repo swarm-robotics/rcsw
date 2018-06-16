@@ -174,7 +174,7 @@ BEGIN_C_DECLS
  * @return The initialized list, or NULL if an ERROR occurred
  */
 struct darray *darray_init(struct darray *arr_in,
-                           const struct ds_params * params) __check_return;
+                           const struct ds_params * params) __rcsw_check_return;
 
 /**
  * @brief Delete a darray
