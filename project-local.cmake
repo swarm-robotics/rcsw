@@ -13,7 +13,6 @@ if (WITH_TESTS)
   list(APPEND ${target}_SUBDIRS tests)
 endif()
 
-list(APPEND ${target}_SUBDIRS tests)
 list(APPEND ${target}_SUBDIRS adapter)
 list(APPEND ${target}_SUBDIRS algorithm)
 list(APPEND ${target}_SUBDIRS common)
