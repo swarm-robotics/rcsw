@@ -1,16 +1,21 @@
 ################################################################################
-# External Projects                                                            #
-################################################################################
-
-################################################################################
-# Submodules                                                                   #
+# Configuration Options                                                        #
 ################################################################################
 set(${target}_CHECK_LANGUAGE "C")
 set(${target}_HAS_RECURSIVE_DIRS YES)
 
+################################################################################
+# Includes                                                                     #
+################################################################################
+set(${target}_INCLUDE_DIRS "${${target}_INC_PATH}" ${rcppsw_INCLUDE_DIRS})
+
+################################################################################
+# Submodules                                                                   #
+################################################################################
+
 # Must be first in list to get linking dependencies right
 if (WITH_TESTS)
-  list(APPEND ${target}_SUBDIRS tests)
+  add_subdirectory(tests)
 endif()
 
 list(APPEND ${target}_SUBDIRS adapter)
@@ -28,24 +33,15 @@ endif()
 
 foreach(d ${${target}_SUBDIRS})
   add_subdirectory(src/${d})
-  # The include directory for common tests bits needs to be added to
-  # each target
-  target_include_directories(${target}-${d} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/tests/include)
-
-  target_include_directories(${target}-${d} PUBLIC "${${target}_INC_PATH}")
-  target_include_directories(${target}-${d} SYSTEM PUBLIC ext)
+  target_include_directories(${target}-${d} PUBLIC ${${target}_INCLUDE_DIRS})
+  target_include_directories(${target}-${d} SYSTEM PRIVATE ext)
 endforeach()
 
-################################################################################
-# Includes                                                                     #
-################################################################################
-set(${target}_INCLUDE_DIRS "${${target}_INC_PATH}")
 
 ################################################################################
 # Libraries                                                                    #
 ################################################################################
-
-set(${target}_LIBS
+set(${target}_LIBRARIES
   )
 
 if (NOT TARGET ${target})
@@ -58,6 +54,7 @@ if (NOT TARGET ${target})
     $<TARGET_OBJECTS:${target}-pulse>
     $<TARGET_OBJECTS:${target}-stdio>
     $<TARGET_OBJECTS:${target}-utils>)
+  target_link_libraries(${target} ${${target}_LIBRARIES})
 endif()
 
 
@@ -66,5 +63,6 @@ endif()
 ################################################################################
 if (NOT IS_ROOT_PROJECT)
   set(${target}_INCLUDE_DIRS "${${target}_INCLUDE_DIRS}" PARENT_SCOPE)
-  set(${target}_LIBS "${${target}_LIBS}" PARENT_SCOPE)
+  set(${target}_LIBRARIES "${${target}_LIBRARIES}" PARENT_SCOPE)
+  set(${target}_LIBRARY_DIRS "${${target}_LIBRARY_DIRS}" PARENT_SCOPE)
 endif()

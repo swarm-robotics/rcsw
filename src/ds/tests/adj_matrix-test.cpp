@@ -30,6 +30,12 @@
 #include <catch.hpp>
 
 extern "C" {
+  /*
+   * isnan() is in the std namespace in C++--need to bring it to global
+   * namespace to test C code
+   */
+#include <cmath>
+using std::isnan;
 #include "rcsw/ds/static_adj_matrix.h"
 #include "rcsw/common/dbg.h"
 #include "tests/ds_test.h"
