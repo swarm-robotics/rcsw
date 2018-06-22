@@ -466,7 +466,7 @@
  * addressed.
  */
 #if defined(NDEBUG)
-#define __rcsw_unused __attribute__((__rcsw_unused__))
+#define __rcsw_unused __attribute__((__unused__))
 #else
 #define __rcsw_unused
 #endif /* NDEBUG */

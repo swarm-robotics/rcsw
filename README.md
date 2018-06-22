@@ -1,6 +1,7 @@
 # Reusable C Software Library
 
-[![Build Status](https://travis-ci.org/swarm-robotics/rcsw.svg?branch=devel)](https://travis-ci.org/swarm-robotics/rcsw.svg?branch=devel)
+[![Build Status](https://travis-ci.org/swarm-robotics/rcsw.svg?branch=devel)](https://travis-ci.org/swarm-robotics/rcsw.svg?branch=devel) (Devel)
+[![Build Status](https://travis-ci.org/swarm-robotics/rcsw.svg?branch=master)](https://travis-ci.org/swarm-robotics/rcsw.svg?branch=master) (Master)
 
 
 A highly flexible, and also (relatively) high performance C of a C version of
@@ -143,7 +144,7 @@ each publishing thread does the work of its publish().
 For contributing to `rcsw`, see [CONTRIBUTING](docs/CONTRIBUTING.md)
 
 # License
-This project is licensed under GPL 2.0. See [LICENSE](LICENSE).
+This project is licensed under GPL 3.0. See [LICENSE](LICENSE).
 
 # Donate
 If you've found this project helpful, please consider donating somewhere between

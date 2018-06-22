@@ -1,6 +1,6 @@
 [submodule "cmake"]
 	path = cmake
-	url = https://github.com/jharwell/cmake-config
+	url = https://github.com/swarm-robotics/libra
 [submodule "ext/stb"]
 	path = ext/stb
 	url = https://github.com/nothings/stb.git
