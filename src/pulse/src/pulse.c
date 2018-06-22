@@ -76,7 +76,7 @@ struct pulse_inst *pulse_init(struct pulse_inst *pulse_in,
   pulse->n_rxqs = 0;
   pulse->n_pools = params->n_pools;
   pulse->max_rxqs = params->max_rxqs;
-
+  pulse->max_subs = params->max_subs;
   DBGD("Initializing %zu buffer pools: %s allocation\n", pulse->n_pools,
        (params->flags & PULSE_APP_DOMAIN_POOLS) ? "STATIC" : "DYNAMIC");
 
@@ -96,13 +96,11 @@ struct pulse_inst *pulse_init(struct pulse_inst *pulse_in,
                                         .elements = params->pools[i].elements,
                                         .flags = flags | DS_APP_DOMAIN_HANDLE |
                                                  MPOOL_REF_COUNT_EN};
-    printf("BEFORE1\n");
     CHECK_PTR(mt_mutex_init(&pulse->buffer_pools[i].mutex, MT_APP_DOMAIN_MEM));
-    printf("BEFORE2\n");
     CHECK(NULL != mpool_init(&pulse->buffer_pools[i].pool, &mpool_params));
   } /* for() */
 
-  DBGD("Allocating %zu receive questions, %zu max subscribers\n",
+  DBGD("Allocating %zu receive queues, %zu max subscribers\n",
        pulse->max_rxqs, pulse->max_subs);
 
   /* Initialize receive queues */

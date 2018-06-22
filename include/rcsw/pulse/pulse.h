@@ -85,6 +85,7 @@ struct pulse_bp_params {
 struct pulse_params {
     size_t n_pools;   /// # of buffer pools for the bus.
     size_t max_rxqs;  /// Max # of receive queues for the bus.
+    size_t max_subs;
     uint32_t flags;   /// Configuration flags.
 
     /**

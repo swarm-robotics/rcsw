@@ -36,6 +36,8 @@
 #define NUM_TESTS            3
 #define MODULE_ID M_TESTING
 #define MAX_POOLS 16
+#define MAX_RXQS 16
+#define MAX_SUBS 128
 
 /*******************************************************************************
  * Test Helper Functions
@@ -59,6 +61,8 @@ static void test_runner1(void (*test)(struct pulse_params* params)) {
     CATCH_REQUIRE(NULL != bus_params.pools[i].nodes);
     bus_params.pools[i].n_bufs = 1024;
     bus_params.pools[i].buf_size = MAX_BUFFER_SIZE;
+    bus_params.max_rxqs = MAX_RXQS;
+    bus_params.max_subs = MAX_SUBS;
   } /* for() */
 
   for (int i = 0x4; i < 0x10; ++i) {
@@ -85,35 +89,8 @@ static void fill_test(struct pulse_params *params);
  * Test Cases
  ******************************************************************************/
 CATCH_TEST_CASE("PULSE Init Test", "[PULSE]") { test_runner1(init_test); }
-CATCH_TEST_CASE("PULSE Subscribe Test", "[PULSE]") { test_runner1(subscribe_test); }
-CATCH_TEST_CASE("PULSE Fill Test", "[PULSE]") { test_runner1(fill_test); }
-
-  /*         int i,j,k,m,n; */
-  /*         /\* iterate through all tests *\/ */
-  /*         for (i = 0; i < NUM_TESTS; ++i) { */
-  /*                 if (TEST_TAG(tests,i) == TEST_FP0) { */
-  /*                         TEST_RUN(tests,i,params); */
-  /*                 } */
-  /*                 /\* test with range of # of buffer pools *\/ */
-  /*                 for (j = 1; j <= PULSE_MAX_BP_ENTRIES; ++j) { */
-  /*                         params->n_bp_ent = j; */
-  /*                         /\* test with range of # buffers/pool *\/ */
-  /*                         for (k = 1; k <= PULSE_MAX_BUFS_PER_POOL; ++k) { */
-  /*                                 /\* test with range of buffer sizes *\/ */
-  /*                                 for (m = 4;  m <= MAX_BUFFER_SIZE ; m+=4) { */
-  /*                                         for (n = 0; n < j; ++n) { */
-  /*                                                 params->a_bpp[n].n_bufs = k; */
-  /*                                                 params->a_bpp[n].buf_size = m; */
-  /*                                         } /\* for(n..) *\/ */
-  /*                                         TEST_RUN(tests,i,params); */
-  /*                                 } /\* for(m..) *\/ */
-  /*                         } /\* for(k...) *\/ */
-  /*                 } /\* for(j..) *\/ */
-  /*         test_finish: */
-  /*                 test_frmwk_test_status(tests,i); */
-  /*         } /\* for(i..) *\/ */
-  /*         test_frmwk_summary(tests); */
- /* run_tests() */
+/* CATCH_TEST_CASE("PULSE Subscribe Test", "[PULSE]") { test_runner1(subscribe_test); } */
+/* CATCH_TEST_CASE("PULSE Fill Test", "[PULSE]") { test_runner1(fill_test); } */
 
 static void init_test(struct pulse_params * params) {
   struct pulse_inst mypulse;

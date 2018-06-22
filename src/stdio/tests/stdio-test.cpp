@@ -122,16 +122,6 @@ static void printf_basic_test(void) {
 } /* printf_basic_test() */
 
 static void printf_tricky_test(void) {
-  sstdio_printf("\n***** Testing printing positive hex numbers with # *****\n");
-  sstdio_printf("number 0       : %#X\n", 0);
-  sstdio_printf("number 1       : %#X\n", 1);
-  sstdio_printf("number 2       : %#x\n", 2);
-  sstdio_printf("number 256     : %#x\n", 256);
-  sstdio_printf("number 32      : %#x\n", 32);
-  sstdio_printf("number 17      : %#X\n", 17);
-  sstdio_printf("number 1028749 : %#X\n", 1028749);
-  sstdio_printf("number 48750   : %#X\n", 48750);
-
   sstdio_printf("\n***** Testing printing positive hex numbers with filling *****\n");
   sstdio_printf("number 0 (zero fill to 4)        : %04x\n", 0);
   sstdio_printf("number 1 (zero fill to 2)        : %02x\n", 1);
@@ -143,14 +133,14 @@ static void printf_tricky_test(void) {
   sstdio_printf("number 49750 (space fill to 3)   : %3X\n", 48750);
 
   sstdio_printf("\n***** Testing printing positive hex numbers for correct number of digits *****\n");
-  sstdio_printf("number 0x1        : %#x\n", 0x1);
-  sstdio_printf("number 0x12       : %#x\n", 0x12);
-  sstdio_printf("number 0x123      : %#x\n", 0x123);
-  sstdio_printf("number 0x1234     : %#x\n", 0x1234);
-  sstdio_printf("number 0x12345    : %#x\n", 0x12345);
-  sstdio_printf("number 0x123456   : %#x\n", 0x123456);
-  sstdio_printf("number 0x1234567  : %#x\n", 0x1234567);
-  sstdio_printf("number 0x12345678 : %#x\n", 0x12345678);
+  sstdio_printf("number 0x1        : %0x\n", 0x1);
+  sstdio_printf("number 0x12       : %0x\n", 0x12);
+  sstdio_printf("number 0x123      : %0x\n", 0x123);
+  sstdio_printf("number 0x1234     : %0x\n", 0x1234);
+  sstdio_printf("number 0x12345    : %0x\n", 0x12345);
+  sstdio_printf("number 0x123456   : %0x\n", 0x123456);
+  sstdio_printf("number 0x1234567  : %0x\n", 0x1234567);
+  sstdio_printf("number 0x12345678 : %0x\n", 0x12345678);
 
   sstdio_printf("\n***** Test printing with integers with space filling *****\n");
   sstdio_printf("number 1      (1 digit)  : %1d\n", 1);
@@ -503,6 +493,6 @@ static void convert_test(void) {
 
 static void puts_test(void) {
   printf("\n***** Test puts() *****\n");
-  char* s = "I'm having a...a...you know--a headache with pictures!\r\nYou mean an idea?\r\n";
+  const char* s = "I'm having a...a...you know--a headache with pictures!\r\nYou mean an idea?\r\n";
   sstdio_puts(s);
 } /* string_test */

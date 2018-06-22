@@ -1,5 +1,8 @@
 # Reusable C Software Library
 
+[![Build Status](https://travis-ci.org/swarm-robotics/rcsw.svg?branch=devel)](https://travis-ci.org/swarm-robotics/rcsw.svg?branch=devel)
+
+
 A highly flexible, and also (relatively) high performance C of a C version of
 the C++ STL. Unless otherwise stated, everything in here is for programming on a
 Linux platform (it might work on Windows, but I haven't tested it even a little

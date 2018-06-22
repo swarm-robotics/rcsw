@@ -106,7 +106,7 @@ int sstdio_vprintf(const char *fmt, va_list argp) {
   int show_sign = 0;    /* flag to always show sign on integers */
   int left_justify = 0; /* flag to left justify integer formatting */
   char fmt_buf[256];
-  char fmt_chars[25] = {
+  char fmt_chars[24] = {
       'd',      /* decimal integers */
       'x', 'X', /* hexadecimal integers (always size_t) */
       's',      /* strings */
@@ -116,7 +116,7 @@ int sstdio_vprintf(const char *fmt, va_list argp) {
       'f', /* floating point */
       'e', 'E',
 
-      '.', '#', '+', '-',                         /* format modifiers */
+      '.', '+', '-',                         /* format modifiers */
       '0', '1', '2', '3', '4', '5', '6', '7', '8' /* numerical specifiers */
   };
 
@@ -214,7 +214,7 @@ int sstdio_vprintf(const char *fmt, va_list argp) {
           sstdio_putchar(*s++);
 
           /* round arg decimal portion as needed */
-          float_arg_round(s, n_digits);
+          float_arg_round((char*)s, n_digits);
 
           /* display arg decimals */
 
@@ -280,33 +280,26 @@ int sstdio_vprintf(const char *fmt, va_list argp) {
         val = va_arg(argp, int);
         sstdio_itoad(val, fmt_buf);
 
-        /* get number of digits to display */
-        n_digits = (size_t)decimal_digits_get(fmt_buf, fmt_block, i);
-
         /* Get fill char */
         if (i >= 2 && fmt_block[i - 2] == '0') {
           fill_char = '0';
         }
-
         /* needed because fmt_buf is an immutable array -_- */
         s = fmt_buf;
 
         /*
-         * Advance past the sign returned by itoa() if not displaying
-         * the sign char (except if the fmt_buf is the single digit
-         * number 0)
+         * Advance past the sign returned by itoa() if not displaying the sign
+         * char (except if the fmt_buf is the single digit number 0)
          */
         if (fill_char == ' ') {
-          if (!show_sign && val != 0) {
+          if (!show_sign && val > 0) {
             s++;
           }
         }
-
         /*
-         * Display the sign char appropriately for zero-filled
-         * numbers. The sign char is counted as one of the number of
-         * requested characters, if a certain number of digits is
-         * requested.
+         * Display the sign char appropriately for zero-filled numbers. The sign
+         * char is counted as one of the number of requested characters, if a
+         * certain number of digits is requested.
          */
         else if (fill_char == '0') {
           if (val < 0) {
@@ -318,8 +311,10 @@ int sstdio_vprintf(const char *fmt, va_list argp) {
           }
           s++;
         }
+        /* get number of digits to display */
+        n_digits = (size_t)decimal_digits_get(s, fmt_block, i);
 
-        size_t tmp_len = sstring_strlen(s);
+        int tmp_len = sstring_strlen(s);
 
         /* only allow left justification if space-filling */
         if (fill_char != ' ') {
@@ -327,14 +322,12 @@ int sstdio_vprintf(const char *fmt, va_list argp) {
         }
 
         /*
-         * Display fill chars if necessary; if strlen(fmt_buf) >
-         * n_digits, ignore the request to print only a certain number
-         * of digits.
+         * Display fill chars if necessary; if strlen(fmt_buf) > n_digits,
+         * ignore the request to print only a certain number of digits.
          */
-        if (tmp_len < (size_t)n_digits && !left_justify) {
+        if (tmp_len < n_digits && !left_justify) {
           DISPLAY_FILL_CHARS(fill_char, (int)n_digits - (int)tmp_len);
         }
-
         /* display arg */
         while (*s) {
           sstdio_putchar(*s++);
@@ -349,12 +342,6 @@ int sstdio_vprintf(const char *fmt, va_list argp) {
         break;
       case 'X':
       case 'x':
-        if ((i == 1 && fmt_block[i - 1] == '#') ||
-            (i == 2 && fmt_block[i - 2] == '#')) {
-          fill_char = '0';
-          sstdio_puts("0x");
-        }
-
         /* get and convert arg */
         val2 = va_arg(argp, size_t);
         sstdio_itoax((int)val2, fmt_buf);
@@ -388,7 +375,6 @@ int sstdio_vprintf(const char *fmt, va_list argp) {
         sstdio_puts(fmt_buf);
         break;
       default:
-        assert(0);
         break;
       } /* end switch */
     }   /* end for() */
