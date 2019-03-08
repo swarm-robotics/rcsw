@@ -22,15 +22,15 @@
  * Includes
  ******************************************************************************/
 #include "rcsw/algorithm/algorithm.h"
+#include <stdio.h>
 #include "rcsw/common/dbg.h"
 #include "rcsw/common/fpc.h"
 #include "rcsw/utils/utils.h"
-#include <stdio.h>
 
 /*******************************************************************************
  * API Functions
  ******************************************************************************/
-size_t alg_arr_largest_num(const size_t *const array, size_t n_elts) {
+size_t alg_arr_largest_num(const size_t* const array, size_t n_elts) {
   FPC_CHECK(-1, NULL != array);
   size_t largest = 0;
 
@@ -42,7 +42,7 @@ size_t alg_arr_largest_num(const size_t *const array, size_t n_elts) {
   return largest;
 } /* largest_num() */
 
-int alg_arr_largest_num2(const int *const array, size_t n_elts) {
+int alg_arr_largest_num2(const int* const array, size_t n_elts) {
   FPC_CHECK(-1, NULL != array);
   int largest = 0;
 
@@ -54,7 +54,9 @@ int alg_arr_largest_num2(const int *const array, size_t n_elts) {
   return largest;
 } /* largest_num() */
 
-bool_t str_is_parenthesizable(const char *const x, char *const r, char el,
+bool_t str_is_parenthesizable(const char* const x,
+                              char* const r,
+                              char el,
                               char (*multiply_cb)(char x, char y)) {
   FPC_CHECK(FALSE, NULL != x, NULL != r, NULL != multiply_cb);
 

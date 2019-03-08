@@ -22,21 +22,24 @@
  * Includes
  ******************************************************************************/
 #include "rcsw/algorithm/search.h"
+#include <math.h>
 #include "rcsw/common/dbg.h"
 #include "rcsw/common/fpc.h"
-#include <math.h>
 
 /*******************************************************************************
  * Functions
  ******************************************************************************/
 BEGIN_C_DECLS
 
-int bsearch_iter(const void *const a, const void *const e,
-                 int (*cmpe)(const void *const e1, const void *const e2),
-                 size_t el_size, size_t high, size_t low) {
+int bsearch_iter(const void* const a,
+                 const void* const e,
+                 int (*cmpe)(const void* const e1, const void* const e2),
+                 size_t el_size,
+                 size_t high,
+                 size_t low) {
   FPC_CHECK(-1, NULL != a, NULL != e, NULL != cmpe);
 
-  const uint8_t *const arr = a;
+  const uint8_t* const arr = a;
   while (low <= high) {
     size_t index = (low + high) / 2;
     if (cmpe(arr + (index * el_size), e) == 0) { /* found a match */
@@ -51,16 +54,19 @@ int bsearch_iter(const void *const a, const void *const e,
   return -1;
 } /* bsearch_iter() */
 
-int bsearch_rec(const void *const a, const void *const e,
-                int (*cmpe)(const void *const e1, const void *const e2),
-                size_t el_size, size_t low, size_t high) {
+int bsearch_rec(const void* const a,
+                const void* const e,
+                int (*cmpe)(const void* const e1, const void* const e2),
+                size_t el_size,
+                size_t low,
+                size_t high) {
   FPC_CHECK(-1, NULL != a, NULL != e, NULL != cmpe);
 
   if (low > high) {
     return -1;
   }
   size_t mid = (high + low) / 2;
-  const uint8_t *const arr = a;
+  const uint8_t* const arr = a;
   int rval = cmpe(e, arr + (el_size * mid));
 
   if (0 == rval) { /* found a match */

@@ -33,20 +33,20 @@
 /*******************************************************************************
  * API Functions
  ******************************************************************************/
-status_t simple_image_clamp_rgb(simple_image_t *const image) {
+status_t simple_image_clamp_rgb(simple_image_t* const image) {
   FPC_CHECK(ERROR, NULL != image);
   int const width = image->width;
   int const height = image->height;
 
-  float *const __restrict__ red = image->red;
-  float *const __restrict__ green = image->green;
-  float *const __restrict__ blue = image->blue;
+  float* const __restrict__ red = image->red;
+  float* const __restrict__ green = image->green;
+  float* const __restrict__ blue = image->blue;
 
   float minv = 255.;
   float maxv = 0.;
 
-#pragma omp parallel for schedule(static) reduction(min                        \
-                                                    : minv) reduction(max      \
+#pragma omp parallel for schedule(static) reduction(min                   \
+                                                    : minv) reduction(max \
                                                                       : maxv)
   for (int x = 0; x < width * height; ++x) {
     minv = MIN(minv, red[x]);
@@ -77,8 +77,8 @@ status_t simple_image_clamp_rgb(simple_image_t *const image) {
   return OK;
 } /* simple_image_clamp_rgb() */
 
-__rcsw_pure size_t simple_image_kernel2d_flops(simple_image_t const *const image,
-                                          size_t kernel_dim) {
+__rcsw_pure size_t simple_image_kernel2d_flops(simple_image_t const* const image,
+                                               size_t kernel_dim) {
   size_t flops_per_pixel = kernel_dim * kernel_dim * 2;
   size_t n_pixels = 3 * image->width * image->height; /* 3 accounts for RGB */
 
@@ -89,19 +89,19 @@ __rcsw_pure size_t simple_image_kernel2d_flops(simple_image_t const *const image
   return flops_per_pixel * n_pixels;
 } /* simple_image_kernel2d_flops() */
 
-simple_image_t *simple_image_load(char const *const filename) {
+simple_image_t* simple_image_load(char const* const filename) {
   FPC_CHECK(NULL, NULL != filename);
   int width;
   int height;
   int nchannels;
-  uint8_t *simple_image = stbi_load(filename, &width, &height, &nchannels, 3);
+  uint8_t* simple_image = stbi_load(filename, &width, &height, &nchannels, 3);
   if (simple_image == NULL) {
     stbi_failure_reason();
     return NULL;
   }
 
   /* Now split simple_image into red/green/blue channels. */
-  simple_image_t *im = simple_image_alloc(width, height);
+  simple_image_t* im = simple_image_alloc(width, height);
   for (int x = 0; x < width * height; ++x) {
     im->red[x] = (float)simple_image[(x * nchannels) + 0];
     im->green[x] = (float)simple_image[(x * nchannels) + 1];
@@ -114,14 +114,14 @@ simple_image_t *simple_image_load(char const *const filename) {
   return im;
 } /* simple_image_load() */
 
-status_t simple_image_write_bmp(char const *const filename,
-                                simple_image_t *const image) {
+status_t simple_image_write_bmp(char const* const filename,
+                                simple_image_t* const image) {
   FPC_CHECK(ERROR, NULL != filename, NULL != image);
   CHECK(OK == simple_image_clamp_rgb(image));
 
   /* First merge the red/green/blue channels. */
   size_t const im_size = image->width * image->height;
-  uint8_t *image_bytes = malloc(im_size * 3 * sizeof(*image_bytes));
+  uint8_t* image_bytes = malloc(im_size * 3 * sizeof(*image_bytes));
   for (size_t x = 0; x < im_size; ++x) {
     image_bytes[(x * 3) + 0] = (uint8_t)image->red[x];
     image_bytes[(x * 3) + 1] = (uint8_t)image->green[x];
@@ -143,8 +143,8 @@ error:
   return ERROR;
 } /* simple_image_write_bmp() */
 
-simple_image_t *simple_image_alloc(size_t width, size_t height) {
-  simple_image_t *im = malloc(sizeof(*im));
+simple_image_t* simple_image_alloc(size_t width, size_t height) {
+  simple_image_t* im = malloc(sizeof(*im));
   CHECK_PTR(im);
   im->width = width;
   im->height = height;
@@ -162,7 +162,7 @@ error:
   return NULL;
 } /* simple_image_alloc() */
 
-void simple_image_free(simple_image_t *const im) {
+void simple_image_free(simple_image_t* const im) {
   if (im == NULL) {
     return;
   }

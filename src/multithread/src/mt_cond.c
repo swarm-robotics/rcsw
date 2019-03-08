@@ -31,8 +31,8 @@
  ******************************************************************************/
 BEGIN_C_DECLS
 
-mt_cond_t *mt_cond_init(mt_cond_t *const cv_in, uint32_t flags) {
-  mt_cond_t *cv = NULL;
+mt_cond_t* mt_cond_init(mt_cond_t* const cv_in, uint32_t flags) {
+  mt_cond_t* cv = NULL;
   if (flags & MT_APP_DOMAIN_MEM) {
     cv = cv_in;
   } else {
@@ -49,7 +49,7 @@ error:
   return NULL;
 } /* mt_cond_init() */
 
-void mt_cond_destroy(mt_cond_t *const cv) {
+void mt_cond_destroy(mt_cond_t* const cv) {
   FPC_CHECKV(FPC_VOID, NULL != cv);
 
   pthread_cond_destroy(&cv->cv);
@@ -58,7 +58,7 @@ void mt_cond_destroy(mt_cond_t *const cv) {
   }
 } /* mt_cond_destroy() */
 
-status_t mt_cond_signal(mt_cond_t *const cv) {
+status_t mt_cond_signal(mt_cond_t* const cv) {
   FPC_CHECK(ERROR, NULL != cv);
   CHECK(0 == pthread_cond_signal(&cv->cv));
   return OK;
@@ -67,7 +67,7 @@ error:
   return ERROR;
 } /* mt_cond_signal() */
 
-status_t mt_cond_wait(mt_cond_t *const cv, mt_mutex_t *const mutex) {
+status_t mt_cond_wait(mt_cond_t* const cv, mt_mutex_t* const mutex) {
   FPC_CHECK(ERROR, NULL != cv);
   CHECK(0 == pthread_cond_wait(&cv->cv, &mutex->mutex));
   return OK;
@@ -76,8 +76,9 @@ error:
   return ERROR;
 } /* mt_cond_wait() */
 
-status_t mt_cond_timedwait(mt_cond_t *const cv, mt_mutex_t *const mutex,
-                           const struct timespec *const to) {
+status_t mt_cond_timedwait(mt_cond_t* const cv,
+                           mt_mutex_t* const mutex,
+                           const struct timespec* const to) {
   FPC_CHECK(ERROR, NULL != cv, NULL != to);
   struct timespec ts = {.tv_sec = 0, .tv_nsec = 0};
 
@@ -90,7 +91,7 @@ error:
   return ERROR;
 } /* mt_cond_timedwait() */
 
-status_t mt_cond_broadcast(mt_cond_t *const cv) {
+status_t mt_cond_broadcast(mt_cond_t* const cv) {
   FPC_CHECK(ERROR, NULL != cv);
   CHECK(0 == pthread_cond_broadcast(&cv->cv));
   return OK;

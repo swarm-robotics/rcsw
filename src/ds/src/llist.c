@@ -36,12 +36,15 @@
  ******************************************************************************/
 BEGIN_C_DECLS
 
-struct llist *llist_init(struct llist *list_in,
-                         const struct ds_params *const params) {
-  FPC_CHECK(NULL, params != NULL, params->tag == DS_LLIST,
-            params->max_elts != 0, params->el_size > 0);
+struct llist* llist_init(struct llist* list_in,
+                         const struct ds_params* const params) {
+  FPC_CHECK(NULL,
+            params != NULL,
+            params->tag == DS_LLIST,
+            params->max_elts != 0,
+            params->el_size > 0);
 
-  struct llist *list = NULL;
+  struct llist* list = NULL;
   int i;
   if (params->flags & DS_APP_DOMAIN_HANDLE) {
     CHECK_PTR(list_in);
@@ -62,7 +65,7 @@ struct llist *llist_init(struct llist *list_in,
 
     /* initialize free list of llist_nodes */
     for (i = 0; i < params->max_elts; ++i) {
-      ((int *)(params->nodes))[i] = -1;
+      ((int*)(params->nodes))[i] = -1;
     }
     list->nodes = params->nodes;
   }
@@ -75,14 +78,15 @@ struct llist *llist_init(struct llist *list_in,
 
     /* initialize free list of data elements */
     for (i = 0; i < params->max_elts; ++i) {
-      ((int *)(params->elements))[i] = -1;
+      ((int*)(params->elements))[i] = -1;
     }
     list->elements = params->elements;
   }
 
   if (params->cmpe == NULL && !(params->flags & DS_LLIST_PTR_CMP)) {
-    DBGW("WARNING: No compare function provided and DS_LLIST_PTR_CMP not "
-         "passed\n");
+    DBGW(
+        "WARNING: No compare function provided and DS_LLIST_PTR_CMP not "
+        "passed\n");
   }
 
   list->first = NULL;
@@ -93,7 +97,9 @@ struct llist *llist_init(struct llist *list_in,
   list->max_elts = params->max_elts;
   list->sorted = 0;
 
-  DBGD("el_size=%zu max_elts=%d flags=0x%08x\n", list->el_size, list->max_elts,
+  DBGD("el_size=%zu max_elts=%d flags=0x%08x\n",
+       list->el_size,
+       list->max_elts,
        list->flags);
   return list;
 
@@ -103,11 +109,11 @@ error:
   return NULL;
 } /* llist_init() */
 
-void llist_destroy(struct llist *list) {
+void llist_destroy(struct llist* list) {
   FPC_CHECKV(FPC_VOID, NULL != list);
 
-  struct llist_node *curr = list->first;
-  struct llist_node *next;
+  struct llist_node* curr = list->first;
+  struct llist_node* next;
 
   while (list->current > 0 && curr != NULL) {
     next = curr->next;
@@ -121,11 +127,11 @@ void llist_destroy(struct llist *list) {
   }
 } /* llist_destroy() */
 
-status_t llist_clear(struct llist *const list) {
+status_t llist_clear(struct llist* const list) {
   FPC_CHECK(ERROR, list != NULL);
 
-  struct llist_node *curr = list->first;
-  struct llist_node *next;
+  struct llist_node* curr = list->first;
+  struct llist_node* next;
   while (list->current > 0 && curr != NULL) {
     next = curr->next;
     llist_node_destroy(list, curr);
@@ -138,7 +144,7 @@ status_t llist_clear(struct llist *const list) {
   return OK;
 } /* llist_clear() */
 
-status_t llist_remove(struct llist *const list, const void *const e) {
+status_t llist_remove(struct llist* const list, const void* const e) {
   FPC_CHECK(ERROR, list != NULL, e != NULL);
 
   /* can't remove from an empty list */
@@ -148,15 +154,16 @@ status_t llist_remove(struct llist *const list, const void *const e) {
     return ERROR;
   }
 
-  struct llist_node *node = llist_node_query(list, e);
+  struct llist_node* node = llist_node_query(list, e);
   if (node == NULL) { /* node not in list: nothing to do */
     return OK;
   }
   return llist_delete(list, node, NULL);
 } /* llist_remove() */
 
-status_t llist_delete(struct llist *const list, struct llist_node *victim,
-                      void *const e) {
+status_t llist_delete(struct llist* const list,
+                      struct llist_node* victim,
+                      void* const e) {
   /* only one node in list */
   if (list->first == victim && list->last == victim) {
     list->first = NULL;
@@ -180,7 +187,7 @@ status_t llist_delete(struct llist *const list, struct llist_node *victim,
   return OK;
 } /* llist_delete() */
 
-status_t llist_append(struct llist *const list, void *const data) {
+status_t llist_append(struct llist* const list, void* const data) {
   FPC_CHECK(ERROR, list != NULL, data != NULL);
 
   if (llist_isfull(list) && list->max_elts != -1) {
@@ -189,7 +196,7 @@ status_t llist_append(struct llist *const list, void *const data) {
     return ERROR;
   }
 
-  struct llist_node *node = llist_node_create(list, data);
+  struct llist_node* node = llist_node_create(list, data);
   status_t rval = ERROR;
   CHECK_PTR(node);
 
@@ -215,7 +222,7 @@ error:
   return rval;
 } /* llist_append() */
 
-status_t llist_prepend(struct llist *const list, void *const data) {
+status_t llist_prepend(struct llist* const list, void* const data) {
   FPC_CHECK(ERROR, list != NULL, data != NULL);
 
   if (llist_isfull(list) && list->max_elts != -1) {
@@ -224,7 +231,7 @@ status_t llist_prepend(struct llist *const list, void *const data) {
     return ERROR;
   }
 
-  struct llist_node *node = llist_node_create(list, data);
+  struct llist_node* node = llist_node_create(list, data);
   status_t rval = ERROR;
   CHECK_PTR(node);
 
@@ -251,7 +258,7 @@ error:
   return rval;
 } /* llist_prepend() */
 
-void llist_print(struct llist *const list) {
+void llist_print(struct llist* const list) {
   if (list == NULL) {
     DPRINTF("LLIST: < NULL list >\n");
     return;
@@ -270,7 +277,7 @@ void llist_print(struct llist *const list) {
   DPRINTF("\n");
 } /* llist_print() */
 
-void *llist_data_query(struct llist *const list, const void *const e) {
+void* llist_data_query(struct llist* const list, const void* const e) {
   FPC_CHECK(NULL, list != NULL, e != NULL);
 
   if (list->cmpe == NULL && !(list->flags & DS_LLIST_PTR_CMP)) {
@@ -278,12 +285,12 @@ void *llist_data_query(struct llist *const list, const void *const e) {
     return NULL;
   }
 
-  struct llist_node *node = llist_node_query(list, e);
+  struct llist_node* node = llist_node_query(list, e);
   return (NULL == node) ? NULL : node->data;
 } /* llist_data_query() */
 
-struct llist_node *llist_node_query(struct llist *const list,
-                                    const void *const e) {
+struct llist_node* llist_node_query(struct llist* const list,
+                                    const void* const e) {
   FPC_CHECK(NULL, list != NULL, e != NULL);
 
   if (list->cmpe == NULL && !(list->flags & DS_LLIST_PTR_CMP)) {
@@ -291,7 +298,7 @@ struct llist_node *llist_node_query(struct llist *const list,
     return NULL;
   }
 
-  void *match = NULL;
+  void* match = NULL;
   LLIST_FOREACH(list, next, curr) {
     if (list->flags & DS_LLIST_PTR_CMP) {
       if (curr->data == e) {
@@ -308,7 +315,7 @@ struct llist_node *llist_node_query(struct llist *const list,
   return match;
 } /* llist_node_query() */
 
-status_t llist_sort(struct llist *const list, enum alg_sort_type type) {
+status_t llist_sort(struct llist* const list, enum alg_sort_type type) {
   FPC_CHECK(ERROR, list != NULL, list->cmpe != NULL);
 
   status_t rval = OK;
@@ -328,7 +335,7 @@ status_t llist_sort(struct llist *const list, enum alg_sort_type type) {
 
     /* find new list->last */
     list->sorted = 1;
-    struct llist_node *tmp = list->first;
+    struct llist_node* tmp = list->first;
     size_t count = 1;
     while (tmp->next != NULL) {
       tmp = tmp->next;
@@ -346,21 +353,21 @@ status_t llist_sort(struct llist *const list, enum alg_sort_type type) {
   return rval;
 } /* llist_sort() */
 
-struct llist *llist_copy(struct llist *const list,
-                         const struct ds_params *const cparams) {
+struct llist* llist_copy(struct llist* const list,
+                         const struct ds_params* const cparams) {
   FPC_CHECK(NULL, list != NULL);
 
-  struct ds_params params = {
-      .cmpe = list->cmpe,
-      .printe = list->printe,
-      .el_size = list->el_size,
-      .max_elts = list->max_elts,
-      .tag = DS_LLIST,
-      .flags = (cparams == NULL) ? 0 : cparams->flags,
-      .elements = (cparams == NULL) ? NULL : cparams->elements,
-      .nodes = (cparams == NULL) ? NULL : cparams->nodes};
+  struct ds_params params = {.cmpe = list->cmpe,
+                             .printe = list->printe,
+                             .el_size = list->el_size,
+                             .max_elts = list->max_elts,
+                             .tag = DS_LLIST,
+                             .flags = (cparams == NULL) ? 0 : cparams->flags,
+                             .elements =
+                                 (cparams == NULL) ? NULL : cparams->elements,
+                             .nodes = (cparams == NULL) ? NULL : cparams->nodes};
 
-  struct llist *clist = llist_init(NULL, &params);
+  struct llist* clist = llist_init(NULL, &params);
   CHECK_PTR(clist);
 
   LLIST_FOREACH(list, next, curr) { llist_append(clist, curr->data); }
@@ -370,22 +377,22 @@ error:
   return clist;
 } /* llist_copy() */
 
-struct llist *llist_copy2(struct llist *const list,
-                          bool_t (*pred)(const void *const e),
-                          const struct ds_params *const cparams) {
+struct llist* llist_copy2(struct llist* const list,
+                          bool_t (*pred)(const void* const e),
+                          const struct ds_params* const cparams) {
   FPC_CHECK(NULL, list != NULL, pred != NULL);
 
-  struct ds_params params = {
-      .cmpe = list->cmpe,
-      .printe = list->printe,
-      .el_size = list->el_size,
-      .max_elts = list->max_elts,
-      .tag = DS_LLIST,
-      .flags = (cparams == NULL) ? 0 : cparams->flags,
-      .elements = (cparams == NULL) ? NULL : cparams->elements,
-      .nodes = (cparams == NULL) ? NULL : cparams->nodes};
+  struct ds_params params = {.cmpe = list->cmpe,
+                             .printe = list->printe,
+                             .el_size = list->el_size,
+                             .max_elts = list->max_elts,
+                             .tag = DS_LLIST,
+                             .flags = (cparams == NULL) ? 0 : cparams->flags,
+                             .elements =
+                                 (cparams == NULL) ? NULL : cparams->elements,
+                             .nodes = (cparams == NULL) ? NULL : cparams->nodes};
 
-  struct llist *clist = llist_init(NULL, &params);
+  struct llist* clist = llist_init(NULL, &params);
   CHECK_PTR(clist);
 
   LLIST_FOREACH(list, next, curr) {
@@ -395,28 +402,29 @@ struct llist *llist_copy2(struct llist *const list,
     llist_append(clist, curr->data);
   }
   DBGD("Copied list: %zu %zu-byte elements matched copy predicate\n",
-       clist->current, clist->el_size);
+       clist->current,
+       clist->el_size);
 
 error:
   return clist;
 } /* llist_copy2() */
 
-struct llist *llist_filter(struct llist *list,
-                           bool_t (*pred)(const void *const e),
-                           const struct ds_params *const fparams) {
+struct llist* llist_filter(struct llist* list,
+                           bool_t (*pred)(const void* const e),
+                           const struct ds_params* const fparams) {
   FPC_CHECK(NULL, list != NULL, pred != NULL);
 
-  struct ds_params params = {
-      .cmpe = list->cmpe,
-      .printe = list->printe,
-      .el_size = list->el_size,
-      .max_elts = list->max_elts,
-      .tag = DS_LLIST,
-      .flags = (fparams == NULL) ? 0 : fparams->flags,
-      .elements = (fparams == NULL) ? NULL : fparams->elements,
-      .nodes = (fparams == NULL) ? NULL : fparams->nodes};
+  struct ds_params params = {.cmpe = list->cmpe,
+                             .printe = list->printe,
+                             .el_size = list->el_size,
+                             .max_elts = list->max_elts,
+                             .tag = DS_LLIST,
+                             .flags = (fparams == NULL) ? 0 : fparams->flags,
+                             .elements =
+                                 (fparams == NULL) ? NULL : fparams->elements,
+                             .nodes = (fparams == NULL) ? NULL : fparams->nodes};
 
-  struct llist *flist = llist_init(NULL, &params);
+  struct llist* flist = llist_init(NULL, &params);
   CHECK_PTR(flist);
 
   /*
@@ -424,7 +432,7 @@ struct llist *llist_filter(struct llist *list,
    * passed
    * them in the iteration, using match, not curr.
    */
-  struct llist_node *match = NULL;
+  struct llist_node* match = NULL;
   LLIST_FOREACH(list, next, curr) {
     if (match != NULL) {
       llist_append(flist, match->data);
@@ -442,16 +450,18 @@ struct llist *llist_filter(struct llist *list,
     match = NULL;
   }
 
-  DBGD("Filtered list: %zu %zu-byte elements filtered out. %zu elements "
-       "remain.\n",
-       flist->current, flist->el_size, list->current);
+  DBGD(
+      "Filtered list: %zu %zu-byte elements filtered out. %zu elements "
+      "remain.\n",
+      flist->current,
+      flist->el_size,
+      list->current);
 
 error:
   return flist;
 } /* llist_filter() */
 
-status_t llist_filter2(struct llist *list,
-                       bool_t (*pred)(const void *const e)) {
+status_t llist_filter2(struct llist* list, bool_t (*pred)(const void* const e)) {
   FPC_CHECK(ERROR, list != NULL, pred != NULL);
 
   /*
@@ -460,7 +470,7 @@ status_t llist_filter2(struct llist *list,
    */
   status_t rval = ERROR;
   size_t count = 0;
-  struct llist_node *match = NULL;
+  struct llist_node* match = NULL;
   LLIST_FOREACH(list, next, curr) {
     if (match != NULL) {
       count++;
@@ -480,22 +490,28 @@ status_t llist_filter2(struct llist *list,
   }
 
   rval = OK;
-  DBGD("Filtered list: %zu %zu-byte elements filtered out. %zu elements "
-       "remain.\n",
-       count, list->el_size, list->current);
+  DBGD(
+      "Filtered list: %zu %zu-byte elements filtered out. %zu elements "
+      "remain.\n",
+      count,
+      list->el_size,
+      list->current);
 
 error:
   return rval;
 } /* llist_filter2() */
 
-status_t llist_splice(struct llist *list1, struct llist *list2,
-                      const struct llist_node *const node) {
+status_t llist_splice(struct llist* list1,
+                      struct llist* list2,
+                      const struct llist_node* const node) {
   FPC_CHECK(ERROR, list1 != NULL, list2 != NULL, node != NULL);
 
   if (list1->current + list2->current > (size_t)list1->max_elts &&
       list1->max_elts != -1) {
     DBGE("ERROR: Cannot splice: %zu + %zu > %d (max elements exceeded)\n",
-         list1->current, list2->current, list1->max_elts);
+         list1->current,
+         list2->current,
+         list1->max_elts);
     errno = ENOSPC;
     return ERROR;
   } else if (list1->current == 0 || list2->current == 0) {
@@ -505,7 +521,7 @@ status_t llist_splice(struct llist *list1, struct llist *list2,
   }
 
   size_t count = list1->current;
-  struct llist_node *pos = NULL;
+  struct llist_node* pos = NULL;
   status_t rval = ERROR;
 
   LLIST_FOREACH(list1, next, curr) {
@@ -554,7 +570,7 @@ error:
   return rval;
 } /* llist_splice() */
 
-status_t llist_map(struct llist *list, void (*f)(void *e)) {
+status_t llist_map(struct llist* list, void (*f)(void* e)) {
   FPC_CHECK(ERROR, list != NULL, f != NULL);
 
   LLIST_FOREACH(list, next, curr) { f(curr->data); }
@@ -562,8 +578,9 @@ status_t llist_map(struct llist *list, void (*f)(void *e)) {
   return OK;
 } /* llist_map() */
 
-status_t llist_inject(struct llist *const list, void (*f)(void *e, void *res),
-                      void *result) {
+status_t llist_inject(struct llist* const list,
+                      void (*f)(void* e, void* res),
+                      void* result) {
   FPC_CHECK(ERROR, list != NULL, f != NULL, result != NULL);
 
   LLIST_FOREACH(list, next, curr) { f(curr->data, result); }
@@ -571,7 +588,7 @@ status_t llist_inject(struct llist *const list, void (*f)(void *e, void *res),
   return OK;
 } /* llist_inject() */
 
-size_t llist_heap_footprint(const struct llist *const list) {
+size_t llist_heap_footprint(const struct llist* const list) {
   FPC_CHECK(0, NULL != list);
 
   size_t size = 0;

@@ -22,11 +22,11 @@
  * Includes
  ******************************************************************************/
 #include "rcsw/multithread/omp_radix_sort.h"
+#include <omp.h>
 #include "rcsw/algorithm/algorithm.h"
 #include "rcsw/algorithm/sort.h"
 #include "rcsw/common/dbg.h"
 #include "rcsw/common/fpc.h"
-#include <omp.h>
 
 /*******************************************************************************
  * Constant Definitions
@@ -46,21 +46,21 @@
  *
  * @return \ref status_t.
  */
-static status_t omp_radix_sorter_step(struct omp_radix_sorter *const sorter,
+static status_t omp_radix_sorter_step(struct omp_radix_sorter* const sorter,
                                       int digit);
-static void
-omp_radix_sorter_first_touch_alloc(struct omp_radix_sorter *const sorter);
+static void omp_radix_sorter_first_touch_alloc(
+    struct omp_radix_sorter* const sorter);
 
 BEGIN_C_DECLS
 
 /*******************************************************************************
  * API Functions
  ******************************************************************************/
-struct omp_radix_sorter *
-omp_radix_sorter_init(const struct omp_radix_sorter_params *const params) {
+struct omp_radix_sorter* omp_radix_sorter_init(
+    const struct omp_radix_sorter_params* const params) {
   FPC_CHECK(NULL, NULL != params, NULL != params->data);
 
-  struct omp_radix_sorter *sorter = malloc(sizeof(struct omp_radix_sorter));
+  struct omp_radix_sorter* sorter = malloc(sizeof(struct omp_radix_sorter));
   CHECK_PTR(sorter);
   sorter->n_elts = params->n_elts;
   sorter->base = params->base;
@@ -101,8 +101,11 @@ omp_radix_sorter_init(const struct omp_radix_sorter_params *const params) {
     sorter->data[i] = params->data[i];
   } /* for(i..) */
 
-  DBGD("n_threads=%zu n_elts=%zu chunk_size=%zu base=%zu\n", sorter->n_threads,
-       sorter->n_elts, sorter->chunk_size, sorter->base);
+  DBGD("n_threads=%zu n_elts=%zu chunk_size=%zu base=%zu\n",
+       sorter->n_threads,
+       sorter->n_elts,
+       sorter->chunk_size,
+       sorter->base);
   return sorter;
 
 error:
@@ -110,7 +113,7 @@ error:
   return NULL;
 } /* omp_radix_sorter_init() */
 
-void omp_radix_sorter_destroy(struct omp_radix_sorter *const sorter) {
+void omp_radix_sorter_destroy(struct omp_radix_sorter* const sorter) {
   if (sorter) {
     if (sorter->bins) {
       for (size_t i = 0; i < sorter->base * sorter->n_threads; ++i) {
@@ -128,13 +131,14 @@ void omp_radix_sorter_destroy(struct omp_radix_sorter *const sorter) {
   }
 } /* omp_radix_sorter_destroy() */
 
-status_t omp_radix_sorter_exec(struct omp_radix_sorter *const sorter) {
+status_t omp_radix_sorter_exec(struct omp_radix_sorter* const sorter) {
   DBGN("Starting radix sort\n");
 
   int m;
   /* Get largest # in array to get total # of digits */
   m = alg_arr_largest_num(sorter->data, sorter->n_elts);
-  memset(sorter->cum_prefix_sums, 0,
+  memset(sorter->cum_prefix_sums,
+         0,
          sizeof(size_t) * sorter->base * sorter->n_threads);
 
   for (int exp = 1; m / exp > 0; exp *= sorter->base) {
@@ -150,7 +154,7 @@ error:
 /*******************************************************************************
  * Static Functions
  ******************************************************************************/
-static status_t omp_radix_sorter_step(struct omp_radix_sorter *const sorter,
+static status_t omp_radix_sorter_step(struct omp_radix_sorter* const sorter,
                                       int digit) {
   DBGN("Radix sort digit %d\n", digit);
 
@@ -185,8 +189,7 @@ static status_t omp_radix_sorter_step(struct omp_radix_sorter *const sorter,
   /* Calculate all prefix sums for remaining symbols */
   for (size_t j = 1; j < sorter->base; ++j) {
     sorter->cum_prefix_sums[j] =
-        sorter
-            ->cum_prefix_sums[(sorter->n_threads - 1) * sorter->base + j - 1] +
+        sorter->cum_prefix_sums[(sorter->n_threads - 1) * sorter->base + j - 1] +
         fifo_n_elts(
             &sorter->bins[(sorter->n_threads - 1) * sorter->base + j - 1]);
     for (size_t i = 1; i < sorter->n_threads; ++i) {
@@ -202,7 +205,7 @@ static status_t omp_radix_sorter_step(struct omp_radix_sorter *const sorter,
 #pragma omp parallel for num_threads(sorter->n_threads) schedule(static)
   for (size_t j = 0; j < sorter->n_threads; ++j) {
     for (size_t i = 0; i < sorter->base; ++i) {
-      struct fifo *f = &sorter->bins[j * sorter->base + i];
+      struct fifo* f = &sorter->bins[j * sorter->base + i];
       size_t n_elts = 0;
       while (!fifo_isempty(f)) {
         fifo_deq(f,
@@ -214,8 +217,8 @@ static status_t omp_radix_sorter_step(struct omp_radix_sorter *const sorter,
   return OK;
 } /* omp_radix_sorter_step() */
 
-static void
-omp_radix_sorter_first_touch_alloc(struct omp_radix_sorter *const sorter) {
+static void omp_radix_sorter_first_touch_alloc(
+    struct omp_radix_sorter* const sorter) {
 #pragma omp parallel for num_threads(sorter->n_threads)
   for (size_t i = 0; i < sorter->n_elts; ++i) {
     sorter->data[i] = 0;

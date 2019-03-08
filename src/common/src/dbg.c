@@ -42,7 +42,7 @@ struct dbg_frmwk dbg_g;
  *
  * @return < 0, 0, or >0, depending
  */
-static int dbg_mod_cmp(const void *e1, const void *e2);
+static int dbg_mod_cmp(const void* e1, const void* e2);
 
 /*******************************************************************************
  * API Functions
@@ -69,7 +69,7 @@ error:
   return ERROR;
 } /* dbg_init() */
 
-status_t dbg_insmod(int64_t id, const char *const name) {
+status_t dbg_insmod(int64_t id, const char* const name) {
   struct dbg_module mod;
   mod.id_ = id;
   strncpy(mod.name_, name, sizeof(mod.name_));
@@ -89,7 +89,7 @@ error:
   return ERROR;
 } /* dbg_rmmod() */
 
-status_t dbg_rmmod2(const char *const name) {
+status_t dbg_rmmod2(const char* const name) {
   int64_t id = dbg_mod_id_get(name);
   CHECK(-1 != id);
   CHECK(OK == llist_remove(dbg_g.modules_, &id));
@@ -99,8 +99,8 @@ error:
 } /* dbg_rmmod2() */
 
 status_t dbg_mod_lvl_set(int64_t id, uint8_t lvl) {
-  struct dbg_module *mod =
-      (struct dbg_module *)llist_data_query(dbg_g.modules_, &id);
+  struct dbg_module* mod =
+      (struct dbg_module*)llist_data_query(dbg_g.modules_, &id);
   CHECK_PTR(mod);
   mod->lvl_ = lvl;
   return OK;
@@ -109,9 +109,9 @@ error:
   return ERROR;
 } /* dbg_mod_lvl_set() */
 
-__rcsw_pure int64_t dbg_mod_id_get(const char *const name) {
+__rcsw_pure int64_t dbg_mod_id_get(const char* const name) {
   LLIST_FOREACH(dbg_g.modules_, next, curr) {
-    struct dbg_module *mod = (struct dbg_module *)curr->data;
+    struct dbg_module* mod = (struct dbg_module*)curr->data;
     if (0 != strncmp(name, mod->name_, sizeof(mod->name_))) {
       return mod->id_;
     }
@@ -124,13 +124,11 @@ void dbg_shutdown(void) { llist_destroy(dbg_g.modules_); } /* dbg_shutdown() */
 /*******************************************************************************
  * Static Functions
  ******************************************************************************/
-int dbg_mod_cmp(const void *const e1, const void *const e2) {
-  if (((const struct dbg_module *)e1)->id_ <
-      ((const struct dbg_module *)e2)->id_) {
+int dbg_mod_cmp(const void* const e1, const void* const e2) {
+  if (((const struct dbg_module*)e1)->id_ < ((const struct dbg_module*)e2)->id_) {
     return -1;
   }
-  if (((const struct dbg_module *)e1)->id_ >
-      ((const struct dbg_module *)e2)->id_) {
+  if (((const struct dbg_module*)e1)->id_ > ((const struct dbg_module*)e2)->id_) {
     return 1;
   }
   return 0;

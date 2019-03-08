@@ -39,9 +39,9 @@
 /*******************************************************************************
  * Macros
  ******************************************************************************/
-#define DISPLAY_FILL_CHARS(_char, num)                                         \
-  for (int _i = 0; _i < (int)num; _i++) {                                      \
-    sstdio_putchar(_char);                                                     \
+#define DISPLAY_FILL_CHARS(_char, num)    \
+  for (int _i = 0; _i < (int)num; _i++) { \
+    sstdio_putchar(_char);                \
   }
 
 /*******************************************************************************
@@ -61,7 +61,8 @@ BEGIN_C_DECLS
  *
  * @return The number of digits to display.
  */
-static int decimal_digits_get(const char *fmt_buf, const char *fmt_block,
+static int decimal_digits_get(const char* fmt_buf,
+                              const char* fmt_block,
                               size_t pos);
 
 /**
@@ -74,12 +75,12 @@ static int decimal_digits_get(const char *fmt_buf, const char *fmt_block,
  * @param s The converted string
  * @param n_digits The # of decimal places to keep.
  */
-static void float_arg_round(char *s, size_t n_digits);
+static void float_arg_round(char* s, size_t n_digits);
 
 /*******************************************************************************
  * API Functions
  ******************************************************************************/
-int sstdio_printf(const char *fmt, ...) {
+int sstdio_printf(const char* fmt, ...) {
   va_list arg;
   int rval;
   /* 2* is for a safety margin when doing strrep() */
@@ -94,9 +95,9 @@ int sstdio_printf(const char *fmt, ...) {
   return rval;
 } /* sstdio_printf() */
 
-int sstdio_vprintf(const char *fmt, va_list argp) {
-  const char *p;
-  const char *s;
+int sstdio_vprintf(const char* fmt, va_list argp) {
+  const char* p;
+  const char* s;
   int i, n_digits;
   int c, val;
   double dval;
@@ -116,7 +117,7 @@ int sstdio_vprintf(const char *fmt, va_list argp) {
       'f', /* floating point */
       'e', 'E',
 
-      '.', '+', '-',                         /* format modifiers */
+      '.', '+', '-',                              /* format modifiers */
       '0', '1', '2', '3', '4', '5', '6', '7', '8' /* numerical specifiers */
   };
 
@@ -126,7 +127,7 @@ int sstdio_vprintf(const char *fmt, va_list argp) {
    */
   char fmt_block[16];
 
-  for (p = (const char *)fmt, c = 0; *p != '\0'; p++, c++) {
+  for (p = (const char*)fmt, c = 0; *p != '\0'; p++, c++) {
     if (*p != '%') { /* just a regular char */
       sstdio_putchar(*p);
       continue;
@@ -158,224 +159,225 @@ int sstdio_vprintf(const char *fmt, va_list argp) {
     for (i = 0; i < (int)sstring_strlen(fmt_block); i++) {
       fill_char = ' ';
       switch (fmt_block[i]) {
-      case '+':
-        show_sign = 1;
-        break;
-      case '-':
-        left_justify = 1;
-        break;
-      case 'c':
-        sstdio_putchar((char)va_arg(argp, int));
-        break;
+        case '+':
+          show_sign = 1;
+          break;
+        case '-':
+          left_justify = 1;
+          break;
+        case 'c':
+          sstdio_putchar((char)va_arg(argp, int));
+          break;
 
-      case 'u':
-        val2 = va_arg(argp, size_t);
-        sstdio_itoad((int)val2, fmt_buf);
-        sstdio_puts(fmt_buf);
-        break;
-      case 'f':
-      case 'e':
-      case 'E':
+        case 'u':
+          val2 = va_arg(argp, size_t);
+          sstdio_itoad((int)val2, fmt_buf);
+          sstdio_puts(fmt_buf);
+          break;
+        case 'f':
+        case 'e':
+        case 'E':
 
-        dval = va_arg(argp, double);
-        char exp_char = fmt_block[i];
-        int j, k;
+          dval = va_arg(argp, double);
+          char exp_char = fmt_block[i];
+          int j, k;
 
-        if (exp_char == 'e' || exp_char == 'E') {
-          sstdio_dtoa(dval, 1, fmt_buf);
-        } else {
-          sstdio_dtoa(dval, 0, fmt_buf);
-        }
-
-        /* get number of decimals to display (max of 8) */
-        if ((sstring_strlen(fmt_block) > 1 && fmt_block[i - 2] == '.') &&
-            (sstring_isdigit(fmt_block[i - 1])) && fmt_block[i - 1] <= '8') {
-          n_digits = sstdio_atoi(&fmt_block[i - 1], 10);
-        } else {
-          n_digits = 6;
-        }
-
-        s = fmt_buf;
-
-        if (sstring_strchr(s, '.')) {
-          /* diplay arg mantissa */
-
-          j = 0; /* count of mantissa chars */
-
-          /* display all chars up to decimal point */
-          while (*s != '.') {
-            sstdio_putchar(*s++);
-            j++;
+          if (exp_char == 'e' || exp_char == 'E') {
+            sstdio_dtoa(dval, 1, fmt_buf);
+          } else {
+            sstdio_dtoa(dval, 0, fmt_buf);
           }
 
-          size_t tmp_len = sstring_strlen(s);
+          /* get number of decimals to display (max of 8) */
+          if ((sstring_strlen(fmt_block) > 1 && fmt_block[i - 2] == '.') &&
+              (sstring_isdigit(fmt_block[i - 1])) && fmt_block[i - 1] <= '8') {
+            n_digits = sstdio_atoi(&fmt_block[i - 1], 10);
+          } else {
+            n_digits = 6;
+          }
 
-          /* display '.' */
-          sstdio_putchar(*s++);
+          s = fmt_buf;
 
-          /* round arg decimal portion as needed */
-          float_arg_round((char*)s, n_digits);
+          if (sstring_strchr(s, '.')) {
+            /* diplay arg mantissa */
 
-          /* display arg decimals */
+            j = 0; /* count of mantissa chars */
 
-          j = 0; /* count of decimal chars */
+            /* display all chars up to decimal point */
+            while (*s != '.') {
+              sstdio_putchar(*s++);
+              j++;
+            }
 
-          /*
+            size_t tmp_len = sstring_strlen(s);
+
+            /* display '.' */
+            sstdio_putchar(*s++);
+
+            /* round arg decimal portion as needed */
+            float_arg_round((char*)s, n_digits);
+
+            /* display arg decimals */
+
+            j = 0; /* count of decimal chars */
+
+            /*
            * Display all decimals up to exponent, or up to the number
            * of requested digits, whichever comes first
            */
-          while (*s != exp_char && j < (int)tmp_len) {
-            sstdio_putchar(*s++);
-            j++;
-            if (j == n_digits) {
-              break;
+            while (*s != exp_char && j < (int)tmp_len) {
+              sstdio_putchar(*s++);
+              j++;
+              if (j == n_digits) {
+                break;
+              }
             }
-          }
 
-          /* if there were not enough, 0 fill */
-          for (k = 0; k < n_digits - j; k++) {
-            sstdio_putchar('0');
-          }
-        } else { /* arg did not have a '.' */
-          /*
+            /* if there were not enough, 0 fill */
+            for (k = 0; k < n_digits - j; k++) {
+              sstdio_putchar('0');
+            }
+          } else { /* arg did not have a '.' */
+            /*
            * Display all characters up to exponent or the end of the
            * arg, whichever comes first
            */
-          j = 0; /* count of mantissa chars */
-          size_t tmp_len = sstring_strlen(s);
-          while (*s != 'e' && j < (int)tmp_len) {
-            sstdio_putchar(*s++);
-            j++;
+            j = 0; /* count of mantissa chars */
+            size_t tmp_len = sstring_strlen(s);
+            while (*s != 'e' && j < (int)tmp_len) {
+              sstdio_putchar(*s++);
+              j++;
+            }
+            /* display a fill decimal region */
+            sstdio_putchar('.');
+            DISPLAY_FILL_CHARS('0', n_digits);
           }
-          /* display a fill decimal region */
-          sstdio_putchar('.');
-          DISPLAY_FILL_CHARS('0', n_digits);
-        }
 
-        /* display the exponent for arg, if it contains one */
-        if (sstring_strchr(s, 'e')) {
-          /*
+          /* display the exponent for arg, if it contains one */
+          if (sstring_strchr(s, 'e')) {
+            /*
            * Advance to the start of the exponent, possibly skipping
            * digits
            */
-          while (*s != 'e') {
+            while (*s != 'e') {
+              s++;
+            }
+            /* display the 'e'/'E' and advance past it */
+            sstdio_putchar((exp_char == 'E') ? 'E' : 'e');
             s++;
+
+            /* display sign of exponent */
+            sstdio_putchar(*s++);
+
+            /* if the exponent has only a single digit, add a fill 0 */
+            if (sstring_strlen(s) < 2) {
+              sstdio_putchar('0');
+            }
+            /* display the rest of the exponent */
+            sstdio_puts(s);
           }
-          /* display the 'e'/'E' and advance past it */
-          sstdio_putchar((exp_char == 'E') ? 'E' : 'e');
-          s++;
+          break;
+        case 'd':
+          val = va_arg(argp, int);
+          sstdio_itoad(val, fmt_buf);
 
-          /* display sign of exponent */
-          sstdio_putchar(*s++);
-
-          /* if the exponent has only a single digit, add a fill 0 */
-          if (sstring_strlen(s) < 2) {
-            sstdio_putchar('0');
+          /* Get fill char */
+          if (i >= 2 && fmt_block[i - 2] == '0') {
+            fill_char = '0';
           }
-          /* display the rest of the exponent */
-          sstdio_puts(s);
-        }
-        break;
-      case 'd':
-        val = va_arg(argp, int);
-        sstdio_itoad(val, fmt_buf);
+          /* needed because fmt_buf is an immutable array -_- */
+          s = fmt_buf;
 
-        /* Get fill char */
-        if (i >= 2 && fmt_block[i - 2] == '0') {
-          fill_char = '0';
-        }
-        /* needed because fmt_buf is an immutable array -_- */
-        s = fmt_buf;
-
-        /*
+          /*
          * Advance past the sign returned by itoa() if not displaying the sign
          * char (except if the fmt_buf is the single digit number 0)
          */
-        if (fill_char == ' ') {
-          if (!show_sign && val > 0) {
-            s++;
+          if (fill_char == ' ') {
+            if (!show_sign && val > 0) {
+              s++;
+            }
           }
-        }
-        /*
+          /*
          * Display the sign char appropriately for zero-filled numbers. The sign
          * char is counted as one of the number of requested characters, if a
          * certain number of digits is requested.
          */
-        else if (fill_char == '0') {
-          if (val < 0) {
-            sstdio_putchar('-');
-            n_digits--;
-          } else if (show_sign) {
-            sstdio_putchar('+');
-            n_digits--;
+          else if (fill_char == '0') {
+            if (val < 0) {
+              sstdio_putchar('-');
+              n_digits--;
+            } else if (show_sign) {
+              sstdio_putchar('+');
+              n_digits--;
+            }
+            s++;
           }
-          s++;
-        }
-        /* get number of digits to display */
-        n_digits = (size_t)decimal_digits_get(s, fmt_block, i);
+          /* get number of digits to display */
+          n_digits = (size_t)decimal_digits_get(s, fmt_block, i);
 
-        int tmp_len = sstring_strlen(s);
+          int tmp_len = sstring_strlen(s);
 
-        /* only allow left justification if space-filling */
-        if (fill_char != ' ') {
-          left_justify = 0;
-        }
+          /* only allow left justification if space-filling */
+          if (fill_char != ' ') {
+            left_justify = 0;
+          }
 
-        /*
+          /*
          * Display fill chars if necessary; if strlen(fmt_buf) > n_digits,
          * ignore the request to print only a certain number of digits.
          */
-        if (tmp_len < n_digits && !left_justify) {
-          DISPLAY_FILL_CHARS(fill_char, (int)n_digits - (int)tmp_len);
-        }
-        /* display arg */
-        while (*s) {
-          sstdio_putchar(*s++);
-        }
-        if (left_justify) {
-          DISPLAY_FILL_CHARS(fill_char, (int)n_digits - (int)tmp_len);
-        }
-        break;
+          if (tmp_len < n_digits && !left_justify) {
+            DISPLAY_FILL_CHARS(fill_char, (int)n_digits - (int)tmp_len);
+          }
+          /* display arg */
+          while (*s) {
+            sstdio_putchar(*s++);
+          }
+          if (left_justify) {
+            DISPLAY_FILL_CHARS(fill_char, (int)n_digits - (int)tmp_len);
+          }
+          break;
 
-      case 's':
-        sstdio_puts(va_arg(argp, char *));
-        break;
-      case 'X':
-      case 'x':
-        /* get and convert arg */
-        val2 = va_arg(argp, size_t);
-        sstdio_itoax((int)val2, fmt_buf);
+        case 's':
+          sstdio_puts(va_arg(argp, char*));
+          break;
+        case 'X':
+        case 'x':
+          /* get and convert arg */
+          val2 = va_arg(argp, size_t);
+          sstdio_itoax((int)val2, fmt_buf);
 
-        /* get number of digits to display */
-        n_digits = (size_t)decimal_digits_get(fmt_buf, fmt_block, i);
+          /* get number of digits to display */
+          n_digits = (size_t)decimal_digits_get(fmt_buf, fmt_block, i);
 
-        /*
+          /*
          * Display fill chars if necessary; if strlen(fmt_buf) >
          * n_digits, ignore the request to print only a certain number
          * of digits
          */
-        if (sstring_strlen(fmt_buf) < (size_t)n_digits) {
-          DISPLAY_FILL_CHARS(fill_char, (int)n_digits - (int)sstring_strlen(s));
-        }
-
-        /* display arg */
-        s = fmt_buf;
-        while (*s) {
-          if (fmt_block[i] == 'X') {
-            sstdio_putchar((char)sstring_toupper(*s++));
-          } else {
-            sstdio_putchar(*s++);
+          if (sstring_strlen(fmt_buf) < (size_t)n_digits) {
+            DISPLAY_FILL_CHARS(fill_char,
+                               (int)n_digits - (int)sstring_strlen(s));
           }
-        }
-        break;
-      case 'p':
-        val2 = va_arg(argp, size_t);
-        sstdio_itoax((int)val2, fmt_buf);
-        sstdio_puts("0x");
-        sstdio_puts(fmt_buf);
-        break;
-      default:
-        break;
+
+          /* display arg */
+          s = fmt_buf;
+          while (*s) {
+            if (fmt_block[i] == 'X') {
+              sstdio_putchar((char)sstring_toupper(*s++));
+            } else {
+              sstdio_putchar(*s++);
+            }
+          }
+          break;
+        case 'p':
+          val2 = va_arg(argp, size_t);
+          sstdio_itoax((int)val2, fmt_buf);
+          sstdio_puts("0x");
+          sstdio_puts(fmt_buf);
+          break;
+        default:
+          break;
       } /* end switch */
     }   /* end for() */
   }     /* end for() */
@@ -383,7 +385,7 @@ int sstdio_vprintf(const char *fmt, va_list argp) {
   return c;
 } /* sstdio_vprintf() */
 
-char *sstdio_dtoa(double n, bool_t force_exp, char *s) {
+char* sstdio_dtoa(double n, bool_t force_exp, char* s) {
   /* handle special cases */
   if (isnan(n)) {
     sstring_strcpy(s, "nan");
@@ -401,7 +403,7 @@ char *sstdio_dtoa(double n, bool_t force_exp, char *s) {
   }
 
   int digit, m, exp;
-  char *c = s;
+  char* c = s;
   int neg = (n < 0);
   exp = 0;
   if (neg) {
@@ -486,7 +488,7 @@ char *sstdio_dtoa(double n, bool_t force_exp, char *s) {
   return c;
 } /* sstdio_dtoa() */
 
-size_t sstdio_puts(const char *const s) {
+size_t sstdio_puts(const char* const s) {
   size_t i;
   for (i = 0; i < sstring_strlen(s); i++) {
     sstdio_putchar(s[i]);
@@ -494,7 +496,7 @@ size_t sstdio_puts(const char *const s) {
   return i;
 } /* sstdio_puts() */
 
-int sstdio_atoi(const char *s, int base) {
+int sstdio_atoi(const char* s, int base) {
   char c;
   int result = 0;
   int neg = (*s == '-') ? 1 : 0;
@@ -522,7 +524,7 @@ int sstdio_atoi(const char *s, int base) {
   return neg ? -result : result;
 } /* sstdio_atoi() */
 
-char *sstdio_itoad(int n, char *s) {
+char* sstdio_itoad(int n, char* s) {
   int i = 0;
 
   if (n == 0) {
@@ -543,7 +545,7 @@ char *sstdio_itoad(int n, char *s) {
   return s;
 } /* sstdio_itoad() */
 
-char *sstdio_itoax(int i, char *s) {
+char* sstdio_itoax(int i, char* s) {
   size_t n;
   size_t n_digits;
   int j = i;
@@ -578,8 +580,9 @@ char *sstdio_itoax(int i, char *s) {
 /*******************************************************************************
  * Static Functions
  ******************************************************************************/
-static int decimal_digits_get(const char *const fmt_buf,
-                              const char *const fmt_block, size_t pos) {
+static int decimal_digits_get(const char* const fmt_buf,
+                              const char* const fmt_block,
+                              size_t pos) {
   /* get number of digits to display */
   if (sstring_strlen(fmt_block) > 1 && sstring_isdigit(fmt_block[pos - 1])) {
     return sstdio_atoi(&fmt_block[pos - 1], 10);
@@ -588,9 +591,9 @@ static int decimal_digits_get(const char *const fmt_buf,
   }
 } /* decimal_digits_get() */
 
-static void float_arg_round(char *s, size_t n_digits) {
+static void float_arg_round(char* s, size_t n_digits) {
   size_t i;
-  char *tmp;
+  char* tmp;
 
   i = 0;
 

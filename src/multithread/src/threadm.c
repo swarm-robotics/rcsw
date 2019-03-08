@@ -23,9 +23,9 @@
  ******************************************************************************/
 #define _GNU_SOURCE
 #include "rcsw/multithread/threadm.h"
-#include "rcsw/common/common.h"
 #include <pthread.h>
 #include <sched.h>
+#include "rcsw/common/common.h"
 
 /*******************************************************************************
  * Forward Declarations

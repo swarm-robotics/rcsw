@@ -29,9 +29,11 @@
 /*******************************************************************************
  * API Functions
  ******************************************************************************/
-status_t omp_kernel2d_convolve1(float const *const __restrict__ input,
-                                float kernel[3][3], size_t width, size_t height,
-                                float *const __restrict__ output) {
+status_t omp_kernel2d_convolve1(float const* const __restrict__ input,
+                                float kernel[3][3],
+                                size_t width,
+                                size_t height,
+                                float* const __restrict__ output) {
   FPC_CHECK(ERROR, NULL != input, NULL != output);
 #pragma omp parallel
   {

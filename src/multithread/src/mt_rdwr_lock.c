@@ -31,8 +31,8 @@
  ******************************************************************************/
 BEGIN_C_DECLS
 
-status_t mt_rdwr_lock_init(mt_rdwr_lock_t *const rdwr_in, uint32_t flags) {
-  mt_rdwr_lock_t *rdwr = NULL;
+status_t mt_rdwr_lock_init(mt_rdwr_lock_t* const rdwr_in, uint32_t flags) {
+  mt_rdwr_lock_t* rdwr = NULL;
   if (flags & MT_APP_DOMAIN_MEM) {
     rdwr = rdwr_in;
   } else {
@@ -53,7 +53,7 @@ error:
   return ERROR;
 } /* mt_rdwr_lock_init() */
 
-void mt_rdwr_lock_destroy(mt_rdwr_lock_t *const rdwr) {
+void mt_rdwr_lock_destroy(mt_rdwr_lock_t* const rdwr) {
   FPC_CHECKV(FPC_VOID, NULL != rdwr);
 
   mt_csem_destroy(&rdwr->order);
@@ -65,11 +65,11 @@ void mt_rdwr_lock_destroy(mt_rdwr_lock_t *const rdwr) {
   }
 } /* mt_rdwr_lock_destroy() */
 
-void mt_rdwr_lock_wr_exit(mt_rdwr_lock_t *const rdwr) {
+void mt_rdwr_lock_wr_exit(mt_rdwr_lock_t* const rdwr) {
   mt_csem_post(&rdwr->access); /* release exclusive access to resource */
 } /* mt_rdwr_lock_wr_exit() */
 
-void mt_rdwr_lock_wr_enter(mt_rdwr_lock_t *const rdwr) {
+void mt_rdwr_lock_wr_enter(mt_rdwr_lock_t* const rdwr) {
   /* get a place in line (ensure fairness) */
   mt_csem_wait(&rdwr->order);
 
@@ -80,8 +80,8 @@ void mt_rdwr_lock_wr_enter(mt_rdwr_lock_t *const rdwr) {
   mt_csem_post(&rdwr->order);
 } /* mt_rdwr_lock_wr_enter() */
 
-status_t mt_rdwr_lock_timed_wr_enter(mt_rdwr_lock_t *const rdwr,
-                                     const struct timespec *const to) {
+status_t mt_rdwr_lock_timed_wr_enter(mt_rdwr_lock_t* const rdwr,
+                                     const struct timespec* const to) {
   status_t rval = ERROR;
 
   /* get a place in line (ensure fairness) */
@@ -97,7 +97,7 @@ error:
   return rval;
 } /* mt_rdwr_lock_timed_wr_enter() */
 
-void mt_rdwr_lock_rd_exit(mt_rdwr_lock_t *const rdwr) {
+void mt_rdwr_lock_rd_exit(mt_rdwr_lock_t* const rdwr) {
   /* we are going to modify the readers counter  */
   mt_csem_wait(&rdwr->read);
 
@@ -113,7 +113,7 @@ void mt_rdwr_lock_rd_exit(mt_rdwr_lock_t *const rdwr) {
   mt_csem_post(&rdwr->read);
 } /* mt_rdwr_lock_rd_exit() */
 
-void mt_rdwr_lock_rd_enter(mt_rdwr_lock_t *rdwr) {
+void mt_rdwr_lock_rd_enter(mt_rdwr_lock_t* rdwr) {
   /* get a place in line (ensure fairness) */
   mt_csem_wait(&rdwr->order);
 
@@ -134,8 +134,8 @@ void mt_rdwr_lock_rd_enter(mt_rdwr_lock_t *rdwr) {
   mt_csem_post(&rdwr->read);
 } /* mt_rdwr_lock_rd_enter() */
 
-status_t mt_rdwr_lock_timed_rd_enter(mt_rdwr_lock_t *const rdwr,
-                                     const struct timespec *const to) {
+status_t mt_rdwr_lock_timed_rd_enter(mt_rdwr_lock_t* const rdwr,
+                                     const struct timespec* const to) {
   status_t rval = ERROR;
 
   /* get a place in line (ensure fairness) */

@@ -22,17 +22,17 @@
  * Includes
  ******************************************************************************/
 #include "rcsw/common/test_frmwk.h"
-#include "rcsw/common/dbg.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "rcsw/common/dbg.h"
 
 /*******************************************************************************
  * Functions
  ******************************************************************************/
 BEGIN_C_DECLS
-struct test_frmwk *test_frmwk_init(size_t n_inst) {
-  struct test_frmwk *tests = malloc(sizeof(struct test_frmwk));
+struct test_frmwk* test_frmwk_init(size_t n_inst) {
+  struct test_frmwk* tests = malloc(sizeof(struct test_frmwk));
   CHECK(tests != NULL);
 
   tests->test_insts = malloc(sizeof(struct test_inst) * n_inst);
@@ -47,7 +47,7 @@ error:
   return NULL;
 } /* test_frmwk_init */
 
-void test_frmwk_shutdown(struct test_frmwk *tests) {
+void test_frmwk_shutdown(struct test_frmwk* tests) {
   if (tests) {
     if (tests->test_insts) {
       free(tests->test_insts);
@@ -56,7 +56,7 @@ void test_frmwk_shutdown(struct test_frmwk *tests) {
   }
 } /* test_frmwk_shutdown() */
 
-void test_frmwk_test_status(struct test_frmwk *const tests, /* test array */
+void test_frmwk_test_status(struct test_frmwk* const tests, /* test array */
                             int index) /* index of test to show status for */
 {
   PRINTF("%-32.32s ", tests->test_insts[index].name);
@@ -68,7 +68,7 @@ void test_frmwk_test_status(struct test_frmwk *const tests, /* test array */
   }
 } /* test_frmwk_test_status() */
 
-void test_frmwk_summary(struct test_frmwk *const tests) /* test array */
+void test_frmwk_summary(struct test_frmwk* const tests) /* test array */
 {
   size_t passcount = 0;
   for (size_t i = 0; i < tests->n_tests; ++i) {
@@ -76,7 +76,10 @@ void test_frmwk_summary(struct test_frmwk *const tests) /* test array */
       passcount++;
     }
   }
-  PRINTF("%sPassed %zu/%zu tests.%s\n\n", DBG_HEADC, passcount, tests->n_tests,
+  PRINTF("%sPassed %zu/%zu tests.%s\n\n",
+         DBG_HEADC,
+         passcount,
+         tests->n_tests,
          DBG_ENDC);
   if (passcount < tests->n_tests) {
     PRINTF("%sTEST SUITE FAILED%s\n", DBG_FAILC, DBG_ENDC);

@@ -23,11 +23,11 @@
  ******************************************************************************/
 #define _GNU_SOURCE
 #include "rcsw/multiprocess/procm.h"
-#include "rcsw/common/dbg.h"
 #include <assert.h>
 #include <fcntl.h>
 #include <sched.h>
 #include <unistd.h>
+#include "rcsw/common/dbg.h"
 
 /*******************************************************************************
  * Forward Declarations
@@ -40,11 +40,11 @@ BEGIN_C_DECLS
 status_t procm_socket_lock(int socket) {
   cpu_set_t cpuset;
   char buffer[50];
-  char *line;
+  char* line;
   int64_t n_sockets, cores_per_socket, n_cpus;
 
   CPU_ZERO(&cpuset);
-  FILE *f = popen("lscpu | grep Socket|awk '{print $2}'", "r");
+  FILE* f = popen("lscpu | grep Socket|awk '{print $2}'", "r");
   CHECK_PTR(f);
 
   line = fgets(buffer, sizeof(buffer), f);
@@ -56,7 +56,8 @@ status_t procm_socket_lock(int socket) {
   cores_per_socket = n_cpus / n_sockets;
 
   for (int64_t i = socket * cores_per_socket;
-       i < (socket + 1) * cores_per_socket; ++i) {
+       i < (socket + 1) * cores_per_socket;
+       ++i) {
     CPU_SET(i, &cpuset);
   } /* for(i..) */
 
@@ -67,8 +68,10 @@ error:
   return ERROR;
 } /* procm_socket_lock() */
 
-pid_t procm_fork_exec(char **const cmd, const char *new_wd, bool_t stdout_sup,
-                      int *pipefd) {
+pid_t procm_fork_exec(char** const cmd,
+                      const char* new_wd,
+                      bool_t stdout_sup,
+                      int* pipefd) {
   pid_t pid = fork();
   if (0 == pid) {
     /* change to the working directory before exec()ing if requested */

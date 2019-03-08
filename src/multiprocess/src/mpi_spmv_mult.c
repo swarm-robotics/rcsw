@@ -41,21 +41,21 @@ struct spmv_comm_data {
 /*******************************************************************************
  * Forward Declarations
  ******************************************************************************/
-static status_t mpi_spmv_alloc_init(struct mpi_spmv_mult *const mult);
+static status_t mpi_spmv_alloc_init(struct mpi_spmv_mult* const mult);
 
 BEGIN_C_DECLS
 
 /*******************************************************************************
  * API Functions
  ******************************************************************************/
-struct mpi_spmv_mult *
-mpi_spmv_mult_init(const struct mpi_spmv_mult_params *const params) {
+struct mpi_spmv_mult* mpi_spmv_mult_init(
+    const struct mpi_spmv_mult_params* const params) {
   FPC_CHECK(NULL, NULL != params);
 
   DBGD("Initializing sparse matrix -> vector multiplier\n");
 
   /* All MPI processes perform the same basic initialization */
-  struct mpi_spmv_mult *mult = malloc(sizeof(struct mpi_spmv_mult));
+  struct mpi_spmv_mult* mult = malloc(sizeof(struct mpi_spmv_mult));
   CHECK_PTR(mult);
 
   mult->matrix = params->matrix;
@@ -100,8 +100,10 @@ mpi_spmv_mult_init(const struct mpi_spmv_mult_params *const params) {
   mult->row_owners = calloc(mult->n_rows_init + 2, sizeof(int));
   CHECK_PTR(mult->row_owners);
 
-  DBGD("Rank%d: world_size=%d n_rows_init=%d\n", mult->mpi_rank,
-       mult->mpi_world_size, mult->n_rows_init);
+  DBGD("Rank%d: world_size=%d n_rows_init=%d\n",
+       mult->mpi_rank,
+       mult->mpi_world_size,
+       mult->n_rows_init);
   return mult;
 
 error:
@@ -109,7 +111,7 @@ error:
   return NULL;
 } /* mpi_spmv_mult_init() */
 
-void mpi_spmv_mult_destroy(struct mpi_spmv_mult *mult) {
+void mpi_spmv_mult_destroy(struct mpi_spmv_mult* mult) {
   if (mult) {
     if (mult->row_owners) {
       free(mult->row_owners);
@@ -142,7 +144,7 @@ void mpi_spmv_mult_destroy(struct mpi_spmv_mult *mult) {
   return;
 } /* mpi_spmv_mult_destroy() */
 
-status_t mpi_spmv_mult_ds_init(struct mpi_spmv_mult *const mult) {
+status_t mpi_spmv_mult_ds_init(struct mpi_spmv_mult* const mult) {
   FPC_CHECK(ERROR, NULL != mult);
   MPI_Barrier(MPI_COMM_WORLD);
 
@@ -151,7 +153,9 @@ status_t mpi_spmv_mult_ds_init(struct mpi_spmv_mult *const mult) {
 
   if (0 != mult->mpi_rank) {
     DBGD("Rank%d: Initialize sparse matrix (%d x %d, %d elts)\n",
-         mult->mpi_rank, mult->n_rows_alloc, mult->n_rows_init,
+         mult->mpi_rank,
+         mult->n_rows_alloc,
+         mult->n_rows_init,
          mult->n_elts_alloc);
     /* initialize sparse matrix */
     struct csmatrix_params matrix_params = {.n_rows = mult->n_rows_alloc,
@@ -164,19 +168,21 @@ status_t mpi_spmv_mult_ds_init(struct mpi_spmv_mult *const mult) {
   }
 
   /* Initialize input/output vector at all nodes */
-  DBGV("Rank%d: Initialize input/output vector (%d/%d elts)\n", mult->mpi_rank,
-       mult->n_cols_init, mult->n_rows_alloc);
-  struct ds_params vector_params = {
-      .type = {.da =
-                   {
-                       .init_size = mult->n_cols_init,
-                   }},
-      .max_elts = mult->n_cols_init,
-      .cmpe = NULL,
-      .printe = NULL,
-      .el_size = sizeof(double),
-      .tag = DS_DARRAY,
-      .flags = 0};
+  DBGV("Rank%d: Initialize input/output vector (%d/%d elts)\n",
+       mult->mpi_rank,
+       mult->n_cols_init,
+       mult->n_rows_alloc);
+  struct ds_params vector_params = {.type = {.da =
+                                                 {
+                                                     .init_size =
+                                                         mult->n_cols_init,
+                                                 }},
+                                    .max_elts = mult->n_cols_init,
+                                    .cmpe = NULL,
+                                    .printe = NULL,
+                                    .el_size = sizeof(double),
+                                    .tag = DS_DARRAY,
+                                    .flags = 0};
 
   if (0 != mult->mpi_rank) {
     mult->vector_in = darray_init(NULL, &vector_params);
@@ -201,8 +207,9 @@ status_t mpi_spmv_mult_ds_init(struct mpi_spmv_mult *const mult) {
   indices[1] = (MPI_Aint)offsetof(struct spmv_comm_data, sink_vertex);
   indices[2] = (MPI_Aint)offsetof(struct spmv_comm_data, value);
   MPI_Datatype old_types[] = {MPI_INT, MPI_INT, MPI_DOUBLE};
-  CHECK(MPI_SUCCESS == MPI_Type_struct(count, blocklens, indices, old_types,
-                                       &mult->spmv_comm_type));
+  CHECK(MPI_SUCCESS ==
+        MPI_Type_struct(
+            count, blocklens, indices, old_types, &mult->spmv_comm_type));
   CHECK(MPI_SUCCESS == MPI_Type_commit(&mult->spmv_comm_type));
   return OK;
 
@@ -210,8 +217,8 @@ error:
   return ERROR;
 } /* mpi_spmv_mult_ds_init() */
 
-status_t mpi_spmv_mult_distribute(struct mpi_spmv_mult *const mult,
-                                  struct darray *const vector) {
+status_t mpi_spmv_mult_distribute(struct mpi_spmv_mult* const mult,
+                                  struct darray* const vector) {
   FPC_CHECK(ERROR, NULL != mult);
   DBGD("Rank%d: Distribute data to all ranks\n", mult->mpi_rank);
   /*
@@ -239,31 +246,49 @@ status_t mpi_spmv_mult_distribute(struct mpi_spmv_mult *const mult,
       }
 
       /* Note the +1 for the extra element at the end of outer_starts */
-      DBGD("Send outer_starts[%d-%d] (%d)to rank %d\n", row_accum,
-           row_accum + mult->rank_alloc_rows[i], mult->rank_alloc_rows[i] + 1,
+      DBGD("Send outer_starts[%d-%d] (%d)to rank %d\n",
+           row_accum,
+           row_accum + mult->rank_alloc_rows[i],
+           mult->rank_alloc_rows[i] + 1,
            i);
       MPI_Request req;
 
       CHECK(MPI_SUCCESS ==
             MPI_Isend(csmatrix_outer_starts(mult->matrix) + row_accum,
-                      mult->rank_alloc_rows[i] + 1, MPI_INT, i, 0,
-                      MPI_COMM_WORLD, &req));
+                      mult->rank_alloc_rows[i] + 1,
+                      MPI_INT,
+                      i,
+                      0,
+                      MPI_COMM_WORLD,
+                      &req));
 
-      DBGD("Send inner_indices[%d-%d]  (%d) to rank %d\n", elt_accum,
-           elt_accum + mult->rank_alloc_elts[i] - 1, mult->rank_alloc_elts[i],
+      DBGD("Send inner_indices[%d-%d]  (%d) to rank %d\n",
+           elt_accum,
+           elt_accum + mult->rank_alloc_elts[i] - 1,
+           mult->rank_alloc_elts[i],
            i);
       CHECK(MPI_SUCCESS ==
             MPI_Isend(csmatrix_inner_indices(mult->matrix) + elt_accum,
-                      mult->rank_alloc_elts[i], MPI_INT, i, 0, MPI_COMM_WORLD,
+                      mult->rank_alloc_elts[i],
+                      MPI_INT,
+                      i,
+                      0,
+                      MPI_COMM_WORLD,
                       &req));
 
-      DBGD("Send values[%d-%d] (%d) to rank %d \n", elt_accum,
-           elt_accum + mult->rank_alloc_elts[i] - 1, mult->rank_alloc_elts[i],
+      DBGD("Send values[%d-%d] (%d) to rank %d \n",
+           elt_accum,
+           elt_accum + mult->rank_alloc_elts[i] - 1,
+           mult->rank_alloc_elts[i],
            i);
 
       CHECK(MPI_SUCCESS == MPI_Isend(csmatrix_values(mult->matrix) + elt_accum,
-                                     mult->rank_alloc_elts[i], MPI_DOUBLE, i, 0,
-                                     MPI_COMM_WORLD, &req));
+                                     mult->rank_alloc_elts[i],
+                                     MPI_DOUBLE,
+                                     i,
+                                     0,
+                                     MPI_COMM_WORLD,
+                                     &req));
       row_accum += mult->rank_alloc_rows[i];
       elt_accum += mult->rank_alloc_elts[i];
     } /* for(i..) */
@@ -272,15 +297,27 @@ status_t mpi_spmv_mult_distribute(struct mpi_spmv_mult *const mult,
 
   /* receive matrix data */
   CHECK(MPI_SUCCESS == MPI_Recv(csmatrix_outer_starts(mult->matrix),
-                                mult->n_rows_alloc + 1, MPI_INT, 0, 0,
-                                MPI_COMM_WORLD, MPI_STATUS_IGNORE));
+                                mult->n_rows_alloc + 1,
+                                MPI_INT,
+                                0,
+                                0,
+                                MPI_COMM_WORLD,
+                                MPI_STATUS_IGNORE));
 
   CHECK(MPI_SUCCESS == MPI_Recv(csmatrix_inner_indices(mult->matrix),
-                                mult->n_elts_alloc, MPI_INT, 0, 0,
-                                MPI_COMM_WORLD, MPI_STATUS_IGNORE));
+                                mult->n_elts_alloc,
+                                MPI_INT,
+                                0,
+                                0,
+                                MPI_COMM_WORLD,
+                                MPI_STATUS_IGNORE));
   CHECK(MPI_SUCCESS == MPI_Recv(csmatrix_values(mult->matrix),
-                                mult->n_elts_alloc, MPI_DOUBLE, 0, 0,
-                                MPI_COMM_WORLD, MPI_STATUS_IGNORE));
+                                mult->n_elts_alloc,
+                                MPI_DOUBLE,
+                                0,
+                                0,
+                                MPI_COMM_WORLD,
+                                MPI_STATUS_IGNORE));
 
   DBGD("Rank%d: Receive matrix data...done\n", mult->mpi_rank);
 
@@ -303,15 +340,16 @@ status_t mpi_spmv_mult_distribute(struct mpi_spmv_mult *const mult,
    * Finally, get the row -> rank mappings so you know where to
    * send/receive data to/from during execution
    */
-  CHECK(MPI_SUCCESS == MPI_Bcast(mult->row_owners, mult->n_rows_init, MPI_INT,
-                                 0, MPI_COMM_WORLD));
+  CHECK(MPI_SUCCESS ==
+        MPI_Bcast(
+            mult->row_owners, mult->n_rows_init, MPI_INT, 0, MPI_COMM_WORLD));
   return OK;
 
 error:
   return ERROR;
 } /* mpi_spmv_mult_distribute() */
 
-struct darray *mpi_spmv_mult_exec(struct mpi_spmv_mult *const mult) {
+struct darray* mpi_spmv_mult_exec(struct mpi_spmv_mult* const mult) {
   FPC_CHECK(ERROR, NULL != mult);
   /*
    * Send the vector to multiply with from the root to all other ranks. All
@@ -319,8 +357,11 @@ struct darray *mpi_spmv_mult_exec(struct mpi_spmv_mult *const mult) {
    * need some unknown subset. It is much easier just to broadcast the whole
    * thing rather than trying to figure out who needs what exactly.
    */
-  CHECK(MPI_SUCCESS == MPI_Bcast(mult->vector_in->elements, mult->n_cols_init,
-                                 MPI_DOUBLE, 0, MPI_COMM_WORLD));
+  CHECK(MPI_SUCCESS == MPI_Bcast(mult->vector_in->elements,
+                                 mult->n_cols_init,
+                                 MPI_DOUBLE,
+                                 0,
+                                 MPI_COMM_WORLD));
 
   CHECK(OK == darray_set_n_elts(mult->vector_in, mult->n_cols_init));
 
@@ -329,17 +370,25 @@ struct darray *mpi_spmv_mult_exec(struct mpi_spmv_mult *const mult) {
    */
   darray_set_n_elts(mult->vector_out, mult->n_rows_alloc);
   DBGD("Rank%d: Multiply: [%zu x %zu] x [%zu x 1] = [%zu x 1]\n",
-       mult->mpi_rank, csmatrix_n_rows(mult->matrix),
-       csmatrix_n_cols(mult->matrix), darray_n_elts(mult->vector_in),
+       mult->mpi_rank,
+       csmatrix_n_rows(mult->matrix),
+       csmatrix_n_cols(mult->matrix),
+       darray_n_elts(mult->vector_in),
        darray_n_elts(mult->vector_out));
   CHECK(OK == csmatrix_vmult(mult->matrix, mult->vector_in, mult->vector_out));
 
   /*
    * Consolidate the data back at the root
    */
-  MPI_Gatherv(darray_data_get(mult->vector_out, 0), mult->n_rows_alloc,
-              MPI_DOUBLE, darray_data_get(mult->vector_out, 0), mult->row_sizes,
-              mult->rank_alloc_row_prefix_sums, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+  MPI_Gatherv(darray_data_get(mult->vector_out, 0),
+              mult->n_rows_alloc,
+              MPI_DOUBLE,
+              darray_data_get(mult->vector_out, 0),
+              mult->row_sizes,
+              mult->rank_alloc_row_prefix_sums,
+              MPI_DOUBLE,
+              0,
+              MPI_COMM_WORLD);
   if (0 == mult->mpi_rank) {
     darray_set_n_elts(mult->vector_out, mult->n_rows_init);
   }
@@ -353,7 +402,7 @@ error:
 /*******************************************************************************
  * Static Functions
  ******************************************************************************/
-static status_t mpi_spmv_alloc_init(struct mpi_spmv_mult *const mult) {
+static status_t mpi_spmv_alloc_init(struct mpi_spmv_mult* const mult) {
   FPC_CHECK(ERROR, NULL != mult);
 
   /*
@@ -361,8 +410,10 @@ static status_t mpi_spmv_alloc_init(struct mpi_spmv_mult *const mult) {
    */
   if (0 == mult->mpi_rank) {
     size_t target_size = csmatrix_n_elts(mult->matrix) / mult->mpi_world_size;
-    DBGD("Allocate ~ %zu/%zu elts to %d ranks\n", target_size,
-         csmatrix_n_elts(mult->matrix), mult->mpi_world_size);
+    DBGD("Allocate ~ %zu/%zu elts to %d ranks\n",
+         target_size,
+         csmatrix_n_elts(mult->matrix),
+         mult->mpi_world_size);
     int curr_row = 0;
     size_t curr_size = 0;
     for (int j = 0; j < mult->mpi_world_size; ++j) {
@@ -375,8 +426,12 @@ static status_t mpi_spmv_alloc_init(struct mpi_spmv_mult *const mult) {
         mult->rank_alloc_elts[j] = curr_size;
         mult->rank_alloc_rows[j]++;
 
-        DBGV("Rank%d owns row %d (%zu/%zu): %d alloc()ed\n", j, curr_row,
-             curr_size, target_size, mult->rank_alloc_elts[j]);
+        DBGV("Rank%d owns row %d (%zu/%zu): %d alloc()ed\n",
+             j,
+             curr_row,
+             curr_size,
+             target_size,
+             mult->rank_alloc_elts[j]);
         curr_row++;
       } /* while() */
     }   /* for(j..) */
@@ -401,16 +456,29 @@ static status_t mpi_spmv_alloc_init(struct mpi_spmv_mult *const mult) {
   }
 
   /* Receive allocation parameters from master */
-  CHECK(MPI_SUCCESS == MPI_Scatter(mult->rank_alloc_elts, 1, MPI_INT,
-                                   &mult->n_elts_alloc, 1, MPI_INT, 0,
+  CHECK(MPI_SUCCESS == MPI_Scatter(mult->rank_alloc_elts,
+                                   1,
+                                   MPI_INT,
+                                   &mult->n_elts_alloc,
+                                   1,
+                                   MPI_INT,
+                                   0,
                                    MPI_COMM_WORLD));
-  CHECK(MPI_SUCCESS == MPI_Scatter(mult->rank_alloc_rows, 1, MPI_INT,
-                                   &mult->n_rows_alloc, 1, MPI_INT, 0,
+  CHECK(MPI_SUCCESS == MPI_Scatter(mult->rank_alloc_rows,
+                                   1,
+                                   MPI_INT,
+                                   &mult->n_rows_alloc,
+                                   1,
+                                   MPI_INT,
+                                   0,
                                    MPI_COMM_WORLD));
-  CHECK(MPI_SUCCESS == MPI_Bcast(mult->row_owners, mult->n_rows_init, MPI_INT,
-                                 0, MPI_COMM_WORLD));
+  CHECK(MPI_SUCCESS ==
+        MPI_Bcast(
+            mult->row_owners, mult->n_rows_init, MPI_INT, 0, MPI_COMM_WORLD));
   DBGD("Rank%d: Received allocation parameters: n_rows=%d n_elts=%d\n",
-       mult->mpi_rank, mult->n_rows_alloc, mult->n_elts_alloc);
+       mult->mpi_rank,
+       mult->n_rows_alloc,
+       mult->n_elts_alloc);
   return OK;
 
 error:

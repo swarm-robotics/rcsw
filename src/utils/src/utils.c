@@ -22,9 +22,9 @@
  * Includes
  ******************************************************************************/
 #include "rcsw/utils/utils.h"
+#include <stdlib.h>
 #include "rcsw/common/dbg.h"
 #include "rcsw/common/fpc.h"
-#include <stdlib.h>
 
 /*******************************************************************************
  * Global Variables
@@ -61,7 +61,7 @@ BEGIN_C_DECLS
 /*******************************************************************************
  * Checksum Functions
  ******************************************************************************/
-status_t string_gen(char *const buf, size_t len) {
+status_t string_gen(char* const buf, size_t len) {
   FPC_CHECK(ERROR, buf != NULL);
 
   /* ASCII characters 33 to 126 */
@@ -90,16 +90,18 @@ __rcsw_const uint32_t reflect(uint32_t data, size_t n_bits) {
   return reflection;
 } /* reflect() */
 
-void reverse_byte_array(void *const arr, size_t size) {
+void reverse_byte_array(void* const arr, size_t size) {
   for (size_t i = 0, j = size - 1; i < j; i++, j--) {
-    char tmp = ((char *)arr)[i];
-    ((char *)arr)[i] = ((char *)arr)[j];
-    ((char *)arr)[j] = tmp;
+    char tmp = ((char*)arr)[i];
+    ((char*)arr)[i] = ((char*)arr)[j];
+    ((char*)arr)[j] = tmp;
   } /* for() */
 } /* reverse_byte_array() */
 
-void arr_permute(uint32_t *arr, size_t size, size_t start,
-                 void (*fp)(uint32_t *const arr)) {
+void arr_permute(uint32_t* arr,
+                 size_t size,
+                 size_t start,
+                 void (*fp)(uint32_t* const arr)) {
   /* if we are at the end of the array, we have one permutation we
    * can use */
   if (start == size) {
@@ -119,7 +121,7 @@ void arr_permute(uint32_t *arr, size_t size, size_t start,
   }
 } /* arr_permute() */
 
-void arr_el_swap(uint32_t *const v, size_t i, size_t j) {
+void arr_el_swap(uint32_t* const v, size_t i, size_t j) {
   uint32_t t;
 
   t = v[i];

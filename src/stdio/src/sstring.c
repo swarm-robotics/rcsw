@@ -31,15 +31,15 @@
  ******************************************************************************/
 BEGIN_C_DECLS
 
-char *sstring_strrep(const char *const __restrict__ original,
-                     const char *const __restrict__ pattern,
-                     const char *const __restrict__ replacement,
-                     char *const __restrict__ new_str) {
+char* sstring_strrep(const char* const __restrict__ original,
+                     const char* const __restrict__ pattern,
+                     const char* const __restrict__ replacement,
+                     char* const __restrict__ new_str) {
   size_t orilen = sstring_strlen(original);
   size_t replen = sstring_strlen(replacement);
   size_t patlen = sstring_strlen(pattern);
-  const char *oriptr;
-  const char *patloc;
+  const char* oriptr;
+  const char* patloc;
   size_t patcnt = 0;
 
   /* find how many times the pattern occurs in the original string */
@@ -53,7 +53,7 @@ char *sstring_strrep(const char *const __restrict__ original,
   new_str[newlen] = '\0';
 
   /* copy the original string, replacing all the instances of the pattern */
-  char *retptr = new_str;
+  char* retptr = new_str;
   for (oriptr = original; (patloc = sstring_strstr(oriptr, pattern));
        oriptr = patloc + patlen) {
     size_t skiplen = (size_t)(patloc - oriptr);
@@ -72,7 +72,7 @@ char *sstring_strrep(const char *const __restrict__ original,
   return new_str;
 } /* sstring_strrep() */
 
-void sstring_strrev(char *const s, size_t len) {
+void sstring_strrev(char* const s, size_t len) {
   int i = 0, j = len - 1; /* account for null byte */
 
   for (; i < j; i++, j--) {
@@ -83,34 +83,34 @@ void sstring_strrev(char *const s, size_t len) {
   }
 } /* sstring_strrev() */
 
-__rcsw_pure size_t sstring_strlen(const char *const s) {
-  char const *p = s;
+__rcsw_pure size_t sstring_strlen(const char* const s) {
+  char const* p = s;
   for (; *p != '\0'; p++) {
   }
 
   return (size_t)(p - s);
 } /* sstring_strlen() */
 
-__rcsw_pure const char *sstring_strchr(const char *haystack, char needle) {
+__rcsw_pure const char* sstring_strchr(const char* haystack, char needle) {
   while (haystack != NULL && *haystack) {
     if (*haystack == needle) {
-      return (const char *)haystack;
+      return (const char*)haystack;
     }
     haystack++;
   }
   return NULL;
 } /* sstring_strchr() */
 
-__rcsw_pure const char *sstring_strstr(const char *const __restrict__ haystack,
-                                  const char *const __restrict__ needle) {
-  const char *p1 = (const char *)haystack;
+__rcsw_pure const char* sstring_strstr(const char* const __restrict__ haystack,
+                                       const char* const __restrict__ needle) {
+  const char* p1 = (const char*)haystack;
   if (!*needle) { /* null string */
     return p1;
   }
 
   while (*p1) { /* while there are chars left to check in haystack */
-    const char *p1_curr = p1;
-    const char *p2 = (const char *)needle;
+    const char* p1_curr = p1;
+    const char* p2 = (const char*)needle;
     while (*p1 && *p2 && *p1 == *p2) { /* superimpose substring on current
                                         * position and check char by char */
       p1++;
@@ -125,8 +125,9 @@ __rcsw_pure const char *sstring_strstr(const char *const __restrict__ haystack,
   return NULL;
 } /* sstring_strstr() */
 
-char *sstring_strncpy(char *const __restrict__ dest,
-                      const char *const __restrict__ src, size_t n) {
+char* sstring_strncpy(char* const __restrict__ dest,
+                      const char* const __restrict__ src,
+                      size_t n) {
   size_t i;
   /* copy up to null terminator, or n chars, whichever comes first */
   for (i = 0; i < n && src[i] != '\0'; i++) {
@@ -140,8 +141,8 @@ char *sstring_strncpy(char *const __restrict__ dest,
   return dest;
 } /* sstring_strncpy() */
 
-char *sstring_strcpy(char *__restrict__ dest,
-                     const char *const __restrict__ src) {
+char* sstring_strcpy(char* __restrict__ dest,
+                     const char* const __restrict__ src) {
   size_t i;
   /* copy up to null terminator */
   for (i = 0; src[i] != '\0'; i++) {
@@ -149,12 +150,12 @@ char *sstring_strcpy(char *__restrict__ dest,
   }
 
   dest[i] = '\0';
-  return (char *)dest;
+  return (char*)dest;
 } /* sstring_strcpy() */
 
-__rcsw_pure int sstring_strcmp(const char *const s1, const char *const s2) {
-  const char *t1 = (const char *)s1;
-  const char *t2 = (const char *)s2;
+__rcsw_pure int sstring_strcmp(const char* const s1, const char* const s2) {
+  const char* t1 = (const char*)s1;
+  const char* t2 = (const char*)s2;
   while (*t1 == *t2) {
     if (*t1 == '\0') {
       return 0;
@@ -165,11 +166,12 @@ __rcsw_pure int sstring_strcmp(const char *const s1, const char *const s2) {
   return (*s1 - *s2);
 } /* sstring_strcmp() */
 
-__rcsw_pure int sstring_strncmp(const char *const s1, const char *const s2,
-                           size_t len) {
+__rcsw_pure int sstring_strncmp(const char* const s1,
+                                const char* const s2,
+                                size_t len) {
   size_t i = 0;
-  const char *t1 = (const char *)s1;
-  const char *t2 = (const char *)s2;
+  const char* t1 = (const char*)s1;
+  const char* t2 = (const char*)s2;
 
   /* special case: if len == 0, then by definition all strings are equivalent
    * up to the zeroth character */
@@ -223,10 +225,11 @@ __rcsw_const int sstring_toupper(int c) {
   return c;
 } /* sstring_toupper() */
 
-void *sstring_memcpy(void *const __restrict__ dest,
-                     const void *const __restrict__ src, size_t n) {
-  char *d = dest;
-  const char *s = src;
+void* sstring_memcpy(void* const __restrict__ dest,
+                     const void* const __restrict__ src,
+                     size_t n) {
+  char* d = dest;
+  const char* s = src;
   for (size_t i = 0; i < n; i++) {
     d[i] = s[i];
   }

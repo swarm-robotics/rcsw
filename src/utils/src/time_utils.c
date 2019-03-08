@@ -38,8 +38,8 @@ double time_monotonic_sec(void) {
   return ts.tv_sec + ts.tv_nsec * 1e-9;
 } /* time_monotonic_sec() */
 
-__rcsw_pure int time_ts_cmp(const struct timespec *const a,
-                       const struct timespec *const b) {
+__rcsw_pure int time_ts_cmp(const struct timespec* const a,
+                            const struct timespec* const b) {
   if (a->tv_sec > b->tv_sec) {
     return 1;
   } else if (a->tv_sec < b->tv_sec) {
@@ -52,15 +52,15 @@ __rcsw_pure int time_ts_cmp(const struct timespec *const a,
   return 0;
 } /* time_ts_cmp() */
 
-void time_ts_add(struct timespec *const sum, const struct timespec *const val) {
+void time_ts_add(struct timespec* const sum, const struct timespec* const val) {
   sum->tv_nsec += val->tv_nsec;
   sum->tv_sec += val->tv_sec + (sum->tv_nsec / ONEE9);
   sum->tv_nsec %= ONEE9;
 } /* time_ts_add() */
 
-void time_ts_diff(const struct timespec *const start,
-                  const struct timespec *const end,
-                  struct timespec *const diff) {
+void time_ts_diff(const struct timespec* const start,
+                  const struct timespec* const end,
+                  struct timespec* const diff) {
   if (end->tv_nsec - start->tv_nsec < 0) {
     diff->tv_sec = end->tv_sec - start->tv_sec - 1;
     diff->tv_nsec = ONEE9 + end->tv_nsec - start->tv_nsec;
@@ -70,8 +70,8 @@ void time_ts_diff(const struct timespec *const start,
   }
 } /* time_ts_diff() */
 
-status_t time_ts_ref_conv(const struct timespec *const in,
-                          struct timespec *const out) {
+status_t time_ts_ref_conv(const struct timespec* const in,
+                          struct timespec* const out) {
   /* Get current time */
   CHECK(0 == clock_gettime(CLOCK_REALTIME, out));
 

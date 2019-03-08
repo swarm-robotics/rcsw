@@ -31,11 +31,11 @@
  ******************************************************************************/
 BEGIN_C_DECLS
 
-struct mpool *mpool_init(struct mpool *const pool_in,
-                         const struct mpool_params *const params) {
+struct mpool* mpool_init(struct mpool* const pool_in,
+                         const struct mpool_params* const params) {
   FPC_CHECK(NULL, params != NULL, params->max_elts > 0, params->el_size > 0);
 
-  struct mpool *the_pool = NULL;
+  struct mpool* the_pool = NULL;
   if (params->flags & DS_APP_DOMAIN_HANDLE ||
       params->flags & MT_APP_DOMAIN_MEM) {
     CHECK_PTR(pool_in);
@@ -53,13 +53,12 @@ struct mpool *mpool_init(struct mpool *const pool_in,
     CHECK_PTR(the_pool->elements);
   }
 
-  if (params->flags & DS_APP_DOMAIN_NODES ||
-      params->flags & MT_APP_DOMAIN_MEM) {
+  if (params->flags & DS_APP_DOMAIN_NODES || params->flags & MT_APP_DOMAIN_MEM) {
     CHECK_PTR(params->nodes);
     the_pool->nodes = params->nodes;
   } else {
     the_pool->nodes =
-        (uint8_t *)calloc(params->max_elts, sizeof(struct llist_node));
+        (uint8_t*)calloc(params->max_elts, sizeof(struct llist_node));
     CHECK_PTR(the_pool->nodes);
   }
 
@@ -94,8 +93,8 @@ struct mpool *mpool_init(struct mpool *const pool_in,
   CHECK_PTR(the_pool->refs);
 
   /* initialize locks */
-  CHECK_PTR(mt_csem_init(&the_pool->sem, FALSE, the_pool->max_elts,
-                         MT_APP_DOMAIN_MEM));
+  CHECK_PTR(mt_csem_init(
+      &the_pool->sem, FALSE, the_pool->max_elts, MT_APP_DOMAIN_MEM));
   CHECK_PTR(mt_mutex_init(&the_pool->mutex, MT_APP_DOMAIN_MEM));
 
   return the_pool;
@@ -106,7 +105,7 @@ error:
   return NULL;
 } /* mpool_init() */
 
-void mpool_destroy(struct mpool *const the_pool) {
+void mpool_destroy(struct mpool* const the_pool) {
   FPC_CHECKV(FPC_VOID, NULL != the_pool);
 
   llist_destroy(&the_pool->free);
@@ -126,10 +125,10 @@ void mpool_destroy(struct mpool *const the_pool) {
   }
 } /* mpool_destroy() */
 
-uint8_t *mpool_req(struct mpool *const the_pool) {
+uint8_t* mpool_req(struct mpool* const the_pool) {
   FPC_CHECK(NULL, NULL != the_pool);
 
-  uint8_t *ptr = NULL;
+  uint8_t* ptr = NULL;
 
   /* wait for an entry to become available */
   mt_csem_wait(&the_pool->sem);
@@ -149,7 +148,7 @@ uint8_t *mpool_req(struct mpool *const the_pool) {
   return ptr;
 } /* mpool_req() */
 
-status_t mpool_release(struct mpool *const the_pool, uint8_t *const ptr) {
+status_t mpool_release(struct mpool* const the_pool, uint8_t* const ptr) {
   FPC_CHECK(ERROR, NULL != the_pool, NULL != ptr);
 
   size_t index = (size_t)(ptr - the_pool->elements) / the_pool->el_size;
@@ -177,7 +176,7 @@ status_t mpool_release(struct mpool *const the_pool, uint8_t *const ptr) {
   return OK;
 } /* mpool_release() */
 
-status_t mpool_ref_add(struct mpool *const the_pool, const uint8_t *const ptr) {
+status_t mpool_ref_add(struct mpool* const the_pool, const uint8_t* const ptr) {
   FPC_CHECK(ERROR, NULL != the_pool, NULL != ptr);
 
   status_t rstat = ERROR;
@@ -192,8 +191,8 @@ error:
   return rstat;
 } /* mpool_ref_add() */
 
-status_t mpool_ref_remove(struct mpool *const the_pool,
-                          const uint8_t *const ptr) {
+status_t mpool_ref_remove(struct mpool* const the_pool,
+                          const uint8_t* const ptr) {
   FPC_CHECK(ERROR, NULL != the_pool, NULL != ptr);
 
   status_t rstat = ERROR;
@@ -208,7 +207,7 @@ error:
   return rstat;
 } /* mpool_ref_remove() */
 
-int mpool_ref_query(struct mpool *const the_pool, const uint8_t *const ptr) {
+int mpool_ref_query(struct mpool* const the_pool, const uint8_t* const ptr) {
   FPC_CHECK(-1, NULL != the_pool, NULL != ptr);
 
   /*

@@ -42,13 +42,17 @@ BEGIN_C_DECLS
  *
  * @return  LCS(x,y)
  */
-static int lcs_rec_sub(const char *x, const char *y, int *c, size_t i, size_t j,
+static int lcs_rec_sub(const char* x,
+                       const char* y,
+                       int* c,
+                       size_t i,
+                       size_t j,
                        size_t length);
 
 /*******************************************************************************
  * API Functions
  ******************************************************************************/
-status_t lcs_init(struct lcs_calculator *lcs, const char *x, const char *y) {
+status_t lcs_init(struct lcs_calculator* lcs, const char* x, const char* y) {
   FPC_CHECK(ERROR, NULL != lcs, NULL != x, NULL != y);
 
   lcs->len_x = strlen(x);
@@ -65,7 +69,7 @@ error:
   return ERROR;
 } /* lcs_init() */
 
-void lcs_destroy(struct lcs_calculator *lcs) {
+void lcs_destroy(struct lcs_calculator* lcs) {
   if (!lcs) {
     return;
   }
@@ -77,14 +81,14 @@ void lcs_destroy(struct lcs_calculator *lcs) {
   }
 } /* lcs_destroy() */
 
-int lcs_rec(const struct lcs_calculator *lcs) {
+int lcs_rec(const struct lcs_calculator* lcs) {
   CHECK_PTR(lcs);
   return lcs_rec_sub(lcs->x, lcs->y, lcs->results, 0, 0, lcs->len_x);
 error:
   return -1;
 } /* lcs_rec() */
 
-int lcs_iter(struct lcs_calculator *lcs) {
+int lcs_iter(struct lcs_calculator* lcs) {
   CHECK_PTR(lcs);
 
   for (size_t i = 0; i <= lcs->len_x; ++i) {
@@ -143,7 +147,11 @@ error:
 /*******************************************************************************
  * Static Functions
  ******************************************************************************/
-static int lcs_rec_sub(const char *x, const char *y, int *c, size_t i, size_t j,
+static int lcs_rec_sub(const char* x,
+                       const char* y,
+                       int* c,
+                       size_t i,
+                       size_t j,
                        size_t length) {
   /*
    * Base case: one of the strings has no characters: no possible match, so

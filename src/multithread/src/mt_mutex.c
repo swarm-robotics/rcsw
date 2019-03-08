@@ -30,8 +30,8 @@
  ******************************************************************************/
 BEGIN_C_DECLS
 
-mt_mutex_t *mt_mutex_init(mt_mutex_t *mutex_in, uint32_t flags) {
-  mt_mutex_t *mutex = NULL;
+mt_mutex_t* mt_mutex_init(mt_mutex_t* mutex_in, uint32_t flags) {
+  mt_mutex_t* mutex = NULL;
   if (flags & MT_APP_DOMAIN_MEM) {
     mutex = mutex_in;
   } else {
@@ -48,7 +48,7 @@ error:
   return NULL;
 } /* mt_mutex_init() */
 
-void mt_mutex_destroy(mt_mutex_t *mutex) {
+void mt_mutex_destroy(mt_mutex_t* mutex) {
   FPC_CHECKV(FPC_VOID, NULL != mutex);
 
   pthread_mutex_destroy(&mutex->mutex);
@@ -57,7 +57,7 @@ void mt_mutex_destroy(mt_mutex_t *mutex) {
   }
 } /* mt_mutex_destroy() */
 
-status_t mt_mutex_lock(mt_mutex_t *mutex) {
+status_t mt_mutex_lock(mt_mutex_t* mutex) {
   FPC_CHECK(ERROR, NULL != mutex);
   CHECK(0 == pthread_mutex_lock(&mutex->mutex));
   return OK;
@@ -66,7 +66,7 @@ error:
   return ERROR;
 } /* mt_mutex_lock() */
 
-status_t mt_mutex_unlock(mt_mutex_t *mutex) {
+status_t mt_mutex_unlock(mt_mutex_t* mutex) {
   FPC_CHECK(ERROR, NULL != mutex);
   CHECK(0 == pthread_mutex_unlock(&mutex->mutex));
   return OK;

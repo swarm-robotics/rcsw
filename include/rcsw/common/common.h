@@ -495,10 +495,10 @@
 #error "Compiler defines __rcsw_pure!"
 #endif
 /**
- * @def __rcsw_pure Shorthand for marked a function as purely function of its input
- * parameters and (possibly) global data.
+ * @def __rcsw_pure Shorthand for marked a function as purely function of its
+ * input parameters and (possibly) global data.
  */
-#define __rcsw_pure __attribute__((pure))
+#define __rcsw_pure __attribute__((__pure__))
 
 #if defined(__rcsw_dead)
 #error "Compiler defines __rcsw_dead!"

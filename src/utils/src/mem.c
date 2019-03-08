@@ -32,23 +32,25 @@ BEGIN_C_DECLS
 /*******************************************************************************
  * API Functions
  ******************************************************************************/
-void *mem_cpy32(void *const __restrict__ dest,
-                const void *const __restrict__ src, size_t n_bytes) {
-  FPC_CHECK(dest, IS_MEM_ALIGNED(dest, sizeof(uint32_t)),
+void* mem_cpy32(void* const __restrict__ dest,
+                const void* const __restrict__ src,
+                size_t n_bytes) {
+  FPC_CHECK(dest,
+            IS_MEM_ALIGNED(dest, sizeof(uint32_t)),
             IS_MEM_ALIGNED(src, sizeof(uint32_t)),
             IS_SIZE_ALIGNED(n_bytes, sizeof(uint32_t)));
   size_t i;
   for (i = 0; i < n_bytes / sizeof(uint32_t); ++i) {
-    ((volatile uint32_t *)dest)[i] = ((const volatile uint32_t *)src)[i];
+    ((volatile uint32_t*)dest)[i] = ((const volatile uint32_t*)src)[i];
   } /* for() */
   return dest;
 } /* mem_cpy32() */
 
-status_t mem_dump32(const void *const buf, size_t n_bytes) {
+status_t mem_dump32(const void* const buf, size_t n_bytes) {
   FPC_CHECK(ERROR, IS_MEM_ALIGNED(buf, sizeof(uint32_t)));
   uint32_t i;
   for (i = 0; i < n_bytes / sizeof(uint32_t); i++) {
-    DPRINTF("%08x ", ((const uint32_t *)buf)[i]);
+    DPRINTF("%08x ", ((const uint32_t*)buf)[i]);
     if ((i + 1) % 8 == 0) {
       DPRINTF("\n");
     }
@@ -57,11 +59,11 @@ status_t mem_dump32(const void *const buf, size_t n_bytes) {
   return OK;
 } /* mem_dump32() */
 
-status_t mem_dump16(const void *const buf, size_t n_bytes) {
+status_t mem_dump16(const void* const buf, size_t n_bytes) {
   FPC_CHECK(ERROR, IS_MEM_ALIGNED(buf, sizeof(uint16_t)));
   uint32_t i;
   for (i = 0; i < n_bytes / sizeof(uint16_t); i++) {
-    DPRINTF("%04x ", ((const uint16_t *)buf)[i]);
+    DPRINTF("%04x ", ((const uint16_t*)buf)[i]);
     if ((i + 1) % 16 == 0) {
       DPRINTF("\n");
     }
@@ -70,10 +72,11 @@ status_t mem_dump16(const void *const buf, size_t n_bytes) {
   return OK;
 } /* mem_dump16() */
 
-__rcsw_const void mem_dump8(__rcsw_unused const void *const buf, size_t n_bytes) {
+ void mem_dump8(__rcsw_unused const void* const buf,
+                size_t n_bytes) {
   uint32_t i;
   for (i = 0; i < n_bytes; i++) {
-    DPRINTF("%02x ", ((const uint8_t *)buf)[i]);
+    DPRINTF("%02x ", ((const uint8_t*)buf)[i]);
     if ((i + 1) % 32 == 0) {
       DPRINTF("\n");
     }
@@ -81,7 +84,7 @@ __rcsw_const void mem_dump8(__rcsw_unused const void *const buf, size_t n_bytes)
   DPRINTF("\n");
 } /* mem_dump8() */
 
-status_t mem_dump32v(const void *const buf, size_t n_bytes) {
+status_t mem_dump32v(const void* const buf, size_t n_bytes) {
   FPC_CHECK(ERROR, IS_MEM_ALIGNED(buf, sizeof(uint32_t)));
   uint32_t i;
   DPRINTF("Offset:   ");
@@ -93,7 +96,7 @@ status_t mem_dump32v(const void *const buf, size_t n_bytes) {
     if (i % 8 == 0) {
       DPRINTF("%08x  ", i * 4);
     }
-    DPRINTF("%08x ", ((const uint32_t *)buf)[i]);
+    DPRINTF("%08x ", ((const uint32_t*)buf)[i]);
     if ((i + 1) % 8 == 0) {
       DPRINTF("\n");
     }
@@ -102,7 +105,7 @@ status_t mem_dump32v(const void *const buf, size_t n_bytes) {
   return OK;
 } /* mem_dump32v() */
 
-status_t mem_dump16v(const void *const buf, size_t n_bytes) {
+status_t mem_dump16v(const void* const buf, size_t n_bytes) {
   FPC_CHECK(ERROR, IS_MEM_ALIGNED(buf, sizeof(uint16_t)));
 
   uint32_t i;
@@ -116,7 +119,7 @@ status_t mem_dump16v(const void *const buf, size_t n_bytes) {
       DPRINTF("%08x  ", i * 2);
     }
 
-    DPRINTF("%04x ", ((const uint16_t *)buf)[i]);
+    DPRINTF("%04x ", ((const uint16_t*)buf)[i]);
     if ((i + 1) % 16 == 0) {
       DPRINTF("\n");
     }
@@ -125,7 +128,8 @@ status_t mem_dump16v(const void *const buf, size_t n_bytes) {
   return OK;
 } /* mem_dump16v() */
 
-__rcsw_const void mem_dump8v(__rcsw_unused const void *const buf, size_t n_bytes) {
+void mem_dump8v(__rcsw_unused const void* const buf,
+                size_t n_bytes) {
   uint32_t i;
   DPRINTF("Offset:   ");
   for (i = 0; i < 32; i++) {
@@ -136,7 +140,7 @@ __rcsw_const void mem_dump8v(__rcsw_unused const void *const buf, size_t n_bytes
     if (i % 32 == 0) {
       DPRINTF("%08x  ", i);
     }
-    DPRINTF("%02x ", ((const uint8_t *)buf)[i]);
+    DPRINTF("%02x ", ((const uint8_t*)buf)[i]);
     if ((i + 1) % 32 == 0) {
       DPRINTF("\n");
     }
@@ -144,8 +148,9 @@ __rcsw_const void mem_dump8v(__rcsw_unused const void *const buf, size_t n_bytes
   DPRINTF("\n");
 } /* mem_dump8v() */
 
-status_t mem_bswap16(uint16_t *const buf, size_t n_bytes) {
-  FPC_CHECK(ERROR, IS_MEM_ALIGNED(buf, sizeof(uint16_t)),
+status_t mem_bswap16(uint16_t* const buf, size_t n_bytes) {
+  FPC_CHECK(ERROR,
+            IS_MEM_ALIGNED(buf, sizeof(uint16_t)),
             IS_SIZE_ALIGNED(n_bytes, sizeof(uint16_t)));
 
   for (size_t i = 0; i < n_bytes / sizeof(uint16_t); ++i) {
@@ -155,8 +160,9 @@ status_t mem_bswap16(uint16_t *const buf, size_t n_bytes) {
   return OK;
 } /* mem_bswap16() */
 
-status_t mem_bswap32(uint32_t *const buf, size_t n_bytes) {
-  FPC_CHECK(ERROR, IS_MEM_ALIGNED(buf, sizeof(uint32_t)),
+status_t mem_bswap32(uint32_t* const buf, size_t n_bytes) {
+  FPC_CHECK(ERROR,
+            IS_MEM_ALIGNED(buf, sizeof(uint32_t)),
             IS_SIZE_ALIGNED(n_bytes, sizeof(uint32_t)));
 
   uint32_t i;

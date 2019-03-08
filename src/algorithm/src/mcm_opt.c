@@ -22,9 +22,9 @@
  * Includes
  ******************************************************************************/
 #include "rcsw/algorithm/mcm_opt.h"
+#include <limits.h>
 #include "rcsw/common/dbg.h"
 #include "rcsw/common/fpc.h"
-#include <limits.h>
 
 /*******************************************************************************
  * Forward Declarations
@@ -45,7 +45,9 @@ BEGIN_C_DECLS
  * @param length The length of the matrix chain
  *
  */
-static void mcm_opt_print_parens(const size_t *arr, size_t i, size_t j,
+static void mcm_opt_print_parens(const size_t* arr,
+                                 size_t i,
+                                 size_t j,
                                  size_t length);
 
 /**
@@ -63,14 +65,18 @@ static void mcm_opt_print_parens(const size_t *arr, size_t i, size_t j,
  * far. Pass this as 0.
  *
  */
-static void mcm_opt_report_parens(const size_t *arr, size_t i, size_t j,
-                                  size_t length, size_t *__restrict__ ordering,
-                                  size_t *__restrict__ count);
+static void mcm_opt_report_parens(const size_t* arr,
+                                  size_t i,
+                                  size_t j,
+                                  size_t length,
+                                  size_t* __restrict__ ordering,
+                                  size_t* __restrict__ count);
 
 /*******************************************************************************
  * API Functions
  ******************************************************************************/
-status_t mcm_opt_init(struct mcm_optimizer *mcm, const size_t *matrices,
+status_t mcm_opt_init(struct mcm_optimizer* mcm,
+                      const size_t* matrices,
                       size_t size) {
   FPC_CHECK(ERROR, NULL != mcm, NULL != matrices, size >= 2);
   mcm->matrices = matrices;
@@ -90,7 +96,7 @@ error:
   return ERROR;
 } /* mcm_opt_init() */
 
-void mcm_opt_destroy(struct mcm_optimizer *mcm) {
+void mcm_opt_destroy(struct mcm_optimizer* mcm) {
   if (!mcm) {
     return;
   }
@@ -102,7 +108,7 @@ void mcm_opt_destroy(struct mcm_optimizer *mcm) {
   }
 } /* mcm_opt_destroy() */
 
-status_t mcm_opt_optimize(struct mcm_optimizer *mcm) {
+status_t mcm_opt_optimize(struct mcm_optimizer* mcm) {
   FPC_CHECK(ERROR, NULL != mcm);
 
   size_t n = mcm->size - 1;
@@ -155,15 +161,15 @@ status_t mcm_opt_optimize(struct mcm_optimizer *mcm) {
   return OK;
 } /* mcm_opt_optimize() */
 
-status_t mcm_opt_report(const struct mcm_optimizer *mcm, size_t *ordering) {
+status_t mcm_opt_report(const struct mcm_optimizer* mcm, size_t* ordering) {
   FPC_CHECK(ERROR, NULL != mcm, NULL != ordering);
   size_t count = 0;
-  mcm_opt_report_parens(mcm->route, 1, mcm->size - 1, mcm->size, ordering,
-                        &count);
+  mcm_opt_report_parens(
+      mcm->route, 1, mcm->size - 1, mcm->size, ordering, &count);
   return OK;
 } /* mcm_opt_report() */
 
-status_t mcm_opt_print(const struct mcm_optimizer *mcm) {
+status_t mcm_opt_print(const struct mcm_optimizer* mcm) {
   FPC_CHECK(ERROR, NULL != mcm);
   printf("Minimum scalar multiplications: %zu\n", mcm->min_mults);
   printf("Parenthesization:\n");
@@ -175,7 +181,9 @@ status_t mcm_opt_print(const struct mcm_optimizer *mcm) {
 /*******************************************************************************
  * Static Functions
  ******************************************************************************/
-static void mcm_opt_print_parens(const size_t *arr, size_t i, size_t j,
+static void mcm_opt_print_parens(const size_t* arr,
+                                 size_t i,
+                                 size_t j,
                                  size_t length) {
   if (i == j) {
     printf("A%zu", i);
@@ -188,9 +196,12 @@ static void mcm_opt_print_parens(const size_t *arr, size_t i, size_t j,
   }
 } /* mcm_opt_print_parens() */
 
-static void mcm_opt_report_parens(const size_t *arr, size_t i, size_t j,
-                                  size_t length, size_t *ordering,
-                                  size_t *count) {
+static void mcm_opt_report_parens(const size_t* arr,
+                                  size_t i,
+                                  size_t j,
+                                  size_t length,
+                                  size_t* ordering,
+                                  size_t* count) {
   if (i == j) {
   } else {
     size_t k = arr[i + length * j];

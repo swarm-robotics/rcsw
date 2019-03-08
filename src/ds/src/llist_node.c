@@ -36,8 +36,8 @@
  ******************************************************************************/
 BEGIN_C_DECLS
 
-struct llist_node *llist_node_alloc(struct llist *const list) {
-  struct llist_node *node = NULL;
+struct llist_node* llist_node_alloc(struct llist* const list) {
+  struct llist_node* node = NULL;
 
   if (list->flags & DS_APP_DOMAIN_NODES) {
     /*
@@ -47,11 +47,11 @@ struct llist_node *llist_node_alloc(struct llist *const list) {
      */
 
     size_t index = list->current;
-    node = ds_meta_probe(list->nodes, sizeof(struct llist_node),
-                         (size_t)list->max_elts, &index);
+    node = ds_meta_probe(
+        list->nodes, sizeof(struct llist_node), (size_t)list->max_elts, &index);
     CHECK_PTR(node);
 
-    ((int *)(list->nodes))[index] = 0; /* mark node as in use */
+    ((int*)(list->nodes))[index] = 0; /* mark node as in use */
     DBGV("Allocated llist_node %zu/%d\n", index + 1, list->max_elts);
   } else {
     node = calloc(1, sizeof(struct llist_node));
@@ -64,21 +64,21 @@ error:
   return NULL;
 } /* llist_node_alloc() */
 
-void llist_node_dealloc(struct llist *const list, struct llist_node *node) {
+void llist_node_dealloc(struct llist* const list, struct llist_node* node) {
   if (list->flags & DS_APP_DOMAIN_NODES) {
-    struct llist_node *nodes_start =
-        (struct llist_node *)(list->nodes +
-                              ds_calc_meta_space((size_t)list->max_elts));
+    struct llist_node* nodes_start =
+        (struct llist_node*)(list->nodes +
+                             ds_calc_meta_space((size_t)list->max_elts));
     int index = node - nodes_start;
 
-    ((int *)(list->nodes))[index] = -1; /* mark node as available */
+    ((int*)(list->nodes))[index] = -1; /* mark node as available */
     DBGV("Deallocated llist_node %d/%d\n", index + 1, list->max_elts);
   } else {
     free(node);
   }
 } /* llist_node_dealloc() */
 
-void llist_node_destroy(struct llist *const list, struct llist_node *node) {
+void llist_node_destroy(struct llist* const list, struct llist_node* node) {
   FPC_CHECKV(FPC_VOID, NULL != node);
 
   /* deallocate data block, first, then llist_node */
@@ -86,10 +86,10 @@ void llist_node_destroy(struct llist *const list, struct llist_node *node) {
   llist_node_dealloc(list, node);
 } /* llist_node_destroy() */
 
-struct llist_node *llist_node_create(struct llist *const list,
-                                     void *const data_in) {
+struct llist_node* llist_node_create(struct llist* const list,
+                                     void* const data_in) {
   /* get space for llist_node */
-  struct llist_node *node = llist_node_alloc(list);
+  struct llist_node* node = llist_node_alloc(list);
   CHECK_PTR(node);
 
   /* get space for the datablock and copy the data, unless
@@ -112,8 +112,7 @@ error:
 /*******************************************************************************
  * Datablock Functions
  ******************************************************************************/
-void llist_node_datablock_dealloc(struct llist *const list,
-                                  uint8_t *datablock) {
+void llist_node_datablock_dealloc(struct llist* const list, uint8_t* datablock) {
   /* nothing to do */
   if (datablock == NULL) {
     return;
@@ -124,9 +123,9 @@ void llist_node_datablock_dealloc(struct llist *const list,
     return;
   }
   if (list->flags & DS_APP_DOMAIN_DATA) {
-    uint8_t *data_start = (uint8_t *)((int *)list->elements + list->max_elts);
+    uint8_t* data_start = (uint8_t*)((int*)list->elements + list->max_elts);
     size_t block_index = (size_t)(datablock - data_start) / list->el_size;
-    ((int *)(list->elements))[block_index] =
+    ((int*)(list->elements))[block_index] =
         -1; /* mark data block as available */
 
     DBGV("Dellocated data block %zu/%d\n", block_index + 1, list->max_elts);
@@ -135,8 +134,8 @@ void llist_node_datablock_dealloc(struct llist *const list,
   }
 } /* llist_node_datablock_dealloc() */
 
-void *llist_node_datablock_alloc(struct llist *const list) {
-  void *datablock = NULL;
+void* llist_node_datablock_alloc(struct llist* const list) {
+  void* datablock = NULL;
 
   if (list->flags & DS_APP_DOMAIN_DATA) {
     /*
@@ -145,11 +144,11 @@ void *llist_node_datablock_alloc(struct llist *const list) {
      * list--this makes the search process O(1) even for large lists.
      */
     size_t index = list->current;
-    datablock = ds_meta_probe(list->elements, list->el_size,
-                              (size_t)list->max_elts, &index);
+    datablock = ds_meta_probe(
+        list->elements, list->el_size, (size_t)list->max_elts, &index);
     CHECK_PTR(datablock);
 
-    ((int *)(list->elements))[index] = 0; /* mark data block as in use */
+    ((int*)(list->elements))[index] = 0; /* mark data block as in use */
     DBGV("Allocated data block %zu/%d\n", index + 1, list->max_elts);
   } else {
     datablock = malloc(list->el_size);

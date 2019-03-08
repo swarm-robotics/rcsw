@@ -45,9 +45,13 @@ BEGIN_C_DECLS
  *
  * @return # of operations, or -1 if an error occurred.
  */
-static int edit_dist_rec_sub(const char *a, const char *b, int *c, size_t i,
-                             size_t j, size_t length,
-                             bool_t (*cmpe)(const void *e1, const void *e2),
+static int edit_dist_rec_sub(const char* a,
+                             const char* b,
+                             int* c,
+                             size_t i,
+                             size_t j,
+                             size_t length,
+                             bool_t (*cmpe)(const void* e1, const void* e2),
                              size_t el_size);
 /**
  * @brief Find min # of operation to convert A -> B recursively with memoization
@@ -61,9 +65,11 @@ static int edit_dist_rec_sub(const char *a, const char *b, int *c, size_t i,
  *
  * @return minimum # operations, or -1 if an error occurred
  */
-static int edit_dist_rec(const char *a, const char *b, int *c,
-                         size_t (*seq_len)(const void *seq),
-                         bool_t (*cmpe)(const void *e1, const void *e2),
+static int edit_dist_rec(const char* a,
+                         const char* b,
+                         int* c,
+                         size_t (*seq_len)(const void* seq),
+                         bool_t (*cmpe)(const void* e1, const void* e2),
                          size_t el_size);
 
 /**
@@ -79,20 +85,29 @@ static int edit_dist_rec(const char *a, const char *b, int *c,
  *
  * @return min # of of operations, or -1 if an error occurred
  */
-static int edit_dist_iter(const void *a, const void *b, int *c,
-                          size_t (*seq_len)(const void *seq),
-                          bool_t (*cmpe)(const void *e1, const void *e2),
+static int edit_dist_iter(const void* a,
+                          const void* b,
+                          int* c,
+                          size_t (*seq_len)(const void* seq),
+                          bool_t (*cmpe)(const void* e1, const void* e2),
                           size_t el_size);
 
 /*******************************************************************************
  * API Functions
  ******************************************************************************/
-status_t edit_dist_init(struct edit_dist_finder *finder, const void *a,
-                        const void *b, size_t el_size,
-                        bool_t (*cmpe)(const void *e1, const void *e2),
-                        size_t (*seq_len)(const void *seq)) {
-  FPC_CHECK(ERROR, NULL != finder, NULL != a, NULL != b, el_size > 0,
-            NULL != cmpe, NULL != seq_len);
+status_t edit_dist_init(struct edit_dist_finder* finder,
+                        const void* a,
+                        const void* b,
+                        size_t el_size,
+                        bool_t (*cmpe)(const void* e1, const void* e2),
+                        size_t (*seq_len)(const void* seq)) {
+  FPC_CHECK(ERROR,
+            NULL != finder,
+            NULL != a,
+            NULL != b,
+            el_size > 0,
+            NULL != cmpe,
+            NULL != seq_len);
   finder->a_ = a;
   finder->b_ = b;
   finder->el_size_ = el_size;
@@ -110,7 +125,7 @@ error:
   return ERROR;
 } /* edit_dist_init() */
 
-void edit_dist_destroy(struct edit_dist_finder *finder) {
+void edit_dist_destroy(struct edit_dist_finder* finder) {
   if (NULL != finder) {
     if (finder->c_) {
       free(finder->c_);
@@ -118,23 +133,33 @@ void edit_dist_destroy(struct edit_dist_finder *finder) {
   }
 } /* edit_dist_destroy() */
 
-int edit_dist_find(struct edit_dist_finder *finder,
+int edit_dist_find(struct edit_dist_finder* finder,
                    enum edit_dist_exec_type type) {
   FPC_CHECK(-1, NULL != finder);
   if (EDIT_DIST_ITER == type) {
-    return edit_dist_iter(finder->a_, finder->b_, finder->c_, finder->seq_len_,
-                          finder->cmpe_, finder->el_size_);
+    return edit_dist_iter(finder->a_,
+                          finder->b_,
+                          finder->c_,
+                          finder->seq_len_,
+                          finder->cmpe_,
+                          finder->el_size_);
   }
-  return edit_dist_rec(finder->a_, finder->b_, finder->c_, finder->seq_len_,
-                       finder->cmpe_, finder->el_size_);
+  return edit_dist_rec(finder->a_,
+                       finder->b_,
+                       finder->c_,
+                       finder->seq_len_,
+                       finder->cmpe_,
+                       finder->el_size_);
 } /* edit_dist_find() */
 
 /*******************************************************************************
  * Static Functions
  ******************************************************************************/
-static int edit_dist_rec(const char *a, const char *b, int *c,
-                         size_t (*seq_len)(const void *seq),
-                         bool_t (*cmpe)(const void *e1, const void *e2),
+static int edit_dist_rec(const char* a,
+                         const char* b,
+                         int* c,
+                         size_t (*seq_len)(const void* seq),
+                         bool_t (*cmpe)(const void* e1, const void* e2),
                          size_t el_size) {
   FPC_CHECK(-1, NULL != a, NULL != b, NULL != c);
   size_t len_x = seq_len(a);
@@ -144,9 +169,11 @@ static int edit_dist_rec(const char *a, const char *b, int *c,
   return edit_dist_rec_sub(a, b, c, len_x, len_y, len_x, cmpe, el_size);
 } /* edit_dist_rec() */
 
-static int edit_dist_iter(const void *a, const void *b, int *c,
-                          size_t (*seq_len)(const void *seq),
-                          bool_t (*cmpe)(const void *e1, const void *e2),
+static int edit_dist_iter(const void* a,
+                          const void* b,
+                          int* c,
+                          size_t (*seq_len)(const void* seq),
+                          bool_t (*cmpe)(const void* e1, const void* e2),
                           size_t el_size) {
   size_t m = seq_len(a);
   size_t n = seq_len(b);
@@ -158,8 +185,8 @@ static int edit_dist_iter(const void *a, const void *b, int *c,
         c[i * m + j] = (int)j;
       } else if (0 == j) {
         c[i * m + j] = (int)i;
-      } else if (TRUE == cmpe(((const uint8_t *)a) + (i - 1) * el_size,
-                              ((const uint8_t *)b) + (j - 1) * el_size)) {
+      } else if (TRUE == cmpe(((const uint8_t*)a) + (i - 1) * el_size,
+                              ((const uint8_t*)b) + (j - 1) * el_size)) {
         c[i * m + j] = c[(i - 1) * m + j - 1];
       } else {
         c[i * m + j] = 1 + MIN3(c[(i - 1) * m + j - 1], /* substitute */
@@ -172,9 +199,13 @@ static int edit_dist_iter(const void *a, const void *b, int *c,
   return c[m * m + n];
 } /* edit_dist_iter() */
 
-static int edit_dist_rec_sub(const char *a, const char *b, int *c, size_t i,
-                             size_t j, size_t length,
-                             bool_t (*cmpe)(const void *e1, const void *e2),
+static int edit_dist_rec_sub(const char* a,
+                             const char* b,
+                             int* c,
+                             size_t i,
+                             size_t j,
+                             size_t length,
+                             bool_t (*cmpe)(const void* e1, const void* e2),
                              size_t el_size) {
   /* If we have memoized solution, return it */
   if (c[i * length + j] >= 0) {
@@ -196,18 +227,19 @@ static int edit_dist_rec_sub(const char *a, const char *b, int *c, size_t i,
    * if you substitute, delete, or insert chars from a to transform it into b.
    */
   if (TRUE ==
-      cmpe(((const uint8_t *)a) + (i - 1), ((const uint8_t *)b) + (j - 1))) {
+      cmpe(((const uint8_t*)a) + (i - 1), ((const uint8_t*)b) + (j - 1))) {
     c[i * length + j] =
         edit_dist_rec_sub(a, b, c, i - 1, j - 1, length, cmpe, el_size);
     return c[i * length + j];
   } else {
     c[i * length + j] =
-        1 + MIN3(edit_dist_rec_sub(a, b, c, i - 1, j - 1, length, cmpe,
-                                   el_size), /* substitute */
-                 edit_dist_rec_sub(a, b, c, i - 1, j, length, cmpe,
-                                   el_size), /* delete */
-                 edit_dist_rec_sub(a, b, c, i, j - 1, length, cmpe,
-                                   el_size)); /* insert */
+        1 +
+        MIN3(edit_dist_rec_sub(
+                 a, b, c, i - 1, j - 1, length, cmpe, el_size), /* substitute */
+             edit_dist_rec_sub(
+                 a, b, c, i - 1, j, length, cmpe, el_size), /* delete */
+             edit_dist_rec_sub(
+                 a, b, c, i, j - 1, length, cmpe, el_size)); /* insert */
     return c[i * length + j];
   }
 } /* edit_dist_rec_sub() */

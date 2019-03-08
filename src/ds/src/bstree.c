@@ -22,14 +22,14 @@
  * Includes
  ******************************************************************************/
 #include "rcsw/ds/bstree.h"
+#include <limits.h>
+#include <stdlib.h>
 #include "rcsw/common/dbg.h"
 #include "rcsw/ds/bstree_node.h"
 #include "rcsw/ds/int_tree.h"
 #include "rcsw/ds/ostree_node.h"
 #include "rcsw/ds/rbtree.h"
 #include "rcsw/utils/utils.h"
-#include <limits.h>
-#include <stdlib.h>
 
 /*******************************************************************************
  * Constant Definitions
@@ -44,13 +44,16 @@ BEGIN_C_DECLS
 /*******************************************************************************
  * API Functions
  ******************************************************************************/
-struct bstree *bstree_init_internal(struct bstree *tree_in,
-                                    const struct ds_params *const params,
+struct bstree* bstree_init_internal(struct bstree* tree_in,
+                                    const struct ds_params* const params,
                                     size_t node_size) {
-  FPC_CHECK(NULL, params != NULL, params->tag == DS_BSTREE,
-            params->cmpe != NULL, params->el_size > 0);
+  FPC_CHECK(NULL,
+            params != NULL,
+            params->tag == DS_BSTREE,
+            params->cmpe != NULL,
+            params->el_size > 0);
 
-  struct bstree *tree = NULL;
+  struct bstree* tree = NULL;
   int i;
   if (params->flags & DS_APP_DOMAIN_HANDLE) {
     CHECK_PTR(tree_in);
@@ -74,7 +77,7 @@ struct bstree *bstree_init_internal(struct bstree *tree_in,
      * nodes for root and nil, hence the +2.
      */
     for (i = 0; i < params->max_elts + 2; ++i) {
-      ((int *)(params->nodes))[i] = -1;
+      ((int*)(params->nodes))[i] = -1;
     }
     tree->nodes = params->nodes;
   }
@@ -90,7 +93,7 @@ struct bstree *bstree_init_internal(struct bstree *tree_in,
      * nodes for root and nil, hence the +2.
      */
     for (i = 0; i < params->max_elts + 2; ++i) {
-      ((int *)(params->elements))[i] = -1;
+      ((int*)(params->elements))[i] = -1;
     }
     tree->elements = params->elements;
   }
@@ -116,7 +119,9 @@ struct bstree *bstree_init_internal(struct bstree *tree_in,
   } else if (tree->flags & DS_BSTREE_OS) {
     ostree_init_helper(tree);
   }
-  DBGD("max_elts=%d el_size=%zu flags=0x%08x\n", tree->max_elts, tree->el_size,
+  DBGD("max_elts=%d el_size=%zu flags=0x%08x\n",
+       tree->max_elts,
+       tree->el_size,
        tree->flags);
   return tree;
 
@@ -126,7 +131,7 @@ error:
   return NULL;
 } /* bstree_init_internal() */
 
-void bstree_destroy(struct bstree *tree) {
+void bstree_destroy(struct bstree* tree) {
   FPC_CHECKV(FPC_VOID, NULL != tree);
 
   if (tree->root != NULL) {
@@ -144,18 +149,17 @@ void bstree_destroy(struct bstree *tree) {
   }
 } /* bstree_destroy() */
 
-void *bstree_data_query(const struct bstree *const tree,
-                        const void *const key) {
+void* bstree_data_query(const struct bstree* const tree, const void* const key) {
   FPC_CHECK(NULL, tree != NULL, key != NULL);
 
-  struct bstree_node *node = bstree_node_query(tree, tree->root->left, key);
+  struct bstree_node* node = bstree_node_query(tree, tree->root->left, key);
   return (node == NULL) ? NULL : node->data;
 } /* bstree_data_query() */
 
-struct bstree_node *bstree_node_query(const struct bstree *const tree,
-                                      struct bstree_node *const search_root,
-                                      const void *const key) {
-  struct bstree_node *x = search_root;
+struct bstree_node* bstree_node_query(const struct bstree* const tree,
+                                      struct bstree_node* const search_root,
+                                      const void* const key) {
+  struct bstree_node* x = search_root;
   while (x != tree->nil) {
     int res;
     if ((res = tree->cmpe(key, x->key)) == 0) {
@@ -166,9 +170,9 @@ struct bstree_node *bstree_node_query(const struct bstree *const tree,
   return NULL;
 } /* bstree_node_query() */
 
-int bstree_traverse(struct bstree *const tree,
-                    int (*cb)(const struct bstree *const tree,
-                              struct bstree_node *const node),
+int bstree_traverse(struct bstree* const tree,
+                    int (*cb)(const struct bstree* const tree,
+                              struct bstree_node* const node),
                     enum bstree_traversal_type type) {
   FPC_CHECK(ERROR, tree != NULL, cb != NULL);
 
@@ -182,12 +186,14 @@ int bstree_traverse(struct bstree *const tree,
   return -1;
 } /* bstree_traverse() */
 
-status_t bstree_insert_internal(struct bstree *const tree, void *const key,
-                                void *const data, size_t node_size) {
+status_t bstree_insert_internal(struct bstree* const tree,
+                                void* const key,
+                                void* const data,
+                                size_t node_size) {
   FPC_CHECK(ERROR, tree != NULL, key != NULL, data != NULL);
 
-  struct bstree_node *node = tree->root->left;
-  struct bstree_node *parent = tree->root;
+  struct bstree_node* node = tree->root->left;
+  struct bstree_node* parent = tree->root;
   int res;
 
   /* Find correct insertion point */
@@ -221,9 +227,9 @@ status_t bstree_insert_internal(struct bstree *const tree, void *const key,
      * up the auxiliary field during rotations is not enough.
      */
     if (tree->flags & DS_BSTREE_INTERVAL) {
-      int_tree_high_fixup(tree, (struct int_tree_node *)node);
+      int_tree_high_fixup(tree, (struct int_tree_node*)node);
     } else if (tree->flags & DS_BSTREE_OS) {
-      ostree_count_fixup(tree, (struct ostree_node *)node, OSTREE_FIXUP_INSERT);
+      ostree_count_fixup(tree, (struct ostree_node*)node, OSTREE_FIXUP_INSERT);
     }
 
     node->red = TRUE;
@@ -238,8 +244,9 @@ status_t bstree_insert_internal(struct bstree *const tree, void *const key,
     /* Verify properties of RB Tree still hold */
     FPC_CHECK(ERROR, !tree->root->red);
     FPC_CHECK(ERROR, !tree->nil->red);
-    FPC_CHECK(ERROR, rbtree_node_black_height(tree->root->left->left) ==
-                         rbtree_node_black_height(tree->root->left->right));
+    FPC_CHECK(ERROR,
+              rbtree_node_black_height(tree->root->left->left) ==
+                  rbtree_node_black_height(tree->root->left->right));
   }
   tree->current++;
 
@@ -249,10 +256,10 @@ error:
   return ERROR;
 } /* bstree_insert_internal() */
 
-status_t bstree_remove(struct bstree *const tree, const void *const key) {
+status_t bstree_remove(struct bstree* const tree, const void* const key) {
   FPC_CHECK(ERROR, tree != NULL, key != NULL);
 
-  struct bstree_node *victim = bstree_node_query(tree, tree->root->left, key);
+  struct bstree_node* victim = bstree_node_query(tree, tree->root->left, key);
   CHECK_PTR(victim);
   return bstree_delete(tree, victim, NULL);
 
@@ -260,13 +267,14 @@ error:
   return ERROR;
 } /* bstree_remove() */
 
-status_t bstree_delete(struct bstree *const tree, struct bstree_node *z,
-                       void *const e) /* to be filled if non-NULL */
+status_t bstree_delete(struct bstree* const tree,
+                       struct bstree_node* z,
+                       void* const e) /* to be filled if non-NULL */
 {
   FPC_CHECK(ERROR, tree != NULL, z != NULL);
 
-  struct bstree_node *x;
-  struct bstree_node *y;
+  struct bstree_node* x;
+  struct bstree_node* y;
 
   /*
    * Locate the parent or succesor of the node to delete
@@ -303,9 +311,9 @@ status_t bstree_delete(struct bstree *const tree, struct bstree_node *z,
      * up the auxiliary field during rotations is not enough.
      */
     if (tree->flags & DS_BSTREE_INTERVAL) {
-      int_tree_high_fixup(tree, (struct int_tree_node *)x);
+      int_tree_high_fixup(tree, (struct int_tree_node*)x);
     } else if (tree->flags & DS_BSTREE_OS) {
-      ostree_count_fixup(tree, (struct ostree_node *)x, OSTREE_FIXUP_DELETE);
+      ostree_count_fixup(tree, (struct ostree_node*)x, OSTREE_FIXUP_DELETE);
     }
 
     rbtree_delete_fixup(tree, x);
@@ -328,8 +336,9 @@ status_t bstree_delete(struct bstree *const tree, struct bstree_node *z,
     /* Verify properties of RB Tree still hold */
     FPC_CHECK(ERROR, !tree->root->red);
     FPC_CHECK(ERROR, !tree->nil->red);
-    FPC_CHECK(ERROR, rbtree_node_black_height(tree->root->left->left) ==
-                         rbtree_node_black_height(tree->root->left->right));
+    FPC_CHECK(ERROR,
+              rbtree_node_black_height(tree->root->left->left) ==
+                  rbtree_node_black_height(tree->root->left->right));
   }
   if (NULL != e) {
     ds_elt_copy(e, z->data, tree->el_size);
@@ -339,7 +348,7 @@ status_t bstree_delete(struct bstree *const tree, struct bstree_node *z,
   return OK;
 } /* bstree_delete() */
 
-void bstree_print(struct bstree *const tree) {
+void bstree_print(struct bstree* const tree) {
   if (NULL == tree) {
     DPRINTF("BSTREE: < NULL tree >\n");
     return;
@@ -351,10 +360,10 @@ void bstree_print(struct bstree *const tree) {
     return;
   }
 
-  bstree_traverse_nodes_inorder(
-      tree, tree->root,
-      (int (*)(const struct bstree *const,
-               struct bstree_node *))bstree_node_print);
+  bstree_traverse_nodes_inorder(tree,
+                                tree->root,
+                                (int (*)(const struct bstree* const,
+                                         struct bstree_node*))bstree_node_print);
 } /* bstree_print() */
 
 END_C_DECLS

@@ -33,10 +33,10 @@
 /*******************************************************************************
  * Forward Declarations
  ******************************************************************************/
-static int pulse_sub_ent_cmp(const void *a, const void *b);
-static status_t pulse_subscriber_notify(struct pulse_bp_ent *bp_ent,
-                                        const struct pulse_sub_ent *sub,
-                                        struct pulse_rxq_ent *rxq_ent);
+static int pulse_sub_ent_cmp(const void* a, const void* b);
+static status_t pulse_subscriber_notify(struct pulse_bp_ent* bp_ent,
+                                        const struct pulse_sub_ent* sub,
+                                        struct pulse_rxq_ent* rxq_ent);
 
 /**
  * @brief Reserve a buffer on a pulse instance. A suitable buffer will be found
@@ -49,18 +49,18 @@ static status_t pulse_subscriber_notify(struct pulse_bp_ent *bp_ent,
  * @return The allocated packet buffer, or NULL if none found or an error
  * occurred.
  */
-static void *pulse_publish_reserve(struct pulse_inst *pulse,
-                                   struct pulse_bp_ent **bp_ent,
+static void* pulse_publish_reserve(struct pulse_inst* pulse,
+                                   struct pulse_bp_ent** bp_ent,
                                    size_t pkt_size);
 /*******************************************************************************
  * API Functions
  ******************************************************************************/
 BEGIN_C_DECLS
 
-struct pulse_inst *pulse_init(struct pulse_inst *pulse_in,
-                              const struct pulse_params *params) {
+struct pulse_inst* pulse_init(struct pulse_inst* pulse_in,
+                              const struct pulse_params* params) {
   FPC_CHECK(NULL, params != NULL);
-  struct pulse_inst *pulse = NULL;
+  struct pulse_inst* pulse = NULL;
   uint16_t i = 0;
 
   /* initialize software bus */
@@ -77,7 +77,8 @@ struct pulse_inst *pulse_init(struct pulse_inst *pulse_in,
   pulse->n_pools = params->n_pools;
   pulse->max_rxqs = params->max_rxqs;
   pulse->max_subs = params->max_subs;
-  DBGD("Initializing %zu buffer pools: %s allocation\n", pulse->n_pools,
+  DBGD("Initializing %zu buffer pools: %s allocation\n",
+       pulse->n_pools,
        (params->flags & PULSE_APP_DOMAIN_POOLS) ? "STATIC" : "DYNAMIC");
 
   /* initialize buffer pools */
@@ -101,7 +102,8 @@ struct pulse_inst *pulse_init(struct pulse_inst *pulse_in,
   } /* for() */
 
   DBGD("Allocating %zu receive queues, %zu max subscribers\n",
-       pulse->max_rxqs, pulse->max_subs);
+       pulse->max_rxqs,
+       pulse->max_subs);
 
   /* Initialize receive queues */
   pulse->rx_queues = calloc(pulse->max_rxqs, sizeof(struct mt_queue));
@@ -123,7 +125,7 @@ error:
   return NULL;
 } /* pulse_init() */
 
-void pulse_destroy(struct pulse_inst *pulse) {
+void pulse_destroy(struct pulse_inst* pulse) {
   FPC_CHECKV(FPC_VOID, NULL != pulse);
 
   if (pulse->buffer_pools) {
@@ -144,18 +146,20 @@ void pulse_destroy(struct pulse_inst *pulse) {
   }
 } /* pulse_destroy() */
 
-status_t pulse_publish(struct pulse_inst *pulse, uint32_t pid, size_t pkt_size,
-                       const void *pkt) {
+status_t pulse_publish(struct pulse_inst* pulse,
+                       uint32_t pid,
+                       size_t pkt_size,
+                       const void* pkt) {
   FPC_CHECK(ERROR, pulse != NULL, pkt_size > 0);
 
   DBGV("Publishing to bus %s\n", pulse->name);
   DBGV("Packet ID   : 0x%08X\n", pid);
   DBGV("Packet size : %zu2 bytes\n", pkt_size);
 
-  struct pulse_bp_ent *bp_ent;
+  struct pulse_bp_ent* bp_ent;
 
   /* get space on the software bus for the packet */
-  uint8_t *reservation = pulse_publish_reserve(pulse, &bp_ent, pkt_size);
+  uint8_t* reservation = pulse_publish_reserve(pulse, &bp_ent, pkt_size);
   CHECK_PTR(reservation);
 
   /* the actual publish: copy the packet to the allocated buffer */
@@ -171,11 +175,13 @@ error:
   return ERROR;
 } /* pulse_publish() */
 
-status_t pulse_publish_release(struct pulse_inst *pulse, uint32_t pid,
-                               struct pulse_bp_ent *bp_ent, void *reservation,
+status_t pulse_publish_release(struct pulse_inst* pulse,
+                               uint32_t pid,
+                               struct pulse_bp_ent* bp_ent,
+                               void* reservation,
                                size_t pkt_size) {
-  FPC_CHECK(ERROR, pulse != NULL, NULL != bp_ent, reservation != NULL,
-            pkt_size > 0);
+  FPC_CHECK(
+      ERROR, pulse != NULL, NULL != bp_ent, reservation != NULL, pkt_size > 0);
   status_t rstat = OK;
   struct pulse_rxq_ent rxq_entry;
 
@@ -187,7 +193,7 @@ status_t pulse_publish_release(struct pulse_inst *pulse, uint32_t pid,
   DBGV("Releasing receive queue entry on bus %s\n", pulse->name);
   mt_mutex_lock(&pulse->mutex);
 
-  struct pulse_sub_ent *sub = NULL;
+  struct pulse_sub_ent* sub = NULL;
 
   /* Keep application threads from servicing until all subscribers notified */
   if (!(pulse->flags & PULSE_SERVICE_ASYNC)) {
@@ -195,10 +201,11 @@ status_t pulse_publish_release(struct pulse_inst *pulse, uint32_t pid,
   }
 
   LLIST_FOREACH(pulse->sub_list, next, node) {
-    sub = (struct pulse_sub_ent *)node->data;
+    sub = (struct pulse_sub_ent*)node->data;
     if (pid == sub->pid) {
       DBGV("Notifying RXQ %zu subscribed to PID 0x%08X\n",
-           sub->subscriber - pulse->rx_queues, pid);
+           sub->subscriber - pulse->rx_queues,
+           pid);
       if (pulse_subscriber_notify(bp_ent, sub, &rxq_entry)) {
         rstat = ERROR;
       }
@@ -207,7 +214,8 @@ status_t pulse_publish_release(struct pulse_inst *pulse, uint32_t pid,
   } /* LLIST_FOREACH() */
 
   DBGD("Notified %d subscribers subscribed to PID 0x%08X\n",
-       mpool_ref_query(&bp_ent->pool, reservation), pid);
+       mpool_ref_query(&bp_ent->pool, reservation),
+       pid);
 
   /*
    * Unconditional call. If the reference count is currently 0 (i.e. no one
@@ -224,7 +232,8 @@ error:
   return rstat;
 } /* pulse_publish_release() */
 
-struct mt_queue *pulse_rxq_init(struct pulse_inst *pulse, void *buf_p,
+struct mt_queue* pulse_rxq_init(struct pulse_inst* pulse,
+                                void* buf_p,
                                 uint32_t n_entries) {
   FPC_CHECK(NULL, pulse != NULL);
 
@@ -234,7 +243,7 @@ struct mt_queue *pulse_rxq_init(struct pulse_inst *pulse, void *buf_p,
   /* If max number rxqs has not been reached then allocate one */
   SOFT_ASSERT(pulse->n_rxqs < pulse->max_rxqs,
               "ERROR: Cannot allocate receive queue (no space)\n");
-  struct mt_queue *rxq = pulse->rx_queues + pulse->n_rxqs;
+  struct mt_queue* rxq = pulse->rx_queues + pulse->n_rxqs;
 
   /* create FIFO */
   struct mt_queue_params params = {.el_size = sizeof(struct pulse_rxq_ent),
@@ -253,7 +262,8 @@ error:
   return NULL;
 } /* pulse_rxq_init() */
 
-status_t pulse_subscribe(struct pulse_inst *pulse, struct mt_queue *queue,
+status_t pulse_subscribe(struct pulse_inst* pulse,
+                         struct mt_queue* queue,
                          uint32_t pid) {
   FPC_CHECK(ERROR, pulse != NULL, queue != NULL);
 
@@ -266,9 +276,11 @@ status_t pulse_subscribe(struct pulse_inst *pulse, struct mt_queue *queue,
   SOFT_ASSERT(
       NULL == llist_data_query(pulse->sub_list, &sub),
       "ERROR: Cannot subscribe RXQ %zu to PID 0x%08x: duplicate subscription\n",
-      queue - pulse->rx_queues, pid);
+      queue - pulse->rx_queues,
+      pid);
   CHECK(OK == llist_append(pulse->sub_list, &sub));
-  DBGD("Subscribed RXQ %zu to PID 0x%08x on bus\n", queue - pulse->rx_queues,
+  DBGD("Subscribed RXQ %zu to PID 0x%08x on bus\n",
+       queue - pulse->rx_queues,
        pid);
   mt_mutex_unlock(&pulse->mutex);
   return OK;
@@ -278,7 +290,8 @@ error:
   return ERROR;
 } /* pulse_subscribe() */
 
-status_t pulse_unsubscribe(struct pulse_inst *pulse, struct mt_queue *queue,
+status_t pulse_unsubscribe(struct pulse_inst* pulse,
+                           struct mt_queue* queue,
                            uint32_t pid) {
   FPC_CHECK(ERROR, pulse != NULL, queue != NULL);
   status_t rstat = ERROR;
@@ -286,11 +299,12 @@ status_t pulse_unsubscribe(struct pulse_inst *pulse, struct mt_queue *queue,
 
   /* find index for insertion of new subscription */
   struct pulse_sub_ent sub = {.pid = pid, .subscriber = queue};
-  struct llist_node *node = llist_node_query(pulse->sub_list, &sub);
+  struct llist_node* node = llist_node_query(pulse->sub_list, &sub);
   SOFT_ASSERT(NULL != node,
               "ERROR: Could not unsubscribe RXQ %zu from PID "
               "0x%08X: PID no such subscription\n",
-              queue - pulse->rx_queues, pid);
+              queue - pulse->rx_queues,
+              pid);
   CHECK(OK == llist_delete(pulse->sub_list, node, NULL));
   rstat = OK;
 
@@ -299,9 +313,9 @@ error:
   return rstat;
 } /* pulse_unsubscribe() */
 
-void *pulse_wait_front(struct mt_queue *queue) {
+void* pulse_wait_front(struct mt_queue* queue) {
   FPC_CHECK(NULL, NULL != queue);
-  uint8_t *pkt = NULL;
+  uint8_t* pkt = NULL;
   struct pulse_rxq_ent ent;
   CHECK(OK == mt_queue_pop(queue, &ent));
   pkt = ent.buf;
@@ -310,9 +324,9 @@ error:
   return pkt;
 } /* pulse_wait_front() */
 
-void *pulse_timedwait_front(struct mt_queue *queue, struct timespec *to) {
+void* pulse_timedwait_front(struct mt_queue* queue, struct timespec* to) {
   FPC_CHECK(NULL, NULL != queue, NULL != to);
-  uint8_t *pkt = NULL;
+  uint8_t* pkt = NULL;
   struct pulse_rxq_ent ent;
   CHECK(OK == mt_queue_timed_pop(queue, to, &ent));
   pkt = ent.buf;
@@ -321,11 +335,11 @@ error:
   return pkt;
 } /* pulse_timedwait_front() */
 
-status_t pulse_pop_front(struct mt_queue *queue) {
+status_t pulse_pop_front(struct mt_queue* queue) {
   FPC_CHECK(ERROR, queue != NULL);
 
   status_t rstat = ERROR;
-  struct pulse_rxq_ent *ent = mt_queue_peek(queue);
+  struct pulse_rxq_ent* ent = mt_queue_peek(queue);
 
   /* If the application did not use the release() function directly. */
   if (ent->bp_ent) {
@@ -345,22 +359,26 @@ error:
 /*******************************************************************************
  * Static Functions
  ******************************************************************************/
-static void *pulse_publish_reserve(struct pulse_inst *pulse,
-                                   struct pulse_bp_ent **bp_ent,
+static void* pulse_publish_reserve(struct pulse_inst* pulse,
+                                   struct pulse_bp_ent** bp_ent,
                                    size_t pkt_size) {
   FPC_CHECK(NULL, NULL != pulse, NULL != bp_ent, pkt_size > 0);
 
   DBGD("Reserving %zu byte buffer on bus %s\n", pkt_size, pulse->name);
   for (size_t i = 0; i < pulse->n_pools; i++) {
-    struct mpool *pool_p = &pulse->buffer_pools[i].pool;
+    struct mpool* pool_p = &pulse->buffer_pools[i].pool;
 
     /* can't use this buffer pool--buffers are too small or pool is full */
     if (pool_p->el_size < pkt_size || mpool_isfull(pool_p)) {
-      DBGV("Skipping buffer pool %zu in reservation search: buf_size=%zu, "
-           "pkt_size=%zu, full=%d\n",
-           i, pool_p->el_size, pkt_size, mpool_isfull(pool_p));
+      DBGV(
+          "Skipping buffer pool %zu in reservation search: buf_size=%zu, "
+          "pkt_size=%zu, full=%d\n",
+          i,
+          pool_p->el_size,
+          pkt_size,
+          mpool_isfull(pool_p));
     } else {
-      void *ret = mpool_req(pool_p);
+      void* ret = mpool_req(pool_p);
       CHECK_PTR(ret);
       *bp_ent = pulse->buffer_pools + i;
       return ret;
@@ -373,10 +391,13 @@ error:
   return NULL;
 } /* pulse_publish_reserve() */
 
-status_t pulse_subscriber_notify(struct pulse_bp_ent *bp_ent,
-                                 const struct pulse_sub_ent *sub,
-                                 struct pulse_rxq_ent *rxq_ent) {
-  FPC_CHECK(ERROR, NULL != bp_ent, NULL != sub, NULL != sub->subscriber,
+status_t pulse_subscriber_notify(struct pulse_bp_ent* bp_ent,
+                                 const struct pulse_sub_ent* sub,
+                                 struct pulse_rxq_ent* rxq_ent) {
+  FPC_CHECK(ERROR,
+            NULL != bp_ent,
+            NULL != sub,
+            NULL != sub->subscriber,
             NULL != rxq_ent);
   status_t rstat = ERROR;
 
@@ -396,9 +417,9 @@ error:
   return rstat;
 } /* pulse_subscriber_notify() */
 
-static int pulse_sub_ent_cmp(const void *a, const void *b) {
-  const struct pulse_sub_ent *s1 = a;
-  const struct pulse_sub_ent *s2 = b;
+static int pulse_sub_ent_cmp(const void* a, const void* b) {
+  const struct pulse_sub_ent* s1 = a;
+  const struct pulse_sub_ent* s2 = b;
   if (s1->pid < s2->pid) {
     return -1;
   } else if (s1->pid > s2->pid) {

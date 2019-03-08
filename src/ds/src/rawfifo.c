@@ -22,18 +22,20 @@
  * Includes
  ******************************************************************************/
 #include "rcsw/ds/rawfifo.h"
+#include <string.h>
 #include "rcsw/common/common.h"
 #include "rcsw/common/fpc.h"
 #include "rcsw/ds/ds.h"
-#include <string.h>
 
 /*******************************************************************************
  * API Functions
  ******************************************************************************/
 BEGIN_C_DECLS
 
-status_t rawfifo_init(struct rawfifo *const fifo, uint8_t *const buf,
-                      size_t max_elts, size_t el_size) {
+status_t rawfifo_init(struct rawfifo* const fifo,
+                      uint8_t* const buf,
+                      size_t max_elts,
+                      size_t el_size) {
   FPC_CHECK(ERROR, NULL != fifo, NULL != buf);
   fifo->elements = buf;
   fifo->max_elts = max_elts; /* fifo elts + 1 */
@@ -44,7 +46,7 @@ status_t rawfifo_init(struct rawfifo *const fifo, uint8_t *const buf,
   return OK;
 } /* rawfifo_init() */
 
-size_t rawfifo_deq(struct rawfifo *fifo, void *e, size_t n_elts) {
+size_t rawfifo_deq(struct rawfifo* fifo, void* e, size_t n_elts) {
   FPC_CHECK(-1, NULL != fifo, NULL != e);
 
   /* If they try to remove more elements than are in the fifo, cap it. */
@@ -52,7 +54,7 @@ size_t rawfifo_deq(struct rawfifo *fifo, void *e, size_t n_elts) {
 
   size_t i;
   for (i = 0; i < n_elts; i++) {
-    ds_elt_copy((uint8_t *)e + i,
+    ds_elt_copy((uint8_t*)e + i,
                 fifo->elements + (fifo->from_i + i) % fifo->max_elts,
                 fifo->el_size);
   } /* for() */
@@ -61,7 +63,8 @@ size_t rawfifo_deq(struct rawfifo *fifo, void *e, size_t n_elts) {
   return n_elts;
 } /* rawfifo_deq() */
 
-size_t rawfifo_enq(struct rawfifo *const fifo, const void *const elts,
+size_t rawfifo_enq(struct rawfifo* const fifo,
+                   const void* const elts,
                    size_t n_elts) {
   FPC_CHECK(0, NULL != fifo, NULL != elts);
   n_elts = MAX(rawfifo_n_free(fifo), n_elts);
@@ -69,7 +72,8 @@ size_t rawfifo_enq(struct rawfifo *const fifo, const void *const elts,
 
   for (i = 0; i < n_elts; i++) {
     ds_elt_copy(fifo->elements + (fifo->to_i + i) % fifo->max_elts,
-                (const uint8_t *)elts + i, fifo->el_size);
+                (const uint8_t*)elts + i,
+                fifo->el_size);
   } /* for() */
   fifo->to_i = (fifo->to_i + i) % fifo->max_elts;
 

@@ -22,11 +22,11 @@
  * Includes
  ******************************************************************************/
 #include "rcsw/multiprocess/mpi_radix_sort.h"
+#include <mpi.h>
 #include "rcsw/algorithm/algorithm.h"
 #include "rcsw/algorithm/sort.h"
 #include "rcsw/common/dbg.h"
 #include "rcsw/common/fpc.h"
-#include <mpi.h>
 
 /*******************************************************************************
  * Constant Definitions
@@ -48,18 +48,18 @@ BEGIN_C_DECLS
  *
  * @return \ref status_t.
  */
-static status_t mpi_radix_sorter_step(struct mpi_radix_sorter *const sorter,
+static status_t mpi_radix_sorter_step(struct mpi_radix_sorter* const sorter,
                                       int digit);
 
 /*******************************************************************************
  * API Functions
  ******************************************************************************/
-struct mpi_radix_sorter *
-mpi_radix_sorter_init(const struct mpi_radix_sorter_params *const params) {
+struct mpi_radix_sorter* mpi_radix_sorter_init(
+    const struct mpi_radix_sorter_params* const params) {
   FPC_CHECK(NULL, NULL != params, NULL != params->data);
 
   /* All MPI processes perform the same basic initialization */
-  struct mpi_radix_sorter *sorter = malloc(sizeof(struct mpi_radix_sorter));
+  struct mpi_radix_sorter* sorter = malloc(sizeof(struct mpi_radix_sorter));
   CHECK_PTR(sorter);
   sorter->n_elts = params->n_elts;
   sorter->base = params->base;
@@ -85,7 +85,10 @@ mpi_radix_sorter_init(const struct mpi_radix_sorter_params *const params) {
   CHECK_PTR(sorter->data);
 
   DBGD("Rank %d: n_elts=%zu chunk_size=%zu base=%zu world_size=%d\n",
-       sorter->mpi_rank, sorter->n_elts, sorter->chunk_size, sorter->base,
+       sorter->mpi_rank,
+       sorter->n_elts,
+       sorter->chunk_size,
+       sorter->base,
        sorter->mpi_world_size);
   return sorter;
 
@@ -94,7 +97,7 @@ error:
   return NULL;
 } /* mpi_radix_sorter_init() */
 
-void mpi_radix_sorter_destroy(struct mpi_radix_sorter *const sorter) {
+void mpi_radix_sorter_destroy(struct mpi_radix_sorter* const sorter) {
   if (sorter) {
     if (sorter->prefix_sums) {
       free(sorter->prefix_sums);
@@ -112,7 +115,7 @@ void mpi_radix_sorter_destroy(struct mpi_radix_sorter *const sorter) {
   }
 } /* mpi_radix_sorter_destroy() */
 
-status_t mpi_radix_sorter_exec(struct mpi_radix_sorter *const sorter) {
+status_t mpi_radix_sorter_exec(struct mpi_radix_sorter* const sorter) {
   DBGN("Rank %d: Starting radix sort\n", sorter->mpi_rank);
   memset(sorter->prefix_sums, 0, sizeof(size_t) * (sorter->base + 1));
 
@@ -139,7 +142,7 @@ error:
 /*******************************************************************************
  * Static Functions
  ******************************************************************************/
-static status_t mpi_radix_sorter_step(struct mpi_radix_sorter *const sorter,
+static status_t mpi_radix_sorter_step(struct mpi_radix_sorter* const sorter,
                                       int digit) {
   DBGD("Rank %d: Radix sort digit %d\n", sorter->mpi_rank, digit);
   int prefix_recv_counts[sorter->mpi_world_size];
@@ -148,16 +151,25 @@ static status_t mpi_radix_sorter_step(struct mpi_radix_sorter *const sorter,
   int data_disp_counts[sorter->mpi_world_size];
 
   /* Send data to all processes */
-  CHECK(MPI_SUCCESS == MPI_Scatter(sorter->cum_data, sorter->chunk_size,
-                                   MPI_INT, sorter->data, sorter->chunk_size,
-                                   MPI_INT, 0, MPI_COMM_WORLD));
-  DBGV("Rank %d: All data received (%zu bytes)\n", sorter->mpi_rank,
+  CHECK(MPI_SUCCESS == MPI_Scatter(sorter->cum_data,
+                                   sorter->chunk_size,
+                                   MPI_INT,
+                                   sorter->data,
+                                   sorter->chunk_size,
+                                   MPI_INT,
+                                   0,
+                                   MPI_COMM_WORLD));
+  DBGV("Rank %d: All data received (%zu bytes)\n",
+       sorter->mpi_rank,
        sorter->n_elts);
-  radix_counting_sort(sorter->data, sorter->tmp_arr, sorter->chunk_size, digit,
-                      sorter->base);
+  radix_counting_sort(
+      sorter->data, sorter->tmp_arr, sorter->chunk_size, digit, sorter->base);
 
   /* compute prefix sums for current digit (all ranks) */
-  radix_sort_prefix_sum(sorter->data, sorter->chunk_size, sorter->base, digit,
+  radix_sort_prefix_sum(sorter->data,
+                        sorter->chunk_size,
+                        sorter->base,
+                        digit,
                         sorter->prefix_sums + 1);
 
   DBGV("Rank %d: Finished sorting\n", sorter->mpi_rank);
@@ -180,12 +192,18 @@ static status_t mpi_radix_sorter_step(struct mpi_radix_sorter *const sorter,
   size_t total = 0;
   size_t prev_total = 0;
   for (size_t i = 0; i < sorter->base; ++i) {
-    CHECK(MPI_SUCCESS == MPI_Gatherv(sorter->prefix_sums + i, 2, MPI_INT,
+    CHECK(MPI_SUCCESS == MPI_Gatherv(sorter->prefix_sums + i,
+                                     2,
+                                     MPI_INT,
                                      sorter->cum_prefix_sums,
-                                     prefix_recv_counts, prefix_disp_counts,
-                                     MPI_INT, 0, MPI_COMM_WORLD));
+                                     prefix_recv_counts,
+                                     prefix_disp_counts,
+                                     MPI_INT,
+                                     0,
+                                     MPI_COMM_WORLD));
     DBGV("Rank %d: Received prefixes for value %zu at master\n",
-         sorter->mpi_rank, i);
+         sorter->mpi_rank,
+         i);
     /* Only the master needs to compute recv counts/displacements  */
     if (0 == sorter->mpi_rank) {
       for (size_t j = 0; j < (size_t)sorter->mpi_world_size; ++j) {
@@ -211,10 +229,14 @@ static status_t mpi_radix_sorter_step(struct mpi_radix_sorter *const sorter,
     CHECK(MPI_SUCCESS ==
           MPI_Gatherv(sorter->data + sorter->prefix_sums[i],
                       sorter->prefix_sums[i + 1] - sorter->prefix_sums[i],
-                      MPI_INT, sorter->cum_data, data_recv_counts,
-                      data_disp_counts, MPI_INT, 0, MPI_COMM_WORLD));
-    DBGV("Rank %d: Received data for value %zu to master\n", sorter->mpi_rank,
-         i);
+                      MPI_INT,
+                      sorter->cum_data,
+                      data_recv_counts,
+                      data_disp_counts,
+                      MPI_INT,
+                      0,
+                      MPI_COMM_WORLD));
+    DBGV("Rank %d: Received data for value %zu to master\n", sorter->mpi_rank, i);
     prev_total = total;
   } /* for(i..) */
   return OK;

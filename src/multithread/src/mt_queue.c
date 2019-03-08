@@ -30,11 +30,11 @@
  ******************************************************************************/
 BEGIN_C_DECLS
 
-struct mt_queue *mt_queue_init(struct mt_queue *queue_in,
-                               const struct mt_queue_params *const params) {
+struct mt_queue* mt_queue_init(struct mt_queue* queue_in,
+                               const struct mt_queue_params* const params) {
   FPC_CHECK(NULL, NULL != params, params->max_elts > 0, params->el_size > 0);
 
-  struct mt_queue *queue = NULL;
+  struct mt_queue* queue = NULL;
 
   if (params->flags & DS_APP_DOMAIN_HANDLE) {
     CHECK_PTR(queue_in);
@@ -69,7 +69,7 @@ error:
   return NULL;
 } /* mt_queue_init() */
 
-void mt_queue_destroy(struct mt_queue *const queue) {
+void mt_queue_destroy(struct mt_queue* const queue) {
   FPC_CHECKV(FPC_VOID, NULL != queue);
 
   if (!(queue->flags & DS_APP_DOMAIN_HANDLE)) {
@@ -77,7 +77,7 @@ void mt_queue_destroy(struct mt_queue *const queue) {
   }
 } /* mt_queue_destroy() */
 
-status_t mt_queue_push(struct mt_queue *const queue, const void *const e) {
+status_t mt_queue_push(struct mt_queue* const queue, const void* const e) {
   FPC_CHECK(ERROR, NULL != queue, NULL != e);
 
   status_t rval = ERROR;
@@ -93,7 +93,7 @@ error:
   return rval;
 } /* mt_queue_push() */
 
-status_t mt_queue_pop(struct mt_queue *const queue, void *const e) {
+status_t mt_queue_pop(struct mt_queue* const queue, void* const e) {
   FPC_CHECK(ERROR, NULL != queue);
 
   status_t rval = ERROR;
@@ -110,8 +110,9 @@ error:
   return rval;
 } /* mt_queue_pop() */
 
-status_t mt_queue_timed_pop(struct mt_queue *const queue,
-                            const struct timespec *const to, void *const e) {
+status_t mt_queue_timed_pop(struct mt_queue* const queue,
+                            const struct timespec* const to,
+                            void* const e) {
   FPC_CHECK(ERROR, NULL != queue);
 
   status_t rval = ERROR;
@@ -128,10 +129,10 @@ error:
   return rval;
 } /* mt_queue_pop() */
 
-void *mt_queue_peek(struct mt_queue *const queue) {
+void* mt_queue_peek(struct mt_queue* const queue) {
   FPC_CHECK(NULL, NULL != queue);
 
-  uint8_t *ret = NULL;
+  uint8_t* ret = NULL;
 
   CHECK(-1 != mt_csem_trywait(&queue->full));
   mt_mutex_lock(&queue->mutex);

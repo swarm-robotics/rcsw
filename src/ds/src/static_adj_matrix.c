@@ -46,17 +46,17 @@
  ******************************************************************************/
 BEGIN_C_DECLS
 
-static void static_adj_matrix_printeu(const void *e);
-static void static_adj_matrix_printew(const void *e);
+static void static_adj_matrix_printeu(const void* e);
+static void static_adj_matrix_printew(const void* e);
 
 /*******************************************************************************
  * API Functions
  ******************************************************************************/
-struct static_adj_matrix *
-static_adj_matrix_init(struct static_adj_matrix *const matrix_in,
-                       const struct ds_params *const params) {
+struct static_adj_matrix* static_adj_matrix_init(
+    struct static_adj_matrix* const matrix_in,
+    const struct ds_params* const params) {
   FPC_CHECK(NULL, NULL != params, params->tag == DS_ADJ_MATRIX);
-  struct static_adj_matrix *matrix = NULL;
+  struct static_adj_matrix* matrix = NULL;
 
   if (params->flags & DS_APP_DOMAIN_HANDLE) {
     CHECK_PTR(matrix_in);
@@ -97,7 +97,7 @@ static_adj_matrix_init(struct static_adj_matrix *const matrix_in,
   if (matrix->is_weighted) {
     for (size_t i = 0; i < matrix->n_vertices; ++i) {
       for (size_t j = 0; j < matrix->n_vertices; ++j) {
-        *(double *)static_matrix_access(&matrix->matrix, i, j) = NAN;
+        *(double*)static_matrix_access(&matrix->matrix, i, j) = NAN;
       } /* for(j..) */
     }   /* for(i..) */
   }
@@ -109,7 +109,7 @@ error:
   return NULL;
 } /* static_adj_matrix_init() */
 
-void static_adj_matrix_destroy(struct static_adj_matrix *const matrix) {
+void static_adj_matrix_destroy(struct static_adj_matrix* const matrix) {
   FPC_CHECKV(FPC_VOID, NULL != matrix);
   static_matrix_destroy(&matrix->matrix);
   if (!(matrix->flags & DS_APP_DOMAIN_HANDLE)) {
@@ -117,9 +117,13 @@ void static_adj_matrix_destroy(struct static_adj_matrix *const matrix) {
   }
 } /* static_adj_matrix_destroy() */
 
-status_t static_adj_matrix_edge_addu(struct static_adj_matrix *const matrix,
-                                     size_t u, size_t v) {
-  FPC_CHECK(ERROR, NULL != matrix, !matrix->is_directed, u < matrix->n_vertices,
+status_t static_adj_matrix_edge_addu(struct static_adj_matrix* const matrix,
+                                     size_t u,
+                                     size_t v) {
+  FPC_CHECK(ERROR,
+            NULL != matrix,
+            !matrix->is_directed,
+            u < matrix->n_vertices,
             v < matrix->n_vertices);
 
   int val = 1;
@@ -136,10 +140,14 @@ error:
   return ERROR;
 } /* static_adj_matrix_edge_addu() */
 
-status_t static_adj_matrix_edge_addd(struct static_adj_matrix *const matrix,
-                                     size_t u, size_t v,
-                                     const double *const w) {
-  FPC_CHECK(ERROR, NULL != matrix, matrix->is_directed, u < matrix->n_vertices,
+status_t static_adj_matrix_edge_addd(struct static_adj_matrix* const matrix,
+                                     size_t u,
+                                     size_t v,
+                                     const double* const w) {
+  FPC_CHECK(ERROR,
+            NULL != matrix,
+            matrix->is_directed,
+            u < matrix->n_vertices,
             v < matrix->n_vertices);
 
   DBGV("Add directed edge: (%zu, %zu) = %f\n", u, v, w ? *w : 1.0);
@@ -156,13 +164,14 @@ error:
   return ERROR;
 } /* static_adj_matrix_edge_addd() */
 
-status_t static_adj_matrix_edge_remove(struct static_adj_matrix *const matrix,
-                                       size_t u, size_t v) {
-  FPC_CHECK(ERROR, NULL != matrix, u < matrix->n_vertices,
-            v < matrix->n_vertices);
+status_t static_adj_matrix_edge_remove(struct static_adj_matrix* const matrix,
+                                       size_t u,
+                                       size_t v) {
+  FPC_CHECK(
+      ERROR, NULL != matrix, u < matrix->n_vertices, v < matrix->n_vertices);
   DBGV("Remove edge: (%zu, %zu)\n", u, v);
   if (matrix->is_weighted) {
-    *(double *)static_matrix_access(&matrix->matrix, u, v) = NAN;
+    *(double*)static_matrix_access(&matrix->matrix, u, v) = NAN;
   } else {
     CHECK(OK == static_matrix_clear(&matrix->matrix, u, v));
   }
@@ -173,7 +182,7 @@ status_t static_adj_matrix_edge_remove(struct static_adj_matrix *const matrix,
   if (!matrix->is_directed) {
     DBGV("Remove edge: (%zu, %zu)\n", v, u);
     if (matrix->is_weighted) {
-      *(double *)static_matrix_access(&matrix->matrix, v, u) = NAN;
+      *(double*)static_matrix_access(&matrix->matrix, v, u) = NAN;
     } else {
       CHECK(OK == static_matrix_clear(&matrix->matrix, v, u));
     }
@@ -188,12 +197,12 @@ error:
 /*******************************************************************************
  * Static Functions
  ******************************************************************************/
-static void static_adj_matrix_printeu(const void *const e) {
-  printf("%d", *(const int *)e);
+static void static_adj_matrix_printeu(const void* const e) {
+  printf("%d", *(const int*)e);
 } /* static_adj_matrix_printeu() */
 
-static void static_adj_matrix_printew(const void *const e) {
-  printf("%f", *(const double *)e);
+static void static_adj_matrix_printew(const void* const e) {
+  printf("%f", *(const double*)e);
 } /* static_adj_matrix_printew() */
 
 END_C_DECLS

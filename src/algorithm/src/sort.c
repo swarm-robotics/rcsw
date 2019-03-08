@@ -55,15 +55,20 @@ BEGIN_C_DECLS
  *
  * @return The partition index
  */
-static size_t partition(void *a, int min_index, int max_index, size_t el_size,
-                        int (*cmpe)(const void *const e1,
-                                    const void *const e2));
+static size_t partition(void* a,
+                        int min_index,
+                        int max_index,
+                        size_t el_size,
+                        int (*cmpe)(const void* const e1, const void* const e2));
 
 /*******************************************************************************
  * API Functions
  ******************************************************************************/
-void qsort_rec(void *const a, int min_index, int max_index, size_t el_size,
-               int (*cmpe)(const void *const e1, const void *const e2)) {
+void qsort_rec(void* const a,
+               int min_index,
+               int max_index,
+               size_t el_size,
+               int (*cmpe)(const void* const e1, const void* const e2)) {
   if (max_index > min_index) {
     int pivot = partition(a, min_index, max_index, el_size, cmpe);
     qsort_rec(a, min_index, pivot - 1, el_size, cmpe);
@@ -71,8 +76,10 @@ void qsort_rec(void *const a, int min_index, int max_index, size_t el_size,
   }
 } /* qsort_recursive() */
 
-void qsort_iter(void *const a, int max_index, size_t el_size,
-                int (*cmpe)(const void *const e1, const void *const e2)) {
+void qsort_iter(void* const a,
+                int max_index,
+                size_t el_size,
+                int (*cmpe)(const void* const e1, const void* const e2)) {
   int min_index = 0;
 
   /*
@@ -119,25 +126,25 @@ void qsort_iter(void *const a, int max_index, size_t el_size,
   } /* while (top >= 0) */
 } /* qsort_iter() */
 
-struct llist_node *mergesort_rec(struct llist_node *list,
-                                 int (*cmpe)(const void *const e1,
-                                             const void *const e2),
+struct llist_node* mergesort_rec(struct llist_node* list,
+                                 int (*cmpe)(const void* const e1,
+                                             const void* const e2),
                                  bool_t isdouble) {
   /* base case */
   if (!list || !list->next) {
     return list;
   }
 
-  struct llist_node *right =
+  struct llist_node* right =
       list; /* points to start of upper/2nd half of the current list */
-  struct llist_node *temp = list;   /* used to find the middle of the list */
-  struct llist_node *last = list;   /* used as a placeholder to indicate the
+  struct llist_node* temp = list;   /* used to find the middle of the list */
+  struct llist_node* last = list;   /* used as a placeholder to indicate the
                                      * boundary   between the two sublists */
-  struct llist_node *result = NULL; /* points to start of sorted list */
+  struct llist_node* result = NULL; /* points to start of sorted list */
 
   /* these two pointers are used in list merging */
-  struct llist_node *next = NULL;
-  struct llist_node *tail = NULL;
+  struct llist_node* next = NULL;
+  struct llist_node* tail = NULL;
 
   /* find halfway through the list (by running two pointers, one at twice the
    * speed of the other) */
@@ -182,18 +189,18 @@ struct llist_node *mergesort_rec(struct llist_node *list,
   return result;
 } /* mergesort_rec */
 
-struct llist_node *
-mergesort_iter(struct llist_node *list,          /* list to sort */
-               int (*cmpe)(const void *const e1, /* compare function */
-                           const void *const e2),
-               bool_t isdouble) {
-  struct llist_node *p1; /* temporary pointer that starts at the head of the
+struct llist_node* mergesort_iter(
+    struct llist_node* list,          /* list to sort */
+    int (*cmpe)(const void* const e1, /* compare function */
+                const void* const e2),
+    bool_t isdouble) {
+  struct llist_node* p1; /* temporary pointer that starts at the head of the
                             list */
-  struct llist_node *p2; /* secondary pointer advanced along always in front of
+  struct llist_node* p2; /* secondary pointer advanced along always in front of
                             p */
-  struct llist_node *next_el; /* next element to be added to sorted list */
-  struct llist_node *head;    /* the unsorted list */
-  struct llist_node *tail;    /* the sorted list, built from the end forward (is
+  struct llist_node* next_el; /* next element to be added to sorted list */
+  struct llist_node* head;    /* the unsorted list */
+  struct llist_node* tail;    /* the sorted list, built from the end forward (is
                                  remade each pass) */
 
   int merge_size; /* size of sub-lists to merge */
@@ -294,8 +301,10 @@ mergesort_iter(struct llist_node *list,          /* list to sort */
   } /* while(1) (end of pass) */
 } /* mergesort_iter() */
 
-void insertion_sort(void *arr, size_t n_elts, size_t el_size,
-                    int (*cmpe)(const void *const e1, const void *const e2)) {
+void insertion_sort(void* arr,
+                    size_t n_elts,
+                    size_t el_size,
+                    int (*cmpe)(const void* const e1, const void* const e2)) {
   /*
    * The element at j is the element you are currently comparing with/the
    * temporary element. Start at index j-1, move downward through the array,
@@ -304,19 +313,20 @@ void insertion_sort(void *arr, size_t n_elts, size_t el_size,
    */
   for (size_t j = 1; j < n_elts - 1; ++j) {
     size_t i = j - 1;
-    while (i != 0 && cmpe((uint8_t *)arr + (i * el_size),
-                          (uint8_t *)arr + (j * el_size)) > 0) {
-      memmove((uint8_t *)arr + ((i + 1) * el_size),
-              (uint8_t *)arr + (i * el_size), el_size);
+    while (i != 0 && cmpe((uint8_t*)arr + (i * el_size),
+                          (uint8_t*)arr + (j * el_size)) > 0) {
+      memmove((uint8_t*)arr + ((i + 1) * el_size),
+              (uint8_t*)arr + (i * el_size),
+              el_size);
       --i;
     } /* while() */
-    memmove((uint8_t *)arr + ((i + 1) * el_size),
-            (uint8_t *)arr + (j * el_size), el_size);
+    memmove((uint8_t*)arr + ((i + 1) * el_size),
+            (uint8_t*)arr + (j * el_size),
+            el_size);
   } /* for(j..) */
 } /* insertion_sort() */
 
-void radix_sort(size_t *const arr, size_t *const tmp, size_t n_elts,
-                size_t base) {
+void radix_sort(size_t* const arr, size_t* const tmp, size_t n_elts, size_t base) {
   /* get largest # in array to get total # of digits */
   size_t m = alg_arr_largest_num(arr, n_elts);
 
@@ -326,9 +336,11 @@ void radix_sort(size_t *const arr, size_t *const tmp, size_t n_elts,
   } /* for(exp...) */
 } /* radix_sort() */
 
-status_t radix_sort_prefix_sum(const size_t *const arr, size_t n_elts,
-                               size_t base, size_t digit,
-                               size_t *const prefix_sums) {
+status_t radix_sort_prefix_sum(const size_t* const arr,
+                               size_t n_elts,
+                               size_t base,
+                               size_t digit,
+                               size_t* const prefix_sums) {
   FPC_CHECK(ERROR, NULL != arr, n_elts > 0, base > 0, NULL != prefix_sums);
   memset(prefix_sums, 0, sizeof(size_t) * base);
 
@@ -347,8 +359,11 @@ status_t radix_sort_prefix_sum(const size_t *const arr, size_t n_elts,
   return OK;
 } /* radix_sort_prefix_sum() */
 
-status_t radix_counting_sort(size_t *const arr, size_t *const tmp,
-                             size_t n_elts, size_t digit, size_t base) {
+status_t radix_counting_sort(size_t* const arr,
+                             size_t* const tmp,
+                             size_t n_elts,
+                             size_t digit,
+                             size_t base) {
   FPC_CHECK(ERROR, NULL != arr, NULL != tmp, n_elts > 0, digit > 0, base > 0);
 
   size_t prefix_sums[base];
@@ -375,16 +390,18 @@ status_t radix_counting_sort(size_t *const arr, size_t *const tmp,
 /*******************************************************************************
  * Static Functions
  ******************************************************************************/
-static size_t
-partition(void *const a, int min_index, int max_index, size_t el_size,
-          int (*cmpe)(const void *const e1, const void *const e2)) {
+static size_t partition(void* const a,
+                        int min_index,
+                        int max_index,
+                        size_t el_size,
+                        int (*cmpe)(const void* const e1, const void* const e2)) {
   int left;  /* index starts at min_index and increases */
   int right; /* index starts and max_index and decreases */
 
-  uint8_t *const arr = a;
+  uint8_t* const arr = a;
 
   /* chose pivot element */
-  uint8_t *const pivot = arr + (min_index * el_size);
+  uint8_t* const pivot = arr + (min_index * el_size);
 
   uint8_t tmp[el_size];
   left = min_index;
