@@ -157,7 +157,7 @@ BEGIN_C_DECLS
  * @return The initialized heap, or NULL if an error occurred.
  */
 struct bin_heap *bin_heap_init(struct bin_heap *bin_heap_in,
-                               const struct ds_params * params) __rcsw_check_return;
+                               const struct ds_params * params) RCSW_CHECK_RET;
 
 /**
  * @brief Destroy a heap. Any further use of the heap handle after calling this

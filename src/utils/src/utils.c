@@ -75,7 +75,7 @@ status_t string_gen(char* const buf, size_t len) {
   return OK;
 } /* string_gen() */
 
-__rcsw_const uint32_t reflect(uint32_t data, size_t n_bits) {
+uint32_t reflect(uint32_t data, size_t n_bits) {
   uint32_t reflection = 0x00000000;
   uint8_t bit;
 

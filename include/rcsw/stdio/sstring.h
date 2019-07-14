@@ -71,7 +71,7 @@ void *sstring_memcpy(void * __restrict__ dest, const void * __restrict__ src,
  *
  * @return The number of digits.
  */
-size_t sstring_num_digits(int a);
+size_t sstring_num_digits(int a) RCSW_CONST;
 
 /**
  * @brief Convert a char to upper case.
@@ -80,7 +80,7 @@ size_t sstring_num_digits(int a);
  *
  * @return The converted char.
  */
-int sstring_toupper(int c);
+int sstring_toupper(int c) RCSW_CONST;
 
 /**
  * @brief Convert a char to lower case.
@@ -89,7 +89,7 @@ int sstring_toupper(int c);
  *
  * @return The converted char.
  */
-int sstring_tolower(int c);
+int sstring_tolower(int c) RCSW_CONST;
 
 /**
  * @brief Get the length of a string.
@@ -98,7 +98,7 @@ int sstring_tolower(int c);
  *
  * @return The length of the string.
  */
-size_t sstring_strlen(const char * s);
+size_t sstring_strlen(const char * s) RCSW_PURE;
 
 /**
  * @brief Reverse a string of known length.
@@ -129,7 +129,7 @@ void sstring_strrev(char *s, size_t len);
  *          found.
  */
 const char *sstring_strstr(const char * haystack,
-                           const char * needle);
+                           const char * needle) RCSW_PURE;
 
 /**
  * @brief Search a string for a character.
@@ -146,7 +146,7 @@ const char *sstring_strstr(const char * haystack,
  * @return Pointer to the first occurence of the needle, or NULL if the
  *         char was not found.
  */
-const char *sstring_strchr(const char * haystack, char needle);
+const char *sstring_strchr(const char * haystack, char needle) RCSW_PURE;
 
 /**
  * @brief Copy one string over another.
@@ -192,7 +192,7 @@ char *sstring_strcpy(char * __restrict__ dest, const char * __restrict__ src);
  *
  * @return <,=,> 0 depending if s1 is found to be <,=,> s2
  */
-int sstring_strncmp(const char * s1, const char * s2, size_t len);
+int sstring_strncmp(const char * s1, const char * s2, size_t len) RCSW_PURE;
 
 /**
  * @brief Compare two strings for equality.
@@ -205,7 +205,7 @@ int sstring_strncmp(const char * s1, const char * s2, size_t len);
  *
  * @return <,=,> 0 depending if s1 is found to be <,=,> s2
  */
-int sstring_strcmp(const char * s1, const char * s2);
+int sstring_strcmp(const char * s1, const char * s2) RCSW_PURE;
 
 /**
  * @brief Replace a occurrences of one substring within another string with

@@ -236,7 +236,7 @@ BEGIN_C_DECLS
  */
 struct bstree *bstree_init_internal(struct bstree *tree_in,
                                     const struct ds_params * params,
-                                    size_t node_size) __rcsw_check_return;
+                                    size_t node_size) RCSW_CHECK_RET;
 
 /**
  * @brief Destroy a binary search tree

@@ -133,7 +133,7 @@ static inline status_t dynamic_matrix_clear(struct dynamic_matrix* const matrix,
  * @return The initialized matrix, or NULL if an error occurred.
  */
 struct dynamic_matrix* dynamic_matrix_init(struct dynamic_matrix* matrix_in,
-                                           const struct ds_params* params) __rcsw_check_return;
+                                           const struct ds_params* params) RCSW_CHECK_RET;
 
 /**
  * @brief Destroy a dynamic matrix. Any further use of the handle is undefined

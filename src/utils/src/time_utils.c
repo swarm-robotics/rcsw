@@ -38,8 +38,7 @@ double time_monotonic_sec(void) {
   return ts.tv_sec + ts.tv_nsec * 1e-9;
 } /* time_monotonic_sec() */
 
-__rcsw_pure int time_ts_cmp(const struct timespec* const a,
-                            const struct timespec* const b) {
+int time_ts_cmp(const struct timespec* const a, const struct timespec* const b) {
   if (a->tv_sec > b->tv_sec) {
     return 1;
   } else if (a->tv_sec < b->tv_sec) {

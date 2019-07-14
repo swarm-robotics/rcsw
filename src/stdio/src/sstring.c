@@ -83,7 +83,7 @@ void sstring_strrev(char* const s, size_t len) {
   }
 } /* sstring_strrev() */
 
-__rcsw_pure size_t sstring_strlen(const char* const s) {
+size_t sstring_strlen(const char* const s) {
   char const* p = s;
   for (; *p != '\0'; p++) {
   }
@@ -91,7 +91,7 @@ __rcsw_pure size_t sstring_strlen(const char* const s) {
   return (size_t)(p - s);
 } /* sstring_strlen() */
 
-__rcsw_pure const char* sstring_strchr(const char* haystack, char needle) {
+const char* sstring_strchr(const char* haystack, char needle) {
   while (haystack != NULL && *haystack) {
     if (*haystack == needle) {
       return (const char*)haystack;
@@ -101,8 +101,8 @@ __rcsw_pure const char* sstring_strchr(const char* haystack, char needle) {
   return NULL;
 } /* sstring_strchr() */
 
-__rcsw_pure const char* sstring_strstr(const char* const __restrict__ haystack,
-                                       const char* const __restrict__ needle) {
+const char* sstring_strstr(const char* const __restrict__ haystack,
+                           const char* const __restrict__ needle) {
   const char* p1 = (const char*)haystack;
   if (!*needle) { /* null string */
     return p1;
@@ -153,7 +153,7 @@ char* sstring_strcpy(char* __restrict__ dest,
   return (char*)dest;
 } /* sstring_strcpy() */
 
-__rcsw_pure int sstring_strcmp(const char* const s1, const char* const s2) {
+int sstring_strcmp(const char* const s1, const char* const s2) {
   const char* t1 = (const char*)s1;
   const char* t2 = (const char*)s2;
   while (*t1 == *t2) {
@@ -166,9 +166,7 @@ __rcsw_pure int sstring_strcmp(const char* const s1, const char* const s2) {
   return (*s1 - *s2);
 } /* sstring_strcmp() */
 
-__rcsw_pure int sstring_strncmp(const char* const s1,
-                                const char* const s2,
-                                size_t len) {
+int sstring_strncmp(const char* const s1, const char* const s2, size_t len) {
   size_t i = 0;
   const char* t1 = (const char*)s1;
   const char* t2 = (const char*)s2;
@@ -193,7 +191,7 @@ __rcsw_pure int sstring_strncmp(const char* const s1,
   return (*s1 - *s2);
 } /* sstring_strncmp() */
 
-__rcsw_const size_t sstring_num_digits(int a) {
+size_t sstring_num_digits(int a) {
   if (a == 0) {
     return 1;
   }
@@ -211,14 +209,14 @@ __rcsw_const size_t sstring_num_digits(int a) {
   return count;
 } /* sstring_num_digits */
 
-__rcsw_const int sstring_tolower(int c) {
+int sstring_tolower(int c) {
   if (c >= 'A' && c <= 'Z') {
     c += ('a' - 'A');
   }
   return c;
 } /* sstring_tolower() */
 
-__rcsw_const int sstring_toupper(int c) {
+int sstring_toupper(int c) {
   if (c >= 'a' && c <= 'z') {
     c += ('A' - 'a');
   }

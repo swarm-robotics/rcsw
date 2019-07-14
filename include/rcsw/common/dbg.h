@@ -398,7 +398,7 @@ static inline void dbg_default_lvl_set(uint8_t lvl) {
  *
  * @return The ID, or -1 if an error occurred.
  */
-int64_t dbg_mod_id_get(const char* name);
+int64_t dbg_mod_id_get(const char* name) RCSW_PURE;
 
 END_C_DECLS
 

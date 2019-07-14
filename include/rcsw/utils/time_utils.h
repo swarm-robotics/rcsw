@@ -42,7 +42,7 @@ BEGIN_C_DECLS
  * @return <, =, or > 0, dedpending if a is found to be >, =, or > b
  */
 int time_ts_cmp(const struct timespec * a,
-                const struct timespec * b);
+                const struct timespec * b) RCSW_PURE;
 
 /**
  * @brief Add two timespecs in place

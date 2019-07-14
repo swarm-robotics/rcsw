@@ -216,7 +216,7 @@ void int_tree_high_fixup(const struct bstree* tree,
  *
  * @return <,=,> 0, depending if low endpoint of a <,=,> low endpoint of b
  */
-int int_tree_cmp_key(const void * a, const void * b);
+int int_tree_cmp_key(const void * a, const void * b) RCSW_PURE;
 
 END_C_DECLS
 

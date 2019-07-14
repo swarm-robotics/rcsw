@@ -144,7 +144,7 @@ BEGIN_C_DECLS
  */
 struct hashmap *hashmap_init(
     struct hashmap *map_in,
-    const struct ds_params * params) __rcsw_check_return;
+    const struct ds_params * params) RCSW_CHECK_RET;
 
 /**
  * @brief destroy a hashmap. Any further use of the hashmap after calling this

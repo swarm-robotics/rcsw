@@ -343,9 +343,8 @@ void bstree_node_rotate_right(struct bstree* const tree,
   }
 } /* bstree_node_rotate_right() */
 
-__rcsw_pure struct bstree_node* bstree_node_successor(
-    const struct bstree* const tree,
-    const struct bstree_node* node) {
+struct bstree_node* bstree_node_successor(const struct bstree* const tree,
+                                          const struct bstree_node* node) {
   struct bstree_node* succ;
 
   if ((succ = node->right) != tree->nil) {
@@ -364,8 +363,8 @@ __rcsw_pure struct bstree_node* bstree_node_successor(
   return succ;
 } /* bstree_node_successor() */
 
-__rcsw_pure size_t bstree_node_height(const struct bstree* const tree,
-                                      const struct bstree_node* const node) {
+size_t bstree_node_height(const struct bstree* const tree,
+                          const struct bstree_node* const node) {
   /*
    * Sentinel to detect when we have fallen off the tree
    */

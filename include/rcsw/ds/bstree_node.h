@@ -210,7 +210,7 @@ int bstree_node_print(const struct bstree * tree,
  * @return The height or 0 if the node is NULL
  */
 size_t bstree_node_height(const struct bstree* tree,
-                          const struct bstree_node * node);
+                          const struct bstree_node * node) RCSW_PURE;
 
 /**
  * @brief Get the successor of x (smallest node larger than x)
@@ -224,7 +224,7 @@ size_t bstree_node_height(const struct bstree* tree,
  * node in the tree)
  */
 struct bstree_node* bstree_node_successor(const struct bstree* tree,
-                                          const struct bstree_node* node);
+                                          const struct bstree_node* node) RCSW_PURE;
 END_C_DECLS
 
 /* @endcond */

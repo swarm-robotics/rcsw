@@ -72,8 +72,7 @@ status_t mem_dump16(const void* const buf, size_t n_bytes) {
   return OK;
 } /* mem_dump16() */
 
- void mem_dump8(__rcsw_unused const void* const buf,
-                size_t n_bytes) {
+void mem_dump8(RCSW_UNUSED const void* const buf, size_t n_bytes) {
   uint32_t i;
   for (i = 0; i < n_bytes; i++) {
     DPRINTF("%02x ", ((const uint8_t*)buf)[i]);
@@ -128,8 +127,7 @@ status_t mem_dump16v(const void* const buf, size_t n_bytes) {
   return OK;
 } /* mem_dump16v() */
 
-void mem_dump8v(__rcsw_unused const void* const buf,
-                size_t n_bytes) {
+void mem_dump8v(RCSW_UNUSED const void* const buf, size_t n_bytes) {
   uint32_t i;
   DPRINTF("Offset:   ");
   for (i = 0; i < 32; i++) {

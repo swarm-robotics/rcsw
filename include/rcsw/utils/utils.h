@@ -175,7 +175,7 @@ extern const uint8_t util_revtable[];
  *
  * @return The rounded value.
  */
-__rcsw_pure static inline double utils_clamp_f255(double const v) {
+ RCSW_PURE static inline double utils_clamp_f255(double const v) {
     if (v < 0) {
         return 0.0;
     } else if (v > 255.0) {
@@ -241,7 +241,7 @@ status_t string_gen(char * buf, size_t len);
  *
  * @return The reflected data.
  */
-uint32_t reflect(uint32_t data, size_t n_bits);
+uint32_t reflect(uint32_t data, size_t n_bits) RCSW_CONST;
 
 END_C_DECLS
 

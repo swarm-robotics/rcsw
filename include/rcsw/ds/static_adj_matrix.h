@@ -190,7 +190,7 @@ static inline status_t static_adj_matrix_transpose(struct static_adj_matrix* con
  * @return The initialized adjacency matrix, or NULL if an error occurred.
  */
 struct static_adj_matrix* static_adj_matrix_init(struct static_adj_matrix* matrix_in,
-                                     const struct ds_params* params) __rcsw_check_return;
+                                     const struct ds_params* params) RCSW_CHECK_RET;
 
 /**
  * @brief Destroy an adjacency matrix. Any further use of the provided handle is

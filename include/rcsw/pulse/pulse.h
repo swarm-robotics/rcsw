@@ -228,7 +228,7 @@ BEGIN_C_DECLS
  */
 struct pulse_inst *pulse_init(
     struct pulse_inst *pulse_in,
-    const struct pulse_params * params) __rcsw_check_return;
+    const struct pulse_params * params) RCSW_CHECK_RET;
 
 /**
  * @brief  Shutdown a PULSE instance and deallocate its memory.
@@ -251,7 +251,7 @@ void pulse_destroy(struct pulse_inst *pulse);
  */
 struct mt_queue *pulse_rxq_init(struct pulse_inst * pulse,
                                 void * buf_p,
-                                uint32_t n_entries) __rcsw_check_return;
+                                uint32_t n_entries) RCSW_CHECK_RET;
 
 /**
  * @brief Subscribe the specified RXQ to the specified packet ID.
@@ -325,7 +325,7 @@ status_t pulse_publish_release(struct pulse_inst* pulse, uint32_t pid,
  * @return A reference to the first item in the queue, or NULL if an ERROR
  * occurred.
  */
-void *pulse_wait_front(struct mt_queue * queue) __rcsw_check_return;
+void *pulse_wait_front(struct mt_queue * queue) RCSW_CHECK_RET;
 
 /**
  * @brief Wait (until a timeout) until the given receive queue is not empty.
@@ -337,7 +337,7 @@ void *pulse_wait_front(struct mt_queue * queue) __rcsw_check_return;
  * timeout occurred.
  */
 void *pulse_timedwait_front(struct mt_queue * queue,
-                            struct timespec * to) __rcsw_check_return;
+                            struct timespec * to) RCSW_CHECK_RET;
 
 /**
  * @brief Remove the front element from the selected receive queue.

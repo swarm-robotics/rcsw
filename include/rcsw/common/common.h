@@ -456,58 +456,78 @@
 /*******************************************************************************
  * Attribute Macros
  ******************************************************************************/
-#if defined(__rcsw_unused)
-#error "Compiler defines __rcsw_unused!"
+#if defined (RCSW_ATTR)
+#error "RCSW_ATTR defined!"
+#endif
+
+/**
+ * @def RCSW_ATTR(...) Shorthand for attaching a list of attributes to a
+ * function/variable/etc.
+ */
+#define RCSW_ATTR(...) __attribute__((__VA_ARGS__))
+
+#if defined(RCSW_COLD)
+#error "RCSW_COLD defined!"
 #endif
 /**
- * @def __rcsw_unused Shorthand for declaring something unused (I'm lazy). We
- * only need it to stop spurious compiler warnings when optimizations are
- * on. When they are not, then such warnings are not spurious, and should be
- * addressed.
+ * @def RCSW_COLD Shorthand for declaring something as unlikely to be executed
+ * and/or used.
+ */
+#define RCSW_COLD __attribute__((__cold__))
+
+#if defined(RCSW_UNUSED)
+#error "RCSW_UNUSED defined!"
+#endif
+/**
+ * @def RCSW_UNUSED Shorthand for declaring something unused. We only need it to
+ * stop spurious compiler warnings when optimizations are on. When they are not,
+ * then such warnings are should keep showing up to remind developers that
+ * something is off with their function(s).
  */
 #if defined(NDEBUG)
-#define __rcsw_unused __attribute__((__unused__))
+#define RCSW_UNUSED __attribute__((__unused__))
 #else
-#define __rcsw_unused
+#define RCSW_UNUSED
 #endif /* NDEBUG */
 
-#if defined(__rcsw_check_return)
-#error "Compiler defines __rcsw_check_return!"
+#if defined(RCSW_CHECK_RET)
+#error "RCSW_CHECK_RET defined!"
 #endif
 
 /**
- * @def __rcsw_check_return Shorthand for enhancing compile checking of return
- * value usage.
+ * @def RCSW_CHECK_RET Shorthand for enhancing compile checking of return value
+ * usage.
  */
-#define __rcsw_check_return __attribute__((warn_unused_result))
+#define RCSW_CHECK_RET __attribute__((warn_unused_result))
 
 #if defined(__rcsw_const)
-#error "Compiler defines __rcsw_const!"
+#error "RCSW_CONST defined!"
 #endif
 
 /**
- * @def __rcsw_const Shorthand for marked a function as purely function of its
+ * @def RCSW_CONST Shorthand for marked a function as purely function of its
  * input parameters only (no global memory access allowed).
  */
-#define __rcsw_const __attribute__((__const__))
+#define RCSW_CONST __attribute__((__const__))
 
-#if defined(__rcsw_pure)
-#error "Compiler defines __rcsw_pure!"
+#if defined(RCSW_PURE)
+#error "RCSW_PURE defined!"
 #endif
+
 /**
- * @def __rcsw_pure Shorthand for marked a function as purely function of its
+ * @def RCSW_PURE Shorthand for marked a function as purely function of its
  * input parameters and (possibly) global data.
  */
-#define __rcsw_pure __attribute__((__pure__))
+#define RCSW_PURE __attribute__((__pure__))
 
-#if defined(__rcsw_dead)
-#error "Compiler defines __rcsw_dead!"
+#if defined(RCSW_DEAD)
+#error "RCSW_DEAD defined!"
 #endif
 
 /**
- * @def __rcsw_dead Shorthand for marked a function as one that will not return.
+ * @def RCSW_DEAD Shorthand for marked a function as one that will not return.
  */
-#define __rcsw_dead __attribute__((noreturn))
+#define RCSW_DEAD __attribute__((noreturn))
 
 #ifdef __cplusplus
 #ifndef BEGIN_C_DECLS

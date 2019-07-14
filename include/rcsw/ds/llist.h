@@ -188,7 +188,7 @@ BEGIN_C_DECLS
  * @return The initialized list, or NULL if an error occured.
  */
 struct llist *llist_init(
-    struct llist *list_in, const struct ds_params *params) __rcsw_check_return;
+    struct llist *list_in, const struct ds_params *params) RCSW_CHECK_RET;
 
 /**
  * @brief Destroy a linked list

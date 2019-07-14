@@ -143,7 +143,7 @@ BEGIN_C_DECLS
  */
 struct mt_queue * mt_queue_init(
     struct mt_queue *mt_queue_in,
-    const struct mt_queue_params * params) __rcsw_check_return;
+    const struct mt_queue_params * params) RCSW_CHECK_RET;
 
 /**
  * @brief Destroy a producer-consumer queue. Any further use of the queue handle
