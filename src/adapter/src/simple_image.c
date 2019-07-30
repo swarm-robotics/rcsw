@@ -42,8 +42,8 @@ status_t simple_image_clamp_rgb(simple_image_t* const image) {
   float* const __restrict__ green = image->green;
   float* const __restrict__ blue = image->blue;
 
-  float minv = 255.;
-  float maxv = 0.;
+  float minv = 255.0;
+  float maxv = 0.0;
 
 #pragma omp parallel for schedule(static) reduction(min                   \
                                                     : minv) reduction(max \
@@ -58,11 +58,11 @@ status_t simple_image_clamp_rgb(simple_image_t* const image) {
     maxv = MAX(maxv, blue[x]);
   } /* for(x..) */
 
-  if (minv >= 0. && maxv <= 255.) {
+  if (minv >= 0. && maxv <= 255.0) {
     return OK;
   }
 
-  double const scale = 255. / (maxv - minv);
+  float const scale = 255.0f / (maxv - minv);
 
 #pragma omp parallel for schedule(static)
   for (int x = 0; x < width * height; ++x) {

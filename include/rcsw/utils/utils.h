@@ -175,14 +175,14 @@ extern const uint8_t util_revtable[];
  *
  * @return The rounded value.
  */
- RCSW_PURE static inline double utils_clamp_f255(double const v) {
+ RCSW_PURE static inline float utils_clamp_f255(float v) {
     if (v < 0) {
         return 0.0;
     } else if (v > 255.0) {
       return 255.0;
     }
     return v;
-}
+} /* utils_clam_f255() */
 
 /*******************************************************************************
  * Function Prototypes

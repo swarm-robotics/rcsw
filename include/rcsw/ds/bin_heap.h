@@ -139,7 +139,7 @@ static inline void* bin_heap_peek(const struct bin_heap * heap) {
 }
 
 static inline size_t bin_heap_height(const struct bin_heap * heap) {
-    return log10(bin_heap_n_elts(heap)) / log10(2);
+  return (size_t)(log10(bin_heap_n_elts(heap)) / log10(2));
 }
 
 /*******************************************************************************

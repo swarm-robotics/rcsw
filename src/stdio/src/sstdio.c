@@ -127,7 +127,7 @@ int sstdio_vprintf(const char* fmt, va_list argp) {
    */
   char fmt_block[16];
 
-  for (p = (const char*)fmt, c = 0; *p != '\0'; p++, c++) {
+  for (p = fmt, c = 0; *p != '\0'; p++, c++) {
     if (*p != '%') { /* just a regular char */
       sstdio_putchar(*p);
       continue;
@@ -215,7 +215,7 @@ int sstdio_vprintf(const char* fmt, va_list argp) {
             sstdio_putchar(*s++);
 
             /* round arg decimal portion as needed */
-            float_arg_round((char*)s, n_digits);
+            float_arg_round(s, n_digits);
 
             /* display arg decimals */
 
@@ -422,7 +422,7 @@ char* sstdio_dtoa(double n, bool_t force_exp, char* s) {
   /* make 0 < n < 10, saving off the power of 10 that it took to do so */
   if (useExp) {
     if (m < 0 || ((m == 0) && (n > 0) && (n < 1))) {
-      m -= 1.0;
+      m -= 1;
     }
     n /= pow(10.0, m);
     exp = m;
