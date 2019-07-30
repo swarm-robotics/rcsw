@@ -199,7 +199,7 @@ static inline int sstdio_getchar(void) { return getchar(); }
  *
  * @return The converted result.
  */
-int sstdio_atoi(const char *s, int base);
+int sstdio_atoi(const char *s, int base) RCSW_PURE;
 
 /**
  * @brief Convert an integer into a decimal string.
