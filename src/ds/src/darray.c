@@ -85,19 +85,19 @@ struct darray* darray_init(struct darray* arr_in,
   } else {
     arr = malloc(sizeof(struct darray));
   }
-  CHECK_PTR(arr);
+  RCSW_CHECK_PTR(arr);
   arr->flags = params->flags;
   arr->elements = NULL;
 
   if (params->flags & DS_APP_DOMAIN_DATA) {
-    CHECK_PTR(params->elements);
-    CHECK(params->max_elts > 0);
+    RCSW_CHECK_PTR(params->elements);
+    RCSW_CHECK(params->max_elts > 0);
     arr->elements = params->elements;
     arr->capacity = params->max_elts;
   } else {
     arr->capacity = params->type.da.init_size;
     arr->elements = calloc(params->type.da.init_size, params->el_size);
-    CHECK_PTR(arr->elements);
+    RCSW_CHECK_PTR(arr->elements);
   }
   arr->max_elts = params->max_elts;
 
@@ -106,7 +106,7 @@ struct darray* darray_init(struct darray* arr_in,
    * KEEP_SORTED flag, for obvious reasons.
    */
   if (params->flags & DS_KEEP_SORTED) {
-    CHECK_PTR(params->cmpe);
+    RCSW_CHECK_PTR(params->cmpe);
   }
 
   arr->el_size = params->el_size;
@@ -168,7 +168,7 @@ status_t darray_insert(struct darray* const arr,
     errno = ENOSPC;
     return ERROR;
   } else if (arr->current >= arr->capacity) {
-    CHECK(darray_extend(arr, MAX(arr->capacity * 2, (size_t)1)) == OK);
+    RCSW_CHECK(darray_extend(arr, RCSW_MAX(arr->capacity * 2, (size_t)1)) == OK);
   }
 
   /*
@@ -228,7 +228,7 @@ status_t darray_remove(struct darray* const arr, void* const e, size_t index) {
    */
   if (arr->current / (float)arr->capacity <= 0.25) {
     if (!(arr->flags & DS_APP_DOMAIN_DATA)) {
-      CHECK(OK == darray_shrink(arr, arr->capacity / 2));
+      RCSW_CHECK(OK == darray_shrink(arr, arr->capacity / 2));
     }
   }
   return OK;
@@ -359,7 +359,7 @@ struct darray* darray_filter(struct darray* const arr,
                                  (fparams == NULL) ? NULL : fparams->elements};
 
   struct darray* farr = darray_init(NULL, &params);
-  CHECK_PTR(farr);
+  RCSW_CHECK_PTR(farr);
 
   size_t i;
   size_t n_removed = 0;
@@ -372,10 +372,10 @@ struct darray* darray_filter(struct darray* const arr,
    */
   for (i = 0; i < arr->current + n_removed; ++i) {
     if (pred(darray_data_get(arr, i - n_removed))) {
-      CHECK(darray_insert(farr,
+      RCSW_CHECK(darray_insert(farr,
                           darray_data_get(arr, i - n_removed),
                           farr->current) == OK);
-      CHECK(darray_remove(arr, NULL, i - n_removed++) == OK);
+      RCSW_CHECK(darray_remove(arr, NULL, i - n_removed++) == OK);
     }
   } /* for() */
 
@@ -410,7 +410,7 @@ struct darray* darray_copy(const struct darray* const arr,
                                  (cparams == NULL) ? NULL : cparams->elements};
 
   struct darray* carr = darray_init(NULL, &params);
-  CHECK_PTR(carr);
+  RCSW_CHECK_PTR(carr);
   carr->current = arr->current;
   carr->sorted = arr->sorted;
 
@@ -470,7 +470,7 @@ static status_t darray_extend(struct darray* const arr, size_t size) {
   void* tmp = NULL;
   tmp = realloc(arr->elements, arr->capacity * arr->el_size);
 
-  CHECK_PTR(tmp);
+  RCSW_CHECK_PTR(tmp);
   arr->elements = tmp;
 
   return OK;
@@ -488,7 +488,7 @@ static status_t darray_shrink(struct darray* const arr, size_t size) {
   arr->capacity = size;
   if (arr->capacity > 0) {
     void* tmp = realloc(arr->elements, arr->capacity * arr->el_size);
-    CHECK_PTR(tmp);
+    RCSW_CHECK_PTR(tmp);
     arr->elements = tmp;
   } else { /* the list has become empty--don't free() the array */
     arr->capacity = 0;

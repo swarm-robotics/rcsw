@@ -43,11 +43,11 @@ struct bstree_node* bstree_node_create(const struct bstree* const tree,
                                        size_t node_size) {
   /* get space for the node */
   struct bstree_node* node = bstree_node_alloc(tree, node_size);
-  CHECK_PTR(node);
+  RCSW_CHECK_PTR(node);
 
   /* get space for the datablock */
   node->data = bstree_node_datablock_alloc(tree);
-  CHECK_PTR(node->data);
+  RCSW_CHECK_PTR(node->data);
 
   /*
    * Data may be NULL if creating the dummy root node
@@ -127,12 +127,12 @@ void* bstree_node_datablock_alloc(const struct bstree* const tree) {
      */
     datablock = ds_meta_probe(
         tree->elements, tree->el_size, (size_t)tree->max_elts + 2, &index);
-    CHECK_PTR(datablock);
+    RCSW_CHECK_PTR(datablock);
 
     ((int*)(tree->elements))[index] = 0; /* mark data block as in use */
   } else {
     datablock = malloc(tree->el_size);
-    CHECK_PTR(datablock);
+    RCSW_CHECK_PTR(datablock);
   }
 
   return datablock;
@@ -166,14 +166,14 @@ struct bstree_node* bstree_node_alloc(const struct bstree* const tree,
     node = ds_meta_probe(
         tree->nodes, node_size, (size_t)tree->max_elts + 2, &index);
 
-    CHECK_PTR(node);
+    RCSW_CHECK_PTR(node);
 
     ((int*)(tree->nodes))[index] = 0; /* mark node as in use */
   }
   /* MY DOMAIN MWAHAHAHA! */
   else {
     node = malloc(node_size);
-    CHECK_PTR(node);
+    RCSW_CHECK_PTR(node);
   }
   return node;
 
@@ -200,15 +200,15 @@ int bstree_traverse_nodes_preorder(struct bstree* const tree,
                                    int (*cb)(const struct bstree* const tree,
                                              struct bstree_node* const node)) {
   int rc = cb(tree, node);
-  CHECK(rc == 0);
+  RCSW_CHECK(rc == 0);
 
   if (node->left != tree->nil) { /* recurse and operate on left subtree */
     rc = bstree_traverse_nodes_preorder(tree, node->left, cb);
-    CHECK(rc == 0);
+    RCSW_CHECK(rc == 0);
   }
   if (node->right != tree->nil) { /* recurse and operate on right subtree */
     rc = bstree_traverse_nodes_preorder(tree, node->right, cb);
-    CHECK(rc == 0);
+    RCSW_CHECK(rc == 0);
   }
   return 0;
 
@@ -223,13 +223,13 @@ int bstree_traverse_nodes_inorder(struct bstree* const tree,
   int rc = 0;
   if (node->left != tree->nil) { /* recurse and operate on left subtree */
     rc = bstree_traverse_nodes_inorder(tree, node->left, cb);
-    CHECK(rc == 0);
+    RCSW_CHECK(rc == 0);
   }
   rc = cb(tree, node);
-  CHECK(rc == 0);
+  RCSW_CHECK(rc == 0);
   if (node->right != tree->nil) { /* recurse and operate on right subtree */
     rc = bstree_traverse_nodes_inorder(tree, node->right, cb);
-    CHECK(rc == 0);
+    RCSW_CHECK(rc == 0);
   }
   return 0;
 
@@ -245,14 +245,14 @@ int bstree_traverse_nodes_postorder(struct bstree* const tree,
   int rc = 0;
   if (node->left != tree->nil) { /* recurse and operate on left subtree */
     rc = bstree_traverse_nodes_postorder(tree, node->left, cb);
-    CHECK(rc == 0);
+    RCSW_CHECK(rc == 0);
     tree->depth--;
   }
 
   if (node->right != tree->nil) { /* recurse and operate on right subtree */
     rc = bstree_traverse_nodes_postorder(tree, node->right, cb);
     tree->depth--;
-    CHECK(rc == 0);
+    RCSW_CHECK(rc == 0);
   }
 
   return cb(tree, node);
@@ -374,7 +374,7 @@ size_t bstree_node_height(const struct bstree* const tree,
   int height_l = bstree_node_height(tree, node->left);
   int height_r = bstree_node_height(tree, node->right);
 
-  return (MAX(height_l, height_r) + 1);
+  return (RCSW_MAX(height_l, height_r) + 1);
 } /* bstree_node_height() */
 
 END_C_DECLS

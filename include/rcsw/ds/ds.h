@@ -200,7 +200,7 @@ enum ds_tag {
  * @brief Indicate that a heap should function as a min heap. If you do not pass
  * this flag, all heaps will function as max heaps.
  */
-#define DS_MIN_HEAP 0x1000
+#define DS_RCSW_MIN_HEAP 0x1000
 
 /**
  * @brief If you want to define additional flags for derived data structures,

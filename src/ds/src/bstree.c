@@ -56,18 +56,18 @@ struct bstree* bstree_init_internal(struct bstree* tree_in,
   struct bstree* tree = NULL;
   int i;
   if (params->flags & DS_APP_DOMAIN_HANDLE) {
-    CHECK_PTR(tree_in);
+    RCSW_CHECK_PTR(tree_in);
     tree = tree_in;
   } else {
     tree = malloc(sizeof(struct bstree));
-    CHECK_PTR(tree);
+    RCSW_CHECK_PTR(tree);
   }
   tree->flags = params->flags;
   tree->root = NULL;
   tree->nil = NULL;
 
   if (params->flags & DS_APP_DOMAIN_NODES) {
-    CHECK_PTR(params->nodes);
+    RCSW_CHECK_PTR(params->nodes);
     SOFT_ASSERT(
         params->max_elts != -1,
         "ERROR: Cannot have uncapped tree size with DS_APP_DOMAIN_NODES");
@@ -83,7 +83,7 @@ struct bstree* bstree_init_internal(struct bstree* tree_in,
   }
 
   if (params->flags & DS_APP_DOMAIN_DATA) {
-    CHECK_PTR(params->elements);
+    RCSW_CHECK_PTR(params->elements);
     SOFT_ASSERT(
         params->max_elts != -1,
         "ERROR: Cannot have uncapped tree size with DS_APP_DOMAIN_DATA");
@@ -105,12 +105,12 @@ struct bstree* bstree_init_internal(struct bstree* tree_in,
   tree->el_size = params->el_size;
 
   tree->nil = bstree_node_create(tree, NULL, NULL, NULL, node_size);
-  CHECK_PTR(tree->nil);
+  RCSW_CHECK_PTR(tree->nil);
   tree->nil->parent = tree->nil->left = tree->nil->right = tree->nil;
   tree->nil->red = FALSE;
 
   tree->root = bstree_node_create(tree, NULL, NULL, NULL, node_size);
-  CHECK_PTR(tree->root);
+  RCSW_CHECK_PTR(tree->root);
   tree->root->parent = tree->root->left = tree->root->right = tree->nil;
   tree->root->red = FALSE;
 
@@ -211,7 +211,7 @@ status_t bstree_insert_internal(struct bstree* const tree,
    * Create node from key and data, and link into tree hierarchy
    */
   node = bstree_node_create(tree, parent, key, data, node_size);
-  CHECK_PTR(node);
+  RCSW_CHECK_PTR(node);
   if (parent == tree->root || tree->cmpe(key, parent->key) < 0) {
     parent->left = node;
   } else {
@@ -260,7 +260,7 @@ status_t bstree_remove(struct bstree* const tree, const void* const key) {
   FPC_CHECK(ERROR, tree != NULL, key != NULL);
 
   struct bstree_node* victim = bstree_node_query(tree, tree->root->left, key);
-  CHECK_PTR(victim);
+  RCSW_CHECK_PTR(victim);
   return bstree_delete(tree, victim, NULL);
 
 error:

@@ -46,11 +46,11 @@ struct static_matrix* static_matrix_init(struct static_matrix* const matrix_in,
             params->type.smat.n_cols > 0)
   struct static_matrix* matrix = NULL;
   if (params->flags & DS_APP_DOMAIN_HANDLE) {
-    CHECK_PTR(matrix_in);
+    RCSW_CHECK_PTR(matrix_in);
     matrix = matrix_in;
   } else {
     matrix = malloc(sizeof(struct static_matrix));
-    CHECK_PTR(matrix);
+    RCSW_CHECK_PTR(matrix);
   }
   matrix->flags = params->flags;
   matrix->el_size = params->el_size;
@@ -63,7 +63,7 @@ struct static_matrix* static_matrix_init(struct static_matrix* const matrix_in,
   } else {
     matrix->elements = calloc(matrix->n_rows * matrix->n_cols, matrix->el_size);
   }
-  CHECK_PTR(matrix->elements);
+  RCSW_CHECK_PTR(matrix->elements);
   return matrix;
 
 error:

@@ -49,13 +49,13 @@ status_t simple_image_clamp_rgb(simple_image_t* const image) {
                                                     : minv) reduction(max \
                                                                       : maxv)
   for (int x = 0; x < width * height; ++x) {
-    minv = MIN(minv, red[x]);
-    minv = MIN(minv, green[x]);
-    minv = MIN(minv, blue[x]);
+    minv = RCSW_MIN(minv, red[x]);
+    minv = RCSW_MIN(minv, green[x]);
+    minv = RCSW_MIN(minv, blue[x]);
 
-    maxv = MAX(maxv, red[x]);
-    maxv = MAX(maxv, green[x]);
-    maxv = MAX(maxv, blue[x]);
+    maxv = RCSW_MAX(maxv, red[x]);
+    maxv = RCSW_MAX(maxv, green[x]);
+    maxv = RCSW_MAX(maxv, blue[x]);
   } /* for(x..) */
 
   if (minv >= 0. && maxv <= 255.0) {
@@ -117,7 +117,7 @@ simple_image_t* simple_image_load(char const* const filename) {
 status_t simple_image_write_bmp(char const* const filename,
                                 simple_image_t* const image) {
   FPC_CHECK(ERROR, NULL != filename, NULL != image);
-  CHECK(OK == simple_image_clamp_rgb(image));
+  RCSW_CHECK(OK == simple_image_clamp_rgb(image));
 
   /* First merge the red/green/blue channels. */
   size_t const im_size = image->width * image->height;
@@ -145,16 +145,16 @@ error:
 
 simple_image_t* simple_image_alloc(size_t width, size_t height) {
   simple_image_t* im = malloc(sizeof(*im));
-  CHECK_PTR(im);
+  RCSW_CHECK_PTR(im);
   im->width = width;
   im->height = height;
 
   im->red = malloc(width * height * sizeof(*im->red));
-  CHECK_PTR(im->red);
+  RCSW_CHECK_PTR(im->red);
   im->green = malloc(width * height * sizeof(*im->green));
-  CHECK_PTR(im->green);
+  RCSW_CHECK_PTR(im->green);
   im->blue = malloc(width * height * sizeof(*im->blue));
-  CHECK_PTR(im->blue);
+  RCSW_CHECK_PTR(im->blue);
   return im;
 
 error:

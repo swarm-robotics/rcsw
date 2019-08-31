@@ -100,20 +100,20 @@ struct hashmap* hashmap_init(struct hashmap* map_in,
   size_t i;
 
   if (params->flags & DS_APP_DOMAIN_HANDLE) {
-    CHECK_PTR(map_in);
+    RCSW_CHECK_PTR(map_in);
     map = map_in;
   } else {
     map = malloc(sizeof(struct hashmap));
-    CHECK_PTR(map);
+    RCSW_CHECK_PTR(map);
   }
   map->flags = params->flags;
 
   if (params->flags & DS_APP_DOMAIN_NODES) {
-    CHECK_PTR(params->nodes);
+    RCSW_CHECK_PTR(params->nodes);
     map->buckets = (struct darray*)params->nodes;
   } else {
     map->buckets = calloc(params->type.hm.n_buckets, sizeof(struct darray));
-    CHECK_PTR(map->buckets);
+    RCSW_CHECK_PTR(map->buckets);
   }
 
   /* validate keysize */
@@ -141,7 +141,7 @@ struct hashmap* hashmap_init(struct hashmap* map_in,
     map->elements = malloc(hashmap_element_space(
         params->type.hm.n_buckets * params->type.hm.bsize, params->el_size));
   }
-  CHECK_PTR(map->elements);
+  RCSW_CHECK_PTR(map->elements);
 
   /* initialize free pool of hashnodes */
   for (i = 0; i < map->max_elts; ++i) {
@@ -176,7 +176,7 @@ struct hashmap* hashmap_init(struct hashmap* map_in,
      */
     da_params.elements =
         hashnode_start + i * (params->type.hm.bsize * sizeof(struct hashnode));
-    CHECK(darray_init(map->buckets + i, &da_params) != NULL);
+    RCSW_CHECK(darray_init(map->buckets + i, &da_params) != NULL);
   } /* for() */
 
   DBGD("max_elts=%zu n_buckets=%zu bsize=%zu sort_thresh=%d flags=0x%08x\n",
@@ -254,8 +254,8 @@ void* hashmap_data_get(struct hashmap* const map, const void* const key) {
       return NULL;
     }
     linear_probe(map, &node, &bucket_index, &node_index);
-    CHECK(bucket_index != -1);
-    CHECK(node_index != -1);
+    RCSW_CHECK(bucket_index != -1);
+    RCSW_CHECK(node_index != -1);
     bucket = map->buckets + bucket_index;
   }
 
@@ -318,7 +318,7 @@ status_t hashmap_add(struct hashmap* const map,
   } /* if(bucket->current >= bucket->max_elts) */
 
   void* datablock = datablock_alloc(map);
-  CHECK_PTR(datablock);
+  RCSW_CHECK_PTR(datablock);
   ds_elt_copy(datablock, data, map->el_size);
 
   struct hashnode node = {.data = datablock, .hash = hash};
@@ -326,7 +326,7 @@ status_t hashmap_add(struct hashmap* const map,
   memset(node.key, 0, sizeof(node.key));
   memcpy(node.key, key, map->keysize);
 
-  /* CHECK for duplicates */
+  /* RCSW_CHECK for duplicates */
   if (darray_index_query(bucket, &node) != -1) {
     errno = EAGAIN;
     DBGE("ERROR: Node already exists in bucket\n");
@@ -421,7 +421,7 @@ status_t hashmap_clear(const struct hashmap* const map) {
 
   size_t i;
   for (i = 0; i < map->n_buckets; ++i) {
-    CHECK(darray_clear(map->buckets + i) == OK);
+    RCSW_CHECK(darray_clear(map->buckets + i) == OK);
   }
   return OK;
 
@@ -467,7 +467,7 @@ void hashmap_print(const struct hashmap* const map) {
   }
 
   struct hashmap_stats stats;
-  CHECK(hashmap_gather(map, &stats) == OK);
+  RCSW_CHECK(hashmap_gather(map, &stats) == OK);
 
   DPRINTF("\n******************** Hashmap Print ********************\n");
   DPRINTF("Total buckets   : %zu\n", stats.n_buckets);
@@ -500,7 +500,7 @@ void hashmap_print_distribution(const struct hashmap* const map) {
   /* get maximum bucket node count */
   size_t max_node_count = 0;
   for (i = 0; i < map->n_buckets; ++i) {
-    max_node_count = MAX(map->buckets[i].current - 1, max_node_count);
+    max_node_count = RCSW_MAX(map->buckets[i].current - 1, max_node_count);
   }
   size_t y_scale = (max_node_count > 100) ? max_node_count / 100 : 1;
   size_t chunk_size = 100;
@@ -601,7 +601,7 @@ static void* datablock_alloc(const struct hashmap* const map) {
   size_t index = hash_fnv1a(&val, 4) % map->max_elts;
 
   datablock = ds_meta_probe(map->elements, map->el_size, map->max_elts, &index);
-  CHECK_PTR(datablock);
+  RCSW_CHECK_PTR(datablock);
 
   DBGV("Allocated data block %zu/%zu\n", index + 1, map->max_elts);
   ((int*)(map->elements))[index] = 0; /* mark data block as in use */

@@ -52,20 +52,20 @@ struct rbuffer* rbuffer_init(struct rbuffer* rb_in,
   struct rbuffer* rb = NULL;
 
   if (params->flags & DS_APP_DOMAIN_HANDLE) {
-    CHECK_PTR(rb_in);
+    RCSW_CHECK_PTR(rb_in);
     rb = rb_in;
   } else {
     rb = malloc(sizeof(struct rbuffer));
-    CHECK_PTR(rb);
+    RCSW_CHECK_PTR(rb);
   }
   rb->flags = params->flags;
 
   if (params->flags & DS_APP_DOMAIN_DATA) {
-    CHECK_PTR(params->elements);
+    RCSW_CHECK_PTR(params->elements);
     rb->elements = params->elements;
   } else {
     rb->elements = calloc(params->max_elts, params->el_size);
-    CHECK_PTR(rb->elements);
+    RCSW_CHECK_PTR(rb->elements);
   }
 
   rb->el_size = params->el_size;

@@ -59,11 +59,11 @@ struct static_adj_matrix* static_adj_matrix_init(
   struct static_adj_matrix* matrix = NULL;
 
   if (params->flags & DS_APP_DOMAIN_HANDLE) {
-    CHECK_PTR(matrix_in);
+    RCSW_CHECK_PTR(matrix_in);
     matrix = matrix_in;
   } else {
     matrix = malloc(sizeof(struct static_adj_matrix));
-    CHECK_PTR(matrix);
+    RCSW_CHECK_PTR(matrix);
   }
   matrix->flags = params->flags;
   if (params->type.adjm.is_weighted) {
@@ -88,7 +88,7 @@ struct static_adj_matrix* static_adj_matrix_init(
   } else {
     mat_params.printe = static_adj_matrix_printeu;
   }
-  CHECK(NULL != static_matrix_init(&matrix->matrix, &mat_params));
+  RCSW_CHECK(NULL != static_matrix_init(&matrix->matrix, &mat_params));
 
   /*
    * Static matrix initializes memory to 0, we need it to be NAN for weighted
@@ -128,10 +128,10 @@ status_t static_adj_matrix_edge_addu(struct static_adj_matrix* const matrix,
 
   int val = 1;
   DBGV("Add undirected edges: (%zu, %zu), (%zu, %zu)\n", u, v, v, u);
-  CHECK(OK == static_matrix_set(&matrix->matrix, u, v, &val));
+  RCSW_CHECK(OK == static_matrix_set(&matrix->matrix, u, v, &val));
   ++matrix->n_edges;
 
-  CHECK(OK == static_matrix_set(&matrix->matrix, v, u, &val));
+  RCSW_CHECK(OK == static_matrix_set(&matrix->matrix, v, u, &val));
   ++matrix->n_edges;
 
   return OK;
@@ -152,10 +152,10 @@ status_t static_adj_matrix_edge_addd(struct static_adj_matrix* const matrix,
 
   DBGV("Add directed edge: (%zu, %zu) = %f\n", u, v, w ? *w : 1.0);
   if (matrix->is_weighted) {
-    CHECK(OK == static_matrix_set(&matrix->matrix, u, v, w));
+    RCSW_CHECK(OK == static_matrix_set(&matrix->matrix, u, v, w));
   } else {
     int val = 1;
-    CHECK(OK == static_matrix_set(&matrix->matrix, u, v, &val));
+    RCSW_CHECK(OK == static_matrix_set(&matrix->matrix, u, v, &val));
   }
   ++matrix->n_edges;
   return OK;
@@ -173,7 +173,7 @@ status_t static_adj_matrix_edge_remove(struct static_adj_matrix* const matrix,
   if (matrix->is_weighted) {
     *(double*)static_matrix_access(&matrix->matrix, u, v) = NAN;
   } else {
-    CHECK(OK == static_matrix_clear(&matrix->matrix, u, v));
+    RCSW_CHECK(OK == static_matrix_clear(&matrix->matrix, u, v));
   }
 
   --matrix->n_edges;
@@ -184,7 +184,7 @@ status_t static_adj_matrix_edge_remove(struct static_adj_matrix* const matrix,
     if (matrix->is_weighted) {
       *(double*)static_matrix_access(&matrix->matrix, v, u) = NAN;
     } else {
-      CHECK(OK == static_matrix_clear(&matrix->matrix, v, u));
+      RCSW_CHECK(OK == static_matrix_clear(&matrix->matrix, v, u));
     }
     --matrix->n_edges;
   }

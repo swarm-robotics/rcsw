@@ -30,9 +30,13 @@
 /*******************************************************************************
  * Constant Definitions
  ******************************************************************************/
+/**
+ * @brief The runtime implementation method to use for the edit distance
+ * calculation.
+ */
 enum edit_dist_exec_type {
-    EDIT_DIST_REC,
-    EDIT_DIST_ITER,
+  EDIT_DIST_REC,   /// Use a recursive runtime implementation
+  EDIT_DIST_ITER,  /// Use a iterative runtime implementation
 };
 
 /*******************************************************************************

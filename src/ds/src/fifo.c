@@ -39,11 +39,11 @@ struct fifo* fifo_init(struct fifo* fifo_in,
 
   struct fifo* fifo = NULL;
   if (params->flags & DS_APP_DOMAIN_HANDLE) {
-    CHECK_PTR(fifo_in);
+    RCSW_CHECK_PTR(fifo_in);
     fifo = fifo_in;
   } else {
     fifo = malloc(sizeof(struct fifo));
-    CHECK_PTR(fifo);
+    RCSW_CHECK_PTR(fifo);
   }
   fifo->flags = params->flags;
 
@@ -55,7 +55,7 @@ struct fifo* fifo_init(struct fifo* fifo_in,
                                 .elements = params->elements,
                                 .flags = params->flags};
   rb_params.flags |= (DS_APP_DOMAIN_HANDLE | DS_RBUFFER_AS_FIFO);
-  CHECK(NULL != rbuffer_init(&fifo->rb, &rb_params));
+  RCSW_CHECK(NULL != rbuffer_init(&fifo->rb, &rb_params));
   return fifo;
 
 error:

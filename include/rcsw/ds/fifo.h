@@ -35,6 +35,9 @@
 /*******************************************************************************
  * Structure Definitions
  ******************************************************************************/
+/**
+ * @brief FIFO: First In First Out general purpose FIFO.
+ */
 struct fifo {
     struct rbuffer rb;  /// Underlying ringbuffer the FIFO is built on top of.
     uint32_t flags;     /// Run-time configuration parameters.

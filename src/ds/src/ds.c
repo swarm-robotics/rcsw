@@ -191,8 +191,6 @@ bool_t ds_elt_zchk(void* const elt, size_t el_size) {
         } /* for(i..) */
         return sum == 0;
   } /* switch() */
-
-  return OK;
 } /* ds_elt_zchk() */
 
 END_C_DECLS

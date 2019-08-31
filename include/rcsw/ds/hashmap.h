@@ -84,10 +84,11 @@ struct hashmap_stats {
     double average_util;     /// Average bucket utilization
 };
 
+/** Nodes within the hashmap (each bucket is filled with these) */
 struct hashnode {
     uint8_t key[HASHMAP_MAX_KEYSIZE];  /// Key for key-value pair
     void *data;                        /// Value for key-value pair
-    uint32_t hash;                     /// calculated hash
+    uint32_t hash;                     /// Calculated hash
 };
 
 /*******************************************************************************

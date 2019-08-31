@@ -49,13 +49,13 @@ struct llist_node* llist_node_alloc(struct llist* const list) {
     size_t index = list->current;
     node = ds_meta_probe(
         list->nodes, sizeof(struct llist_node), (size_t)list->max_elts, &index);
-    CHECK_PTR(node);
+    RCSW_CHECK_PTR(node);
 
     ((int*)(list->nodes))[index] = 0; /* mark node as in use */
     DBGV("Allocated llist_node %zu/%d\n", index + 1, list->max_elts);
   } else {
     node = calloc(1, sizeof(struct llist_node));
-    CHECK_PTR(node);
+    RCSW_CHECK_PTR(node);
   }
 
   return node;
@@ -90,13 +90,13 @@ struct llist_node* llist_node_create(struct llist* const list,
                                      void* const data_in) {
   /* get space for llist_node */
   struct llist_node* node = llist_node_alloc(list);
-  CHECK_PTR(node);
+  RCSW_CHECK_PTR(node);
 
   /* get space for the datablock and copy the data, unless
    * DS_LLIST_NO_DB or DS_LLIST_NO_DATA was passed */
   if (!(list->flags & (DS_LLIST_NO_DB | DS_LLIST_PTR_CMP))) {
     node->data = llist_node_datablock_alloc(list);
-    CHECK_PTR(node->data);
+    RCSW_CHECK_PTR(node->data);
     ds_elt_copy(node->data, data_in, list->el_size);
   } else {
     node->data = data_in;
@@ -146,13 +146,13 @@ void* llist_node_datablock_alloc(struct llist* const list) {
     size_t index = list->current;
     datablock = ds_meta_probe(
         list->elements, list->el_size, (size_t)list->max_elts, &index);
-    CHECK_PTR(datablock);
+    RCSW_CHECK_PTR(datablock);
 
     ((int*)(list->elements))[index] = 0; /* mark data block as in use */
     DBGV("Allocated data block %zu/%d\n", index + 1, list->max_elts);
   } else {
     datablock = malloc(list->el_size);
-    CHECK_PTR(datablock);
+    RCSW_CHECK_PTR(datablock);
   }
 
   return datablock;
