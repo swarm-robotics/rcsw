@@ -75,11 +75,11 @@ struct bin_heap* bin_heap_init(struct bin_heap* bin_heap_in,
 
   struct bin_heap* heap = NULL;
   if (params->flags & DS_APP_DOMAIN_HANDLE) {
-    CHECK_PTR(bin_heap_in);
+    RCSW_CHECK_PTR(bin_heap_in);
     heap = bin_heap_in;
   } else {
     heap = malloc(sizeof(struct bin_heap));
-    CHECK_PTR(heap);
+    RCSW_CHECK_PTR(heap);
   }
   heap->flags = params->flags;
 
@@ -87,7 +87,7 @@ struct bin_heap* bin_heap_init(struct bin_heap* bin_heap_in,
       .type = {.da =
                    {
                        .init_size =
-                           MAX((size_t)1, params->type.bhp.init_size + 1),
+                           RCSW_MAX((size_t)1, params->type.bhp.init_size + 1),
                    }},
       .printe = params->printe,
       .cmpe = params->cmpe,
@@ -99,8 +99,8 @@ struct bin_heap* bin_heap_init(struct bin_heap* bin_heap_in,
       .flags = params->flags};
   darray_params.flags |= DS_APP_DOMAIN_HANDLE;
   darray_params.max_elts += (darray_params.max_elts == -1) ? 0 : 1;
-  CHECK(NULL != darray_init(&heap->arr, &darray_params));
-  CHECK(OK == darray_set_n_elts(&heap->arr, 1));
+  RCSW_CHECK(NULL != darray_init(&heap->arr, &darray_params));
+  RCSW_CHECK(OK == darray_set_n_elts(&heap->arr, 1));
 
   DBGD("init_size=%zu max_elts=%d el_size=%zu flags=0x%08x\n",
        params->type.bhp.init_size,
@@ -127,7 +127,7 @@ void bin_heap_destroy(struct bin_heap* heap) {
 status_t bin_heap_insert(struct bin_heap* const heap, const void* const e) {
   FPC_CHECK(ERROR, heap != NULL, e != NULL, !bin_heap_isfull(heap));
 
-  CHECK(OK == darray_insert(&heap->arr, e, heap->arr.current));
+  RCSW_CHECK(OK == darray_insert(&heap->arr, e, heap->arr.current));
 
   /* Sift last element up to its correct position in the heap. */
   bin_heap_sift_up(heap, bin_heap_n_elts(heap));
@@ -144,11 +144,11 @@ status_t bin_heap_make(struct bin_heap* const heap,
 
   DBGD("Making heap from %zu %zu-byte elements\n", n_elts, heap->arr.el_size);
   for (size_t i = 0; i < n_elts; ++i) {
-    CHECK(OK == darray_insert(&heap->arr,
+    RCSW_CHECK(OK == darray_insert(&heap->arr,
                               (const uint8_t*)data + heap->arr.el_size * i,
                               i + 1));
   } /* for(i..) */
-  CHECK(OK == darray_set_n_elts(&heap->arr, n_elts + 1));
+  RCSW_CHECK(OK == darray_set_n_elts(&heap->arr, n_elts + 1));
 
   /* Find median element, (n / 2) */
   size_t k = (bin_heap_n_elts(heap) / 2) + 1;
@@ -172,7 +172,7 @@ status_t bin_heap_extract(struct bin_heap* const heap, void* const e) {
   }
 
   /* Copy last element to tmp position, and sift down to correct position */
-  CHECK(OK == darray_remove(&heap->arr,
+  RCSW_CHECK(OK == darray_remove(&heap->arr,
                             darray_data_get(&heap->arr, 1),
                             darray_n_elts(&heap->arr) - 1));
   bin_heap_sift_down(heap, 1);
@@ -187,7 +187,7 @@ status_t bin_heap_update_key(struct bin_heap* const heap,
                              size_t index,
                              const void* const new_val) {
   FPC_CHECK(ERROR, NULL != heap, index > 0, NULL != new_val);
-  CHECK(OK == darray_data_set(&heap->arr, index, new_val));
+  RCSW_CHECK(OK == darray_data_set(&heap->arr, index, new_val));
   bin_heap_sift_up(heap, index);
 
   return OK;
@@ -200,8 +200,8 @@ status_t bin_heap_delete_key(struct bin_heap* const heap,
                              size_t index,
                              const void* const min_val) {
   FPC_CHECK(ERROR, NULL != heap, index > 0, NULL != min_val);
-  CHECK(OK == bin_heap_update_key(heap, index, min_val));
-  CHECK(OK == bin_heap_extract(heap, NULL));
+  RCSW_CHECK(OK == bin_heap_update_key(heap, index, min_val));
+  RCSW_CHECK(OK == bin_heap_extract(heap, NULL));
   return OK;
 
 error:
@@ -223,7 +223,7 @@ static void bin_heap_sift_down(struct bin_heap* const heap, size_t m) {
   size_t l_child = BIN_HEAP_LCHILD(m);
   size_t r_child = BIN_HEAP_RCHILD(m);
   size_t n_elts = bin_heap_n_elts(heap);
-  if (heap->flags & DS_MIN_HEAP) {
+  if (heap->flags & DS_RCSW_MIN_HEAP) {
     size_t smallest = m;
     if (l_child <= n_elts &&
         heap->arr.cmpe(darray_data_get(&heap->arr, l_child),
@@ -277,7 +277,7 @@ static void bin_heap_sift_up(struct bin_heap* const heap, size_t i) {
    *  Set child index to parent.  Get next parent, and repeat until top of
    *  heap is reached.
    */
-  if (heap->flags & DS_MIN_HEAP) {
+  if (heap->flags & DS_RCSW_MIN_HEAP) {
     while (i != 0 &&
            heap->arr.cmpe(darray_data_get(&heap->arr, BIN_HEAP_PARENT(i)),
                           darray_data_get(&heap->arr, i)) > 0) {

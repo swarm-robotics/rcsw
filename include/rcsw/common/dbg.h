@@ -229,7 +229,7 @@
 #endif /* NDEBUG */
 
 /**
- * @brief Like \ref CHECK(), but has an additional message that is printed on failure
+ * @brief Like \ref RCSW_CHECK(), but has an additional message that is printed on failure
  * if debugging is enabled for the module it resides in.
  */
 #define SOFT_ASSERT(cond, msg, ...)                             \
@@ -275,14 +275,14 @@
  * When defining your own module codes, you should always start them with
  * M_EXTERNAL, so as to not conflict with the internal codes in rcsw.
  */
-#define DBG_MODULES M_DBG, M_DS_BSTREE, M_DS_DARRAY, M_DS_LLIST, M_DS_HASHMAP, \
+#define RCSW_DBG_MODULES M_DBG, M_DS_BSTREE, M_DS_DARRAY, M_DS_LLIST, M_DS_HASHMAP, \
     M_DS_RBUFFER, M_MT_QUEUE, M_DS_MPOOL, M_EVTLOG, M_UTILS, M_GRIND,   \
     M_PULSE, M_AL, M_STDIO, M_SCS, M_DS_CORE, M_DS_BIN_HEAP, M_DS_CSMATRIX, \
     M_COMMON, M_COMM, M_DS_FIFO, M_DS_RAWFIFO, M_ALGORITHM, M_DS_RBTREE, \
     M_TESTING, M_DS_INT_TREE, M_DS_OSTREE, M_DS_STATIC_ADJ_MATRIX,             \
     M_DS_STATIC_MATRIX, M_DS_DYNAMIC_MATRIX, M_MULTITHREAD, M_MULTIPROCESS, \
     M_EXTERNAL
-enum dbg_module_codes {XGEN_ENUMS(DBG_MODULES)};
+enum dbg_module_codes {RCSW_XGEN_ENUMS(RCSW_DBG_MODULES)};
 
 /*******************************************************************************
  * Structure Definitions

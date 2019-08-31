@@ -94,7 +94,7 @@ struct csmatrix* csmatrix_init(struct csmatrix* const matrix_in,
   } else {
     matrix = calloc(1, sizeof(struct csmatrix));
   }
-  CHECK_PTR(matrix);
+  RCSW_CHECK_PTR(matrix);
   matrix->flags = params->flags;
   matrix->type = params->type;
   matrix->n_cols = params->n_cols;
@@ -111,7 +111,7 @@ struct csmatrix* csmatrix_init(struct csmatrix* const matrix_in,
       .el_size = sizeof(int),
       .tag = DS_DARRAY,
       .flags = DS_APP_DOMAIN_HANDLE | DS_MAINTAIN_ORDER};
-  CHECK(NULL != darray_init(&matrix->inner_indices, &inner_params));
+  RCSW_CHECK(NULL != darray_init(&matrix->inner_indices, &inner_params));
   struct ds_params count_params = {
       .type = {.da =
                    {
@@ -123,8 +123,8 @@ struct csmatrix* csmatrix_init(struct csmatrix* const matrix_in,
       .el_size = sizeof(int),
       .tag = DS_DARRAY,
       .flags = DS_APP_DOMAIN_HANDLE | DS_MAINTAIN_ORDER};
-  CHECK(NULL != darray_init(&matrix->outer_starts, &count_params));
-  CHECK(OK == darray_set_n_elts(&matrix->outer_starts, params->n_rows + 1));
+  RCSW_CHECK(NULL != darray_init(&matrix->outer_starts, &count_params));
+  RCSW_CHECK(OK == darray_set_n_elts(&matrix->outer_starts, params->n_rows + 1));
   struct ds_params coeff_params = {
       .type = {.da =
                    {
@@ -137,22 +137,22 @@ struct csmatrix* csmatrix_init(struct csmatrix* const matrix_in,
       .tag = DS_DARRAY,
       .flags = DS_APP_DOMAIN_HANDLE | DS_MAINTAIN_ORDER};
 
-  CHECK(NULL != darray_init(&matrix->values, &coeff_params));
+  RCSW_CHECK(NULL != darray_init(&matrix->values, &coeff_params));
   DBGD("n_rows=%zu n_nz_elts=%zu flags=0x%08x\n",
        csmatrix_n_rows(matrix),
        darray_n_elts(&matrix->outer_starts),
        matrix->flags);
 
   matrix->csizes = calloc(params->n_cols, sizeof(int));
-  CHECK_PTR(matrix->csizes);
+  RCSW_CHECK_PTR(matrix->csizes);
 
   /* size_t n_elts = params->n_nz_elts/params->n_cols*10; */
   /* matrix->nodes = calloc(matrix->n_cols, llist_node_space(n_elts)); */
   /* matrix->elts = calloc(matrix->n_cols, */
   /*                       llist_element_space(n_elts, sizeof(struct
    * col_pair))); */
-  /* CHECK_PTR(matrix->nodes); */
-  /* CHECK_PTR(matrix->elts); */
+  /* RCSW_CHECK_PTR(matrix->nodes); */
+  /* RCSW_CHECK_PTR(matrix->elts); */
   struct ds_params llist_params = {.cmpe = csmatrix_col_cmpe,
                                    .printe = NULL,
                                    .max_elts = -1,
@@ -164,7 +164,7 @@ struct csmatrix* csmatrix_init(struct csmatrix* const matrix_in,
     /* llist_params.nodes = matrix->nodes + i* llist_node_space(n_elts); */
     /* llist_params.elements = matrix->elts + */
     /*     i*llist_element_space(n_elts, sizeof(struct col_pair)); */
-    CHECK(NULL != llist_init(matrix->cols + i, &llist_params));
+    RCSW_CHECK(NULL != llist_init(matrix->cols + i, &llist_params));
   } /* for(i..) */
 
   return matrix;
@@ -230,8 +230,8 @@ status_t csmatrix_entry_add(struct csmatrix* const matrix,
        row_start[0],
        csmatrix_rsize(matrix, row),
        row_start[0] + j);
-  CHECK(OK == darray_insert(&matrix->inner_indices, &col, row_start[0] + j));
-  CHECK(OK == darray_insert(&matrix->values, e, row_start[0] + j));
+  RCSW_CHECK(OK == darray_insert(&matrix->inner_indices, &col, row_start[0] + j));
+  RCSW_CHECK(OK == darray_insert(&matrix->values, e, row_start[0] + j));
 
   /*
    * Update outer starts (must be after insertions or indices don't line up).
@@ -255,9 +255,9 @@ status_t csmatrix_entry_add(struct csmatrix* const matrix,
       darray_data_set(&matrix->outer_starts, row + 2, &index);
     }
   }
-  matrix->n_eff_cols = MAX(col, matrix->n_eff_cols);
+  matrix->n_eff_cols = RCSW_MAX(col, matrix->n_eff_cols);
   struct col_pair pair = {.row = row, .inner_index = row_start[0] + j};
-  CHECK(OK == llist_append(&matrix->cols[col], &pair));
+  RCSW_CHECK(OK == llist_append(&matrix->cols[col], &pair));
 
   matrix->csizes[col]++;
   return OK;
@@ -297,8 +297,8 @@ status_t csmatrix_entry_set(struct csmatrix* const matrix,
             row < darray_n_elts(&matrix->outer_starts));
 
   int i = csmatrix_inner_index_get(matrix, row, col);
-  CHECK(-1 != i);
-  CHECK(OK == darray_data_set(&matrix->values, i, e));
+  RCSW_CHECK(-1 != i);
+  RCSW_CHECK(OK == darray_data_set(&matrix->values, i, e));
   return OK;
 
 error:
@@ -311,7 +311,7 @@ void* csmatrix_entry_get(const struct csmatrix* const matrix,
   FPC_CHECK(0, NULL != matrix, row < darray_n_elts(&matrix->outer_starts));
 
   int index = csmatrix_inner_index_get(matrix, row, col);
-  CHECK(-1 != index);
+  RCSW_CHECK(-1 != index);
 
   return darray_data_get(&matrix->values, index);
 
@@ -324,13 +324,13 @@ status_t csmatrix_resize(struct csmatrix* const matrix,
                          size_t n_nz_elts) {
   FPC_CHECK(ERROR, NULL != matrix);
 
-  /* CHECK(OK == darray_resize(&matrix->outer_starts, n_rows+1)); */
-  /* CHECK(OK == darray_resize(&matrix->inner_indices, n_nz_elts)); */
-  /* CHECK(OK == darray_resize(&matrix->values, n_nz_elts)); */
+  /* RCSW_CHECK(OK == darray_resize(&matrix->outer_starts, n_rows+1)); */
+  /* RCSW_CHECK(OK == darray_resize(&matrix->inner_indices, n_nz_elts)); */
+  /* RCSW_CHECK(OK == darray_resize(&matrix->values, n_nz_elts)); */
 
-  CHECK(OK == darray_set_n_elts(&matrix->outer_starts, n_rows + 1));
-  CHECK(OK == darray_set_n_elts(&matrix->inner_indices, n_nz_elts));
-  CHECK(OK == darray_set_n_elts(&matrix->values, n_nz_elts));
+  RCSW_CHECK(OK == darray_set_n_elts(&matrix->outer_starts, n_rows + 1));
+  RCSW_CHECK(OK == darray_set_n_elts(&matrix->inner_indices, n_nz_elts));
+  RCSW_CHECK(OK == darray_set_n_elts(&matrix->values, n_nz_elts));
   return OK;
 
 error:
@@ -346,7 +346,7 @@ status_t csmatrix_calc_clists(struct csmatrix* const matrix) {
     for (size_t j = 0; j < rsize; ++j) {
       struct col_pair pair = {.row = i, .inner_index = links[0] + j};
 
-      CHECK(OK == llist_append(&matrix->cols[links[j]], &pair));
+      RCSW_CHECK(OK == llist_append(&matrix->cols[links[j]], &pair));
     } /* for(j..) */
   }   /* for(i..) */
 
@@ -383,7 +383,7 @@ status_t csmatrix_vmult(const struct csmatrix* const matrix,
            *(double*)darray_data_get(vector_in, cols[j]),
            res);
     } /* for(j..) */
-    CHECK(OK == darray_data_set(vector_out, i, &res));
+    RCSW_CHECK(OK == darray_data_set(vector_out, i, &res));
   } /* for(i..) */
   return OK;
 
@@ -433,11 +433,11 @@ struct csmatrix* csmatrix_transpose(struct csmatrix* const matrix) {
                                    .type = matrix->type,
                                    .flags = 0};
   struct csmatrix* new = csmatrix_init(NULL, &params);
-  CHECK_PTR(new);
+  RCSW_CHECK_PTR(new);
 
   DBGD("TRANSPOSE: Sorting column lists\n");
   for (size_t i = 0; i < csmatrix_n_cols(matrix); ++i) {
-    CHECK(OK == llist_sort(matrix->cols + i, MSORT_REC));
+    RCSW_CHECK(OK == llist_sort(matrix->cols + i, MSORT_REC));
   } /* for(i..) */
   DBGD("TRANSPOSE: Begin\n");
   for (size_t i = 0; i < csmatrix_n_cols(matrix); ++i) {
@@ -457,7 +457,7 @@ struct csmatrix* csmatrix_transpose(struct csmatrix* const matrix) {
            pair->row,
            i,
            val);
-      CHECK(OK == csmatrix_entry_add(new, TRUE, i, pair->row, &val));
+      RCSW_CHECK(OK == csmatrix_entry_add(new, TRUE, i, pair->row, &val));
     }
   } /* for(i..) */
 

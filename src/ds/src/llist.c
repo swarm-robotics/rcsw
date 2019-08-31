@@ -47,18 +47,18 @@ struct llist* llist_init(struct llist* list_in,
   struct llist* list = NULL;
   int i;
   if (params->flags & DS_APP_DOMAIN_HANDLE) {
-    CHECK_PTR(list_in);
+    RCSW_CHECK_PTR(list_in);
     list = list_in;
   } else {
     list = malloc(sizeof(struct llist));
-    CHECK_PTR(list);
+    RCSW_CHECK_PTR(list);
   }
   list->current = 0;
   list->flags = params->flags;
   list->first = NULL;
 
   if (params->flags & DS_APP_DOMAIN_NODES) {
-    CHECK_PTR(params->nodes);
+    RCSW_CHECK_PTR(params->nodes);
     SOFT_ASSERT(
         params->max_elts != -1,
         "ERROR: Cannot have uncapped list length with DS_APP_DOMAIN_NODES");
@@ -71,7 +71,7 @@ struct llist* llist_init(struct llist* list_in,
   }
 
   if (params->flags & DS_APP_DOMAIN_DATA) {
-    CHECK_PTR(params->elements);
+    RCSW_CHECK_PTR(params->elements);
     SOFT_ASSERT(
         params->max_elts != -1,
         "ERROR: Cannot have uncapped list length with DS_APP_DOMAIN_DATA");
@@ -198,7 +198,7 @@ status_t llist_append(struct llist* const list, void* const data) {
 
   struct llist_node* node = llist_node_create(list, data);
   status_t rval = ERROR;
-  CHECK_PTR(node);
+  RCSW_CHECK_PTR(node);
 
   if (list->last == NULL) { /* empty list */
     list->last = node;
@@ -233,7 +233,7 @@ status_t llist_prepend(struct llist* const list, void* const data) {
 
   struct llist_node* node = llist_node_create(list, data);
   status_t rval = ERROR;
-  CHECK_PTR(node);
+  RCSW_CHECK_PTR(node);
 
   if (list->first == NULL) { /* empty list */
     list->first = node;
@@ -368,7 +368,7 @@ struct llist* llist_copy(struct llist* const list,
                              .nodes = (cparams == NULL) ? NULL : cparams->nodes};
 
   struct llist* clist = llist_init(NULL, &params);
-  CHECK_PTR(clist);
+  RCSW_CHECK_PTR(clist);
 
   LLIST_FOREACH(list, next, curr) { llist_append(clist, curr->data); }
 
@@ -393,7 +393,7 @@ struct llist* llist_copy2(struct llist* const list,
                              .nodes = (cparams == NULL) ? NULL : cparams->nodes};
 
   struct llist* clist = llist_init(NULL, &params);
-  CHECK_PTR(clist);
+  RCSW_CHECK_PTR(clist);
 
   LLIST_FOREACH(list, next, curr) {
     if (!pred(curr->data)) {
@@ -425,7 +425,7 @@ struct llist* llist_filter(struct llist* list,
                              .nodes = (fparams == NULL) ? NULL : fparams->nodes};
 
   struct llist* flist = llist_init(NULL, &params);
-  CHECK_PTR(flist);
+  RCSW_CHECK_PTR(flist);
 
   /*
    * Iterate through list, removing matching elements AFTER you have advanced
@@ -436,7 +436,7 @@ struct llist* llist_filter(struct llist* list,
   LLIST_FOREACH(list, next, curr) {
     if (match != NULL) {
       llist_append(flist, match->data);
-      CHECK(llist_remove(list, match->data) == OK);
+      RCSW_CHECK(llist_remove(list, match->data) == OK);
       match = NULL;
     }
     if (pred(curr->data)) {
@@ -446,7 +446,7 @@ struct llist* llist_filter(struct llist* list,
   /* catch corner case where last item in list matched */
   if (match != NULL) {
     llist_append(flist, match->data);
-    CHECK(llist_remove(list, match->data) == OK);
+    RCSW_CHECK(llist_remove(list, match->data) == OK);
     match = NULL;
   }
 

@@ -13,11 +13,11 @@ set(${target}_INCLUDE_DIRS "${${target}_INC_PATH}" ${rcppsw_INCLUDE_DIRS})
 ################################################################################
 
 # Must be first in list to get linking dependencies right
-if (WITH_TESTS)
+if (LIBRA_TESTS)
   add_subdirectory(tests)
 endif()
 
-if (NOT WITH_MPI)
+if (NOT LIBRA_MPI)
   list(FILTER ${target}_SRC EXCLUDE REGEX "multiprocess")
 endif()
 

@@ -1,5 +1,5 @@
 /**
- * @file int_tree_node.c
+ * @file threadm.c
  *
  * @copyright 2017 John Harwell, All rights reserved.
  *
@@ -21,17 +21,30 @@
 /*******************************************************************************
  * Includes
  ******************************************************************************/
-#include "rcsw/ds/int_tree_node.h"
+#define _GNU_SOURCE
+#include "rcsw/multithread/threadm.h"
+#include <pthread.h>
+#include <sched.h>
+#include "rcsw/common/common.h"
 
 /*******************************************************************************
- * API Functions
+ * Forward Declarations
  ******************************************************************************/
 BEGIN_C_DECLS
 
-void int_tree_node_update_max(struct int_tree_node* const node) {
-  node->max_high = RCSW_MAX3(node->left->max_high,
-                        node->right->max_high,
-                        ((struct interval_data*)node->data)->high);
-} /* int_tree_node_update_max() */
+/*******************************************************************************
+ * Functions
+ ******************************************************************************/
+status_t threadm_core_lock(pthread_t thread, size_t core) {
+  cpu_set_t cpuset;
+
+  CPU_ZERO(&cpuset);
+  CPU_SET(core, &cpuset);
+  RCSW_CHECK(0 == pthread_setaffinity_np(thread, sizeof(cpu_set_t), &cpuset));
+  return OK;
+
+error:
+  return ERROR;
+} /* threadm_core_lock() */
 
 END_C_DECLS

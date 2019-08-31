@@ -118,7 +118,7 @@
  * execute/must be true when the function returns.
  */
 #define FPC_CHECK(v, ...)                               \
-    { XFOR_EACH2(FPC_CHECKNV_, v, __VA_ARGS__); }
+    { RCSW_XFOR_EACH2(FPC_CHECKNV_, v, __VA_ARGS__); }
 
 /**
  * @def FPC_CHECKV(v, ...)
@@ -135,14 +135,14 @@
  * execute/must be true when the function returns.
  */
 #define FPC_CHECKV(v, ...)                      \
-  { XFOR_EACH2(FPC_CHECKV_, v, __VA_ARGS__); }
+  { RCSW_XFOR_EACH2(FPC_CHECKV_, v, __VA_ARGS__); }
 
 #elif(FPC_TYPE == FPC_ABORT)
 
 #define FPC_CHECK(v, ...)                       \
-    { XFOR_EACH2(FPC_CHECK2, v, __VA_ARGS__); }
+    { RCSW_XFOR_EACH2(FPC_CHECK2, v, __VA_ARGS__); }
 #define FPC_CHECKV(v, ...)                       \
-  { XFOR_EACH2(FPC_CHECK2, v, __VA_ARGS__); }
+  { RCSW_XFOR_EACH2(FPC_CHECK2, v, __VA_ARGS__); }
 #else
 #define FPC_CHECK(v, ...)
 #endif /* FPC_TYPE */

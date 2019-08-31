@@ -90,21 +90,21 @@ struct test_frmwk {
 /**
  * @brief A checkpoint/condition check
  *
- * Like the CHECK() macro, but also prints if something was OK. Very useful in
+ * Like the RCSW_CHECK() macro, but also prints if something was OK. Very useful in
  * unit tests so you can see the progress of the test, instead of it just
  * sitting there. Should really only be used in unit tests.
  *
  * @param cond The condition to check
  */
-#define CHECKPOINT(cond)                                                \
+#define RCSW_CHECKPOINT(cond)                                                \
     if (!(cond)) {                                                      \
         PRINTF(                                                         \
-            __FILE__ ":%s:%d CHECKPOINT %sFAILED%s: " STR(cond) "\n", __func__, \
+            __FILE__ ":%s:%d RCSW_CHECKPOINT %sFAILED%s: " STR(cond) "\n", __func__, \
             __LINE__, DBG_FAILC, DBG_ENDC);                             \
         goto error;                                                     \
     } else {                                                            \
         PRINTF(                                                         \
-            __FILE__ ":%s:%d CHECKPOINT %sOK%s: " STR(cond) "\n", __func__, \
+            __FILE__ ":%s:%d RCSW_CHECKPOINT %sOK%s: " STR(cond) "\n", __func__, \
             __LINE__, DBG_OKC, DBG_ENDC);                               \
     }
 /**
