@@ -34,7 +34,7 @@
  * API Functions
  ******************************************************************************/
 status_t simple_image_clamp_rgb(simple_image_t* const image) {
-  FPC_CHECK(ERROR, NULL != image);
+  RCSW_FPC_NV(ERROR, NULL != image);
   int const width = image->width;
   int const height = image->height;
 
@@ -90,7 +90,7 @@ size_t simple_image_kernel2d_flops(simple_image_t const* const image,
 } /* simple_image_kernel2d_flops() */
 
 simple_image_t* simple_image_load(char const* const filename) {
-  FPC_CHECK(NULL, NULL != filename);
+  RCSW_FPC_NV(NULL, NULL != filename);
   int width;
   int height;
   int nchannels;
@@ -116,7 +116,7 @@ simple_image_t* simple_image_load(char const* const filename) {
 
 status_t simple_image_write_bmp(char const* const filename,
                                 simple_image_t* const image) {
-  FPC_CHECK(ERROR, NULL != filename, NULL != image);
+  RCSW_FPC_NV(ERROR, NULL != filename, NULL != image);
   RCSW_CHECK(OK == simple_image_clamp_rgb(image));
 
   /* First merge the red/green/blue channels. */

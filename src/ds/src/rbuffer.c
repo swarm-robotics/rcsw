@@ -43,7 +43,7 @@ BEGIN_C_DECLS
 
 struct rbuffer* rbuffer_init(struct rbuffer* rb_in,
                              const struct ds_params* const params) {
-  FPC_CHECK(NULL,
+  RCSW_FPC_NV(NULL,
             params != NULL,
             params->tag == DS_RBUFFER,
             params->max_elts > 0,
@@ -88,7 +88,7 @@ error:
 } /* rbuffer_init() */
 
 void rbuffer_destroy(struct rbuffer* rb) {
-  FPC_CHECKV(FPC_VOID, NULL != rb);
+  RCSW_FPC_V(NULL != rb);
 
   if (!(rb->flags & DS_APP_DOMAIN_DATA)) {
     if (rb->elements) {
@@ -103,7 +103,7 @@ void rbuffer_destroy(struct rbuffer* rb) {
 } /* rbuffer_destroy() */
 
 status_t rbuffer_add(struct rbuffer* const rb, const void* const e) {
-  FPC_CHECK(ERROR, rb != NULL, e != NULL);
+  RCSW_FPC_NV(ERROR, rb != NULL, e != NULL);
 
   /* do not add if acting as FIFO and currently full */
   if ((rb->flags & DS_RBUFFER_AS_FIFO) && rbuffer_isfull(rb)) {
@@ -128,24 +128,24 @@ status_t rbuffer_add(struct rbuffer* const rb, const void* const e) {
 } /* rbuffer_add() */
 
 void* rbuffer_data_get(const struct rbuffer* const rb, size_t key) {
-  FPC_CHECK(NULL, rb != NULL, key < rb->max_elts);
+  RCSW_FPC_NV(NULL, rb != NULL, key < rb->max_elts);
 
   return rb->elements + (key * rb->el_size);
 } /* rbuffer_data_get() */
 
 status_t rbuffer_serve_front(const struct rbuffer* const rb, void* const e) {
-  FPC_CHECK(ERROR, rb != NULL, e != NULL, !rbuffer_isempty(rb));
+  RCSW_FPC_NV(ERROR, rb != NULL, e != NULL, !rbuffer_isempty(rb));
   ds_elt_copy(e, rbuffer_data_get(rb, rb->start), rb->el_size);
   return OK;
 } /* rbuffer_serve_front() */
 
 void* rbuffer_front(const struct rbuffer* const rb) {
-  FPC_CHECK(NULL, rb != NULL, !rbuffer_isempty(rb));
+  RCSW_FPC_NV(NULL, rb != NULL, !rbuffer_isempty(rb));
   return rbuffer_data_get(rb, rb->start);
 } /* rbuffer_serve_front() */
 
 status_t rbuffer_remove(struct rbuffer* const rb, void* const e) {
-  FPC_CHECK(ERROR, rb != NULL, !rbuffer_isempty(rb));
+  RCSW_FPC_NV(ERROR, rb != NULL, !rbuffer_isempty(rb));
 
   if (e != NULL) {
     rbuffer_serve_front(rb, e);
@@ -158,7 +158,7 @@ status_t rbuffer_remove(struct rbuffer* const rb, void* const e) {
 } /* rbuffer_remove() */
 
 int rbuffer_index_query(struct rbuffer* const rb, const void* const e) {
-  FPC_CHECK(ERROR, rb != NULL, rb->cmpe != NULL, e != NULL);
+  RCSW_FPC_NV(ERROR, rb != NULL, rb->cmpe != NULL, e != NULL);
 
   size_t wrap = 0;
   size_t i = rb->start;
@@ -182,7 +182,7 @@ int rbuffer_index_query(struct rbuffer* const rb, const void* const e) {
 } /* rbuffer_index_query() */
 
 status_t rbuffer_clear(struct rbuffer* const rb) {
-  FPC_CHECK(ERROR, rb != NULL);
+  RCSW_FPC_NV(ERROR, rb != NULL);
 
   memset(rb->elements, 0, rb->current * rb->el_size);
   rb->current = 0;
@@ -192,7 +192,7 @@ status_t rbuffer_clear(struct rbuffer* const rb) {
 } /* rbuffer_clear() */
 
 status_t rbuffer_map(struct rbuffer* const rb, void (*f)(void* e)) {
-  FPC_CHECK(ERROR, rb != NULL, f != NULL);
+  RCSW_FPC_NV(ERROR, rb != NULL, f != NULL);
 
   size_t count = 0;
   while (count < rb->current) {
@@ -205,7 +205,7 @@ status_t rbuffer_map(struct rbuffer* const rb, void (*f)(void* e)) {
 status_t rbuffer_inject(struct rbuffer* const rb,
                         void (*f)(void* e, void* res),
                         void* result) {
-  FPC_CHECK(ERROR, rb != NULL, f != NULL, result != NULL);
+  RCSW_FPC_NV(ERROR, rb != NULL, f != NULL, result != NULL);
 
   size_t count = 0;
   while (count < rb->current) {

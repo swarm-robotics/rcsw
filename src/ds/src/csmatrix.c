@@ -86,7 +86,7 @@ BEGIN_C_DECLS
  ******************************************************************************/
 struct csmatrix* csmatrix_init(struct csmatrix* const matrix_in,
                                const struct csmatrix_params* const params) {
-  FPC_CHECK(NULL, NULL != params);
+  RCSW_FPC_NV(NULL, NULL != params);
 
   struct csmatrix* matrix = NULL;
   if (params->flags & DS_APP_DOMAIN_HANDLE) {
@@ -174,7 +174,7 @@ error:
 } /* csmatrix_init() */
 
 void csmatrix_destroy(struct csmatrix* const matrix) {
-  FPC_CHECKV(FPC_VOID, NULL != matrix);
+  RCSW_FPC_V(NULL != matrix);
   darray_destroy(&matrix->inner_indices);
   darray_destroy(&matrix->outer_starts);
   darray_destroy(&matrix->values);
@@ -204,7 +204,7 @@ status_t csmatrix_entry_add(struct csmatrix* const matrix,
                             size_t row,
                             size_t col,
                             const void* const e) {
-  FPC_CHECK(ERROR, NULL != matrix, NULL != e);
+  RCSW_FPC_NV(ERROR, NULL != matrix, NULL != e);
 
   /* entry already exists--nothing to do */
   if (!sequential_insertions &&
@@ -269,7 +269,7 @@ error:
 int csmatrix_inner_index_get(const struct csmatrix* const matrix,
                              size_t row,
                              size_t col) {
-  FPC_CHECK(0, NULL != matrix, row < darray_n_elts(&matrix->outer_starts));
+  RCSW_FPC_NV(0, NULL != matrix, row < darray_n_elts(&matrix->outer_starts));
 
   size_t row_start = *(int*)darray_data_get(&matrix->outer_starts, row);
   size_t rsize = csmatrix_rsize(matrix, row);
@@ -291,7 +291,7 @@ status_t csmatrix_entry_set(struct csmatrix* const matrix,
                             size_t row,
                             size_t col,
                             const void* const e) {
-  FPC_CHECK(ERROR,
+  RCSW_FPC_NV(ERROR,
             NULL != matrix,
             NULL != e,
             row < darray_n_elts(&matrix->outer_starts));
@@ -308,7 +308,7 @@ error:
 void* csmatrix_entry_get(const struct csmatrix* const matrix,
                          size_t row,
                          size_t col) {
-  FPC_CHECK(0, NULL != matrix, row < darray_n_elts(&matrix->outer_starts));
+  RCSW_FPC_NV(0, NULL != matrix, row < darray_n_elts(&matrix->outer_starts));
 
   int index = csmatrix_inner_index_get(matrix, row, col);
   RCSW_CHECK(-1 != index);
@@ -322,7 +322,7 @@ error:
 status_t csmatrix_resize(struct csmatrix* const matrix,
                          size_t n_rows,
                          size_t n_nz_elts) {
-  FPC_CHECK(ERROR, NULL != matrix);
+  RCSW_FPC_NV(ERROR, NULL != matrix);
 
   /* RCSW_CHECK(OK == darray_resize(&matrix->outer_starts, n_rows+1)); */
   /* RCSW_CHECK(OK == darray_resize(&matrix->inner_indices, n_nz_elts)); */
@@ -338,7 +338,7 @@ error:
 } /* cs_matrix_resize() */
 
 status_t csmatrix_calc_clists(struct csmatrix* const matrix) {
-  FPC_CHECK(ERROR, NULL != matrix);
+  RCSW_FPC_NV(ERROR, NULL != matrix);
 
   for (size_t i = 0; i < csmatrix_n_rows(matrix); ++i) {
     int* links = csmatrix_row(matrix, i);
@@ -359,7 +359,7 @@ error:
 status_t csmatrix_vmult(const struct csmatrix* const matrix,
                         const struct darray* const vector_in,
                         struct darray* const vector_out) {
-  /* FPC_CHECK(ERROR, NULL != matrix, NULL != vector_in, NULL != vector_out, */
+  /* RCSW_FPC_NV(ERROR, NULL != matrix, NULL != vector_in, NULL != vector_out, */
   /*           csmatrix_n_rows(matrix) == darray_n_elts(vector_out), */
   /*           csmatrix_n_cols(matrix) == darray_n_elts(vector_in)); */
 
@@ -392,7 +392,7 @@ error:
 } /* csmatrix_vmult() */
 
 status_t csmatrix_cols_normalize(struct csmatrix* const matrix) {
-  FPC_CHECK(ERROR, NULL != matrix);
+  RCSW_FPC_NV(ERROR, NULL != matrix);
 
   for (size_t i = 0; i < csmatrix_n_cols(matrix); ++i) {
     if ((i % 100000) == 0) {
@@ -425,7 +425,7 @@ status_t csmatrix_cols_normalize(struct csmatrix* const matrix) {
 } /* csmatrix_cols_normalize() */
 
 struct csmatrix* csmatrix_transpose(struct csmatrix* const matrix) {
-  FPC_CHECK(NULL, NULL != matrix);
+  RCSW_FPC_NV(NULL, NULL != matrix);
 
   struct csmatrix_params params = {.n_rows = csmatrix_n_cols(matrix),
                                    .n_nz_elts = csmatrix_n_elts(matrix),

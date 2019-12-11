@@ -50,7 +50,7 @@ BEGIN_C_DECLS
  ******************************************************************************/
 struct mpi_spmv_mult* mpi_spmv_mult_init(
     const struct mpi_spmv_mult_params* const params) {
-  FPC_CHECK(NULL, NULL != params);
+  RCSW_FPC_NV(NULL, NULL != params);
 
   DBGD("Initializing sparse matrix -> vector multiplier\n");
 
@@ -145,7 +145,7 @@ void mpi_spmv_mult_destroy(struct mpi_spmv_mult* mult) {
 } /* mpi_spmv_mult_destroy() */
 
 status_t mpi_spmv_mult_ds_init(struct mpi_spmv_mult* const mult) {
-  FPC_CHECK(ERROR, NULL != mult);
+  RCSW_FPC_NV(ERROR, NULL != mult);
   MPI_Barrier(MPI_COMM_WORLD);
 
   DBGD("Rank%d: Initializing data structures\n", mult->mpi_rank);
@@ -219,7 +219,7 @@ error:
 
 status_t mpi_spmv_mult_distribute(struct mpi_spmv_mult* const mult,
                                   struct darray* const vector) {
-  FPC_CHECK(ERROR, NULL != mult);
+  RCSW_FPC_NV(ERROR, NULL != mult);
   DBGD("Rank%d: Distribute data to all ranks\n", mult->mpi_rank);
   /*
    * First, distribute the matrix to all ranks
@@ -350,7 +350,7 @@ error:
 } /* mpi_spmv_mult_distribute() */
 
 struct darray* mpi_spmv_mult_exec(struct mpi_spmv_mult* const mult) {
-  FPC_CHECK(ERROR, NULL != mult);
+  RCSW_FPC_NV(ERROR, NULL != mult);
   /*
    * Send the vector to multiply with from the root to all other ranks. All
    * other ranks won't need ALL of the elements in the vector, but it will
@@ -403,7 +403,7 @@ error:
  * Static Functions
  ******************************************************************************/
 static status_t mpi_spmv_alloc_init(struct mpi_spmv_mult* const mult) {
-  FPC_CHECK(ERROR, NULL != mult);
+  RCSW_FPC_NV(ERROR, NULL != mult);
 
   /*
    * Assign approximately n/p non-zero entries to each rank

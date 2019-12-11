@@ -58,7 +58,7 @@ BEGIN_C_DECLS
  ******************************************************************************/
 struct omp_radix_sorter* omp_radix_sorter_init(
     const struct omp_radix_sorter_params* const params) {
-  FPC_CHECK(NULL, NULL != params, NULL != params->data);
+  RCSW_FPC_NV(NULL, NULL != params, NULL != params->data);
 
   struct omp_radix_sorter* sorter = malloc(sizeof(struct omp_radix_sorter));
   RCSW_CHECK_PTR(sorter);

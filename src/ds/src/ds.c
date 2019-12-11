@@ -62,7 +62,7 @@ void* ds_meta_probe(uint8_t* mem_p,
 #endif
 
 status_t ds_elt_copy(void* const elt1, const void* const elt2, size_t el_size) {
-  FPC_CHECK(ERROR, NULL != elt1, NULL != elt2, el_size > 0);
+  RCSW_FPC_NV(ERROR, NULL != elt1, NULL != elt2, el_size > 0);
 
   switch (el_size) {
     case sizeof(uint8_t):
@@ -91,7 +91,7 @@ status_t ds_elt_copy(void* const elt1, const void* const elt2, size_t el_size) {
 } /* ds_elt_copy() */
 
 status_t ds_elt_swap(void* const elt1, void* const elt2, size_t el_size) {
-  FPC_CHECK(
+  RCSW_FPC_NV(
       ERROR, NULL != elt1, NULL != elt2, el_size > 0, el_size <= sizeof(double));
   double tmp;
   switch (el_size) {
@@ -130,7 +130,7 @@ status_t ds_elt_swap(void* const elt1, void* const elt2, size_t el_size) {
 } /* ds_elt_swap() */
 
 status_t ds_elt_clear(void* const elt, size_t el_size) {
-  FPC_CHECK(ERROR, NULL != elt, el_size > 0);
+  RCSW_FPC_NV(ERROR, NULL != elt, el_size > 0);
 
   switch (el_size) {
     case sizeof(uint8_t):
@@ -163,7 +163,7 @@ status_t ds_elt_clear(void* const elt, size_t el_size) {
 } /* ds_elt_clear() */
 
 bool_t ds_elt_zchk(void* const elt, size_t el_size) {
-  FPC_CHECK(ERROR, NULL != elt, el_size > 0);
+  RCSW_FPC_NV(ERROR, NULL != elt, el_size > 0);
   int sum = 0;
   switch (el_size) {
     case sizeof(uint8_t):

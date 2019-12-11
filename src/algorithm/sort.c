@@ -345,7 +345,7 @@ status_t radix_sort_prefix_sum(const size_t* const arr,
                                size_t base,
                                size_t digit,
                                size_t* const prefix_sums) {
-  FPC_CHECK(ERROR, NULL != arr, n_elts > 0, base > 0, NULL != prefix_sums);
+  RCSW_FPC_NV(ERROR, NULL != arr, n_elts > 0, base > 0, NULL != prefix_sums);
   memset(prefix_sums, 0, sizeof(size_t) * base);
 
   /*
@@ -370,7 +370,7 @@ status_t radix_counting_sort(size_t* const arr,
                              size_t n_elts,
                              size_t digit,
                              size_t base) {
-  FPC_CHECK(ERROR, NULL != arr, NULL != tmp, n_elts > 0, digit > 0, base > 0);
+  RCSW_FPC_NV(ERROR, NULL != arr, NULL != tmp, n_elts > 0, digit > 0, base > 0);
 
   size_t prefix_sums[base];
   memset(prefix_sums, 0, sizeof(prefix_sums));

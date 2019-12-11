@@ -88,7 +88,7 @@ static int hashnode_cmp(const void* n1, const void* n2);
  ******************************************************************************/
 struct hashmap* hashmap_init(struct hashmap* map_in,
                              const struct ds_params* const params) {
-  FPC_CHECK(NULL,
+  RCSW_FPC_NV(NULL,
             params != NULL,
             params->type.hm.hash != NULL,
             params->el_size > 0,
@@ -194,7 +194,7 @@ error:
 } /* hashmap_init() */
 
 void hashmap_destroy(struct hashmap* map) {
-  FPC_CHECKV(FPC_VOID, NULL != map, NULL != map->buckets);
+  RCSW_FPC_V(NULL != map, NULL != map->buckets);
 
   size_t i;
   for (i = 0; i < map->n_buckets; i++) {
@@ -216,7 +216,7 @@ void hashmap_destroy(struct hashmap* map) {
 struct darray* hashmap_query(const struct hashmap* const map,
                              const void* const key,
                              uint32_t* const hash_out) {
-  FPC_CHECK(NULL, map != NULL, key != NULL);
+  RCSW_FPC_NV(NULL, map != NULL, key != NULL);
 
   uint32_t hash = map->hash(key, map->keysize);
   uint32_t bucket_n = hash % map->n_buckets;
@@ -228,7 +228,7 @@ struct darray* hashmap_query(const struct hashmap* const map,
 } /* hashmap_query() */
 
 void* hashmap_data_get(struct hashmap* const map, const void* const key) {
-  FPC_CHECK(NULL, map != NULL, key != NULL);
+  RCSW_FPC_NV(NULL, map != NULL, key != NULL);
 
   uint32_t hash = 0;
   int node_index, bucket_index;
@@ -276,7 +276,7 @@ error:
 status_t hashmap_add(struct hashmap* const map,
                      const void* const key,
                      const void* const data) {
-  FPC_CHECK(ERROR, map != NULL, key != NULL);
+  RCSW_FPC_NV(ERROR, map != NULL, key != NULL);
 
   uint32_t hash = 0;
   size_t bucket_index;
@@ -359,7 +359,7 @@ error:
 } /* hashmap_add() */
 
 status_t hashmap_remove(struct hashmap* const map, const void* const key) {
-  FPC_CHECK(ERROR, map != NULL, key != NULL);
+  RCSW_FPC_NV(ERROR, map != NULL, key != NULL);
 
   uint32_t hash = 0;
   struct darray* bucket = hashmap_query(map, key, &hash);
@@ -405,7 +405,7 @@ error:
 } /* hashmap_remove() */
 
 status_t hashmap_sort(struct hashmap* const map) {
-  FPC_CHECK(ERROR, map != NULL);
+  RCSW_FPC_NV(ERROR, map != NULL);
 
   size_t i;
   for (i = 0; i < map->n_buckets; i++) {
@@ -417,7 +417,7 @@ status_t hashmap_sort(struct hashmap* const map) {
 } /* hashmap_sort() */
 
 status_t hashmap_clear(const struct hashmap* const map) {
-  FPC_CHECK(ERROR, map != NULL);
+  RCSW_FPC_NV(ERROR, map != NULL);
 
   size_t i;
   for (i = 0; i < map->n_buckets; ++i) {
@@ -431,7 +431,7 @@ error:
 
 status_t hashmap_gather(const struct hashmap* const map,
                         struct hashmap_stats* const stats) {
-  FPC_CHECK(ERROR, map != NULL, stats != NULL);
+  RCSW_FPC_NV(ERROR, map != NULL, stats != NULL);
 
   stats->n_buckets = map->n_buckets;
   stats->n_nodes = map->n_nodes;

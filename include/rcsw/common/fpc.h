@@ -5,9 +5,10 @@
  *
  * Allows you to define a set of conditions that must be met for a function to
  * proceed/must be true when it returns. If any of the conditions fails, the
- * function will return the specified return value if FPC_RETURN=\ref FPC_RETURN
- * is passed at compile time. Otherwise, FPC_RETURN=\ref FPC_ABORT is assumed,
- * and the failure of any condition will cause the program to halt.
+ * function will return the specified return value if RCSW_FPC_RETURN=\ref
+ * RCSW_FPC_RETURN is passed at compile time. Otherwise, RCSW_FPC_RETURN=\ref
+ * RCSW_FPC_ABORT is assumed, and the failure of any condition will cause the
+ * program to halt.
  *
  * @copyright 2017 John Harwell, All rights reserved.
  *
@@ -42,33 +43,31 @@
  * @brief Readability constants for determining whether or not the program
  * should halt if a function pre/post condition fails.
  */
-#define FPC_ABORT 0
+#define RCSW_FPC_ABORT 0
 
 /**
  * @brief Readability constants for determining whether or not the program
  * should return an error code of some kind when a function pre/post condition
  * fails.
  */
-#define FPC_RETURN 1
-
-/**
- * @brief Sentinel value to pass as first argument to \ref FPC_CHECKV(), for use
- * in functions that return void.
- */
-#define FPC_VOID 2
+#define RCSW_FPC_RETURN 1
 
 /*******************************************************************************
  * Function Precondition Checking Macros
  ******************************************************************************/
 /**
- * @def FPC_CHECKNV_(X, v)
+ * @def RCSW_FPC_RET_NV(X, v)
  *
  * Check a single function pre/post condition \a X, returning a value \a v if
  * the condition is not met. Requires that the function does not return
- * void. The value to return must be convertiable to the return type of the
+ * void. The value to return must be convertible to the return type of the
  * function.
+ *
+ * This macro can be used to unconditionally return if a precondition fails,
+ * rather than the behavior of \ref RCSW_FPC_NV, which is dependent on the
+ * value of \ref RCSW_FPC_TYPE.
  */
-#define FPC_CHECKNV_(X, v)                                              \
+#define RCSW_FPC_RET_NV(X, v)                                        \
   {                                                                     \
       if (!(X)) {                                                       \
         errno = EINVAL;                                                 \
@@ -77,13 +76,16 @@
   }
 
 /**
- * @def FPC_CHECKV_(X, v)
+ * @def RCSW_FPC_RET_V(X)
  *
  * Check a single function pre/post condition \a X, returning if the condition
- * is not met. Requires that the function returns void. The value to return
- * (\a v) should always be \ref FPC_VOID.
+ * is not met. Requires that the function returns void.
+ *
+ * This macro can be used to unconditionally return if a precondition fails,
+ * rather than the behavior of \ref RCSW_FPC_NV_NV_V, which is dependent on the
+ * value of \ref RCSW_FPC_TYPE.
  */
-#define FPC_CHECKV_(X, v)                       \
+#define RCSW_FPC_RET_V(X)                     \
   {                                             \
     if (!(X)) {                                 \
       errno = EINVAL;                           \
@@ -92,18 +94,41 @@
   }
 
 /**
- * @def FPC_ASSERT(X)
+ * @def RCSW_FPC_ASSERT(X)
  *
  * Check a single function pre/post condition, halting the program if the
  * condition \a X fails.
  */
-#define FPC_ASSERT(X) { assert(X); }
-#define FPC_CHECK2(X, v) FPC_ASSERT(X)
-
-#if(FPC_TYPE == FPC_RETURN)
+#define RCSW_FPC_ASSERT(X) { assert(X); }
 
 /**
- * @def FPC_CHECK(v, ...)
+ * @def RCSW_FPC_ABORT_NV(X)
+ *
+ * Check a single function pre/post condition \a X, aborting if the condition
+ * is not met.
+ *
+ * This macro can be used to unconditionally abort if a precondition fails,
+ * rather than the behavior of \ref RCSW_FPC_NV_NV_NV, which is dependent on the
+ * value of \ref RCSW_FPC_TYPE.
+ */
+#define RCSW_FPC_ABORT_NV(X, v) RCSW_FPC_ASSERT(X)
+
+/**
+ * @def RCSW_FPC_NV_ABORT_V(X)
+ *
+ * Check a single function pre/post condition \a X, aborting if the condition
+ * is not met.
+ *
+ * This macro can be used to unconditionally abort if a precondition fails,
+ * rather than the behavior of \ref RCSW_FPC_NV_NV_V, which is dependent on the
+ * value of \ref RCSW_FPC_TYPE.
+ */
+#define RCSW_FPC_ABORT_V(X) RCSW_FPC_ASSERT(X)
+
+#if(RCSW_FPC_TYPE == RCSW_FPC_RETURN)
+
+/**
+ * @def RCSW_FPC_NV(v, ...)
  *
  * Function pre/post condition macro.
  *
@@ -117,11 +142,11 @@
  * \a ... is a list of conditions that need to be met before the function can
  * execute/must be true when the function returns.
  */
-#define FPC_CHECK(v, ...)                               \
-    { RCSW_XFOR_EACH2(FPC_CHECKNV_, v, __VA_ARGS__); }
+#define RCSW_FPC_NV(v, ...)                               \
+    { RCSW_XFOR_EACH2(RCSW_FPC_RET_NV, v, __VA_ARGS__); }
 
 /**
- * @def FPC_CHECKV(v, ...)
+ * @def RCSW_FPC_V(v, ...)
  *
  * Function pre/post condition macro for functions that return void.
  *
@@ -129,22 +154,21 @@
  * i-1 fails, conditions [i,n] are not checked, and the function returns/program
  * exits (depending on configuration).
  *
- * \a v is the value to return. Should always be \ref FPC_VOID
- *
  * \a ... is a list of conditions that need to be met before the function can
  * execute/must be true when the function returns.
  */
-#define FPC_CHECKV(v, ...)                      \
-  { RCSW_XFOR_EACH2(FPC_CHECKV_, v, __VA_ARGS__); }
+#define RCSW_FPC_V(...)                                 \
+  { RCSW_XFOR_EACH1(RCSW_FPC_RET_V, __VA_ARGS__); }
 
-#elif(FPC_TYPE == FPC_ABORT)
+#elif(RCSW_FPC_TYPE == RCSW_FPC_ABORT)
 
-#define FPC_CHECK(v, ...)                       \
-    { RCSW_XFOR_EACH2(FPC_CHECK2, v, __VA_ARGS__); }
-#define FPC_CHECKV(v, ...)                       \
-  { RCSW_XFOR_EACH2(FPC_CHECK2, v, __VA_ARGS__); }
+#define RCSW_FPC_NV(v, ...)                       \
+    { RCSW_XFOR_EACH2(RCSW_FPC_ABORT_NV, v, __VA_ARGS__); }
+#define RCSW_FPC_V(...)                               \
+  { RCSW_XFOR_EACH1(RCSW_FPC_ABORT_V, __VA_ARGS__); }
 #else
-#define FPC_CHECK(v, ...)
-#endif /* FPC_TYPE */
+#define RCSW_FPC_NV(v, ...)
+#define RCSW_FPC_V(...)
+#endif /* RCSW_FPC_TYPE */
 
 #endif /* INCLUDE_RCSW_COMMON_FPC_H_ */

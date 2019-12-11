@@ -34,7 +34,7 @@ status_t omp_kernel2d_convolve1(float const* const __restrict__ input,
                                 size_t width,
                                 size_t height,
                                 float* const __restrict__ output) {
-  FPC_CHECK(ERROR, NULL != input, NULL != output);
+  RCSW_FPC_NV(ERROR, NULL != input, NULL != output);
 #pragma omp parallel
   {
 /* just copy boundaries */

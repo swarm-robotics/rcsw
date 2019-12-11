@@ -38,7 +38,7 @@ BEGIN_C_DECLS
 struct ds_iterator* ds_iter_init(enum ds_tag tag,
                                  void* const ds,
                                  bool_t (*f)(void* e)) {
-  FPC_CHECK(NULL, tag != DS_HASHMAP, tag != DS_BSTREE, ds != NULL);
+  RCSW_FPC_NV(NULL, tag != DS_HASHMAP, tag != DS_BSTREE, ds != NULL);
 
   struct llist* list = NULL;
   struct darray* arr = NULL;
@@ -80,7 +80,7 @@ struct ds_iterator* ds_iter_init(enum ds_tag tag,
 } /* ds_iter_init() */
 
 void* ds_iter_next(struct ds_iterator* const iter) {
-  FPC_CHECK(NULL, iter != NULL);
+  RCSW_FPC_NV(NULL, iter != NULL);
   switch (iter->tag) {
     case DS_LLIST: {
       LLIST_ITER(iter->list, iter->curr, next, curr) {

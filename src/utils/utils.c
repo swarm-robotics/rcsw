@@ -62,7 +62,7 @@ BEGIN_C_DECLS
  * Checksum Functions
  ******************************************************************************/
 status_t string_gen(char* const buf, size_t len) {
-  FPC_CHECK(ERROR, buf != NULL);
+  RCSW_FPC_NV(ERROR, buf != NULL);
 
   /* ASCII characters 33 to 126 */
   size_t n_chars = len - 1;

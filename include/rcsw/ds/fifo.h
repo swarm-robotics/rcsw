@@ -56,7 +56,7 @@ BEGIN_C_DECLS
  * @return \ref bool_t
  */
 static inline bool_t fifo_isfull(const struct fifo* const fifo) {
-    FPC_CHECK(FALSE, NULL != fifo);
+    RCSW_FPC_NV(FALSE, NULL != fifo);
     return rbuffer_isfull(&fifo->rb);
 }
 
@@ -68,7 +68,7 @@ static inline bool_t fifo_isfull(const struct fifo* const fifo) {
  * @return \ref bool_t
  */
 static inline bool_t fifo_isempty(const struct fifo* const fifo) {
-    FPC_CHECK(FALSE, NULL != fifo);
+    RCSW_FPC_NV(FALSE, NULL != fifo);
     return rbuffer_isempty(&fifo->rb);
 }
 
@@ -81,7 +81,7 @@ static inline bool_t fifo_isempty(const struct fifo* const fifo) {
  */
 
 static inline size_t fifo_n_elts(const struct fifo* const fifo) {
-    FPC_CHECK(0, NULL != fifo);
+    RCSW_FPC_NV(0, NULL != fifo);
     return rbuffer_n_elts(&fifo->rb);
 }
 
@@ -93,7 +93,7 @@ static inline size_t fifo_n_elts(const struct fifo* const fifo) {
  * @return Capacity of the FIFO, or 0 on ERROR.
  */
 static inline size_t fifo_capacity(const struct fifo* const fifo) {
-    FPC_CHECK(0, NULL != fifo);
+    RCSW_FPC_NV(0, NULL != fifo);
     return rbuffer_capacity(&fifo->rb);
 }
 
@@ -106,7 +106,7 @@ static inline size_t fifo_capacity(const struct fifo* const fifo) {
  * occurred.
  */
 static inline void* fifo_front(const struct fifo* const fifo) {
-    FPC_CHECK(0, NULL != fifo);
+    RCSW_FPC_NV(0, NULL != fifo);
     return rbuffer_front(&fifo->rb);
 }
 

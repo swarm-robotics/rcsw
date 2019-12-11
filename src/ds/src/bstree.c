@@ -47,7 +47,7 @@ BEGIN_C_DECLS
 struct bstree* bstree_init_internal(struct bstree* tree_in,
                                     const struct ds_params* const params,
                                     size_t node_size) {
-  FPC_CHECK(NULL,
+  RCSW_FPC_NV(NULL,
             params != NULL,
             params->tag == DS_BSTREE,
             params->cmpe != NULL,
@@ -132,7 +132,7 @@ error:
 } /* bstree_init_internal() */
 
 void bstree_destroy(struct bstree* tree) {
-  FPC_CHECKV(FPC_VOID, NULL != tree);
+  RCSW_FPC_V(NULL != tree);
 
   if (tree->root != NULL) {
     bstree_traverse_nodes_postorder(tree, tree->root, bstree_node_destroy);
@@ -150,7 +150,7 @@ void bstree_destroy(struct bstree* tree) {
 } /* bstree_destroy() */
 
 void* bstree_data_query(const struct bstree* const tree, const void* const key) {
-  FPC_CHECK(NULL, tree != NULL, key != NULL);
+  RCSW_FPC_NV(NULL, tree != NULL, key != NULL);
 
   struct bstree_node* node = bstree_node_query(tree, tree->root->left, key);
   return (node == NULL) ? NULL : node->data;
@@ -174,7 +174,7 @@ int bstree_traverse(struct bstree* const tree,
                     int (*cb)(const struct bstree* const tree,
                               struct bstree_node* const node),
                     enum bstree_traversal_type type) {
-  FPC_CHECK(ERROR, tree != NULL, cb != NULL);
+  RCSW_FPC_NV(ERROR, tree != NULL, cb != NULL);
 
   if (BSTREE_TRAVERSE_PREORDER == type) {
     return bstree_traverse_nodes_preorder(tree, tree->root->left, cb);
@@ -190,7 +190,7 @@ status_t bstree_insert_internal(struct bstree* const tree,
                                 void* const key,
                                 void* const data,
                                 size_t node_size) {
-  FPC_CHECK(ERROR, tree != NULL, key != NULL, data != NULL);
+  RCSW_FPC_NV(ERROR, tree != NULL, key != NULL, data != NULL);
 
   struct bstree_node* node = tree->root->left;
   struct bstree_node* parent = tree->root;
@@ -242,9 +242,9 @@ status_t bstree_insert_internal(struct bstree* const tree,
     tree->root->left->red = FALSE; /* first node is always black */
 
     /* Verify properties of RB Tree still hold */
-    FPC_CHECK(ERROR, !tree->root->red);
-    FPC_CHECK(ERROR, !tree->nil->red);
-    FPC_CHECK(ERROR,
+    RCSW_FPC_NV(ERROR, !tree->root->red);
+    RCSW_FPC_NV(ERROR, !tree->nil->red);
+    RCSW_FPC_NV(ERROR,
               rbtree_node_black_height(tree->root->left->left) ==
                   rbtree_node_black_height(tree->root->left->right));
   }
@@ -257,7 +257,7 @@ error:
 } /* bstree_insert_internal() */
 
 status_t bstree_remove(struct bstree* const tree, const void* const key) {
-  FPC_CHECK(ERROR, tree != NULL, key != NULL);
+  RCSW_FPC_NV(ERROR, tree != NULL, key != NULL);
 
   struct bstree_node* victim = bstree_node_query(tree, tree->root->left, key);
   RCSW_CHECK_PTR(victim);
@@ -271,7 +271,7 @@ status_t bstree_delete(struct bstree* const tree,
                        struct bstree_node* z,
                        void* const e) /* to be filled if non-NULL */
 {
-  FPC_CHECK(ERROR, tree != NULL, z != NULL);
+  RCSW_FPC_NV(ERROR, tree != NULL, z != NULL);
 
   struct bstree_node* x;
   struct bstree_node* y;
@@ -334,9 +334,9 @@ status_t bstree_delete(struct bstree* const tree,
 
   if (tree->flags & DS_BSTREE_REDBLACK) {
     /* Verify properties of RB Tree still hold */
-    FPC_CHECK(ERROR, !tree->root->red);
-    FPC_CHECK(ERROR, !tree->nil->red);
-    FPC_CHECK(ERROR,
+    RCSW_FPC_NV(ERROR, !tree->root->red);
+    RCSW_FPC_NV(ERROR, !tree->nil->red);
+    RCSW_FPC_NV(ERROR,
               rbtree_node_black_height(tree->root->left->left) ==
                   rbtree_node_black_height(tree->root->left->right));
   }

@@ -59,7 +59,7 @@ BEGIN_C_DECLS
 
 struct pulse_inst* pulse_init(struct pulse_inst* pulse_in,
                               const struct pulse_params* params) {
-  FPC_CHECK(NULL, params != NULL);
+  RCSW_FPC_NV(NULL, params != NULL);
   struct pulse_inst* pulse = NULL;
   uint16_t i = 0;
 
@@ -126,7 +126,7 @@ error:
 } /* pulse_init() */
 
 void pulse_destroy(struct pulse_inst* pulse) {
-  FPC_CHECKV(FPC_VOID, NULL != pulse);
+  RCSW_FPC_V(NULL != pulse);
 
   if (pulse->buffer_pools) {
     for (size_t i = 0; i < pulse->n_pools; ++i) {
@@ -150,7 +150,7 @@ status_t pulse_publish(struct pulse_inst* pulse,
                        uint32_t pid,
                        size_t pkt_size,
                        const void* pkt) {
-  FPC_CHECK(ERROR, pulse != NULL, pkt_size > 0);
+  RCSW_FPC_NV(ERROR, pulse != NULL, pkt_size > 0);
 
   DBGV("Publishing to bus %s\n", pulse->name);
   DBGV("Packet ID   : 0x%08X\n", pid);
@@ -180,7 +180,7 @@ status_t pulse_publish_release(struct pulse_inst* pulse,
                                struct pulse_bp_ent* bp_ent,
                                void* reservation,
                                size_t pkt_size) {
-  FPC_CHECK(
+  RCSW_FPC_NV(
       ERROR, pulse != NULL, NULL != bp_ent, reservation != NULL, pkt_size > 0);
   status_t rstat = OK;
   struct pulse_rxq_ent rxq_entry;
@@ -235,7 +235,7 @@ error:
 struct mt_queue* pulse_rxq_init(struct pulse_inst* pulse,
                                 void* buf_p,
                                 uint32_t n_entries) {
-  FPC_CHECK(NULL, pulse != NULL);
+  RCSW_FPC_NV(NULL, pulse != NULL);
 
   DBGD("Initializing new receive queue\n");
   mt_mutex_lock(&(pulse->mutex));
@@ -265,7 +265,7 @@ error:
 status_t pulse_subscribe(struct pulse_inst* pulse,
                          struct mt_queue* queue,
                          uint32_t pid) {
-  FPC_CHECK(ERROR, pulse != NULL, queue != NULL);
+  RCSW_FPC_NV(ERROR, pulse != NULL, queue != NULL);
 
   mt_mutex_lock(&pulse->mutex);
   SOFT_ASSERT(llist_n_elts(pulse->sub_list) < pulse->max_subs,
@@ -293,7 +293,7 @@ error:
 status_t pulse_unsubscribe(struct pulse_inst* pulse,
                            struct mt_queue* queue,
                            uint32_t pid) {
-  FPC_CHECK(ERROR, pulse != NULL, queue != NULL);
+  RCSW_FPC_NV(ERROR, pulse != NULL, queue != NULL);
   status_t rstat = ERROR;
   mt_mutex_lock(&pulse->mutex);
 
@@ -314,7 +314,7 @@ error:
 } /* pulse_unsubscribe() */
 
 void* pulse_wait_front(struct mt_queue* queue) {
-  FPC_CHECK(NULL, NULL != queue);
+  RCSW_FPC_NV(NULL, NULL != queue);
   uint8_t* pkt = NULL;
   struct pulse_rxq_ent ent;
   RCSW_CHECK(OK == mt_queue_pop(queue, &ent));
@@ -325,7 +325,7 @@ error:
 } /* pulse_wait_front() */
 
 void* pulse_timedwait_front(struct mt_queue* queue, struct timespec* to) {
-  FPC_CHECK(NULL, NULL != queue, NULL != to);
+  RCSW_FPC_NV(NULL, NULL != queue, NULL != to);
   uint8_t* pkt = NULL;
   struct pulse_rxq_ent ent;
   RCSW_CHECK(OK == mt_queue_timed_pop(queue, to, &ent));
@@ -336,7 +336,7 @@ error:
 } /* pulse_timedwait_front() */
 
 status_t pulse_pop_front(struct mt_queue* queue) {
-  FPC_CHECK(ERROR, queue != NULL);
+  RCSW_FPC_NV(ERROR, queue != NULL);
 
   status_t rstat = ERROR;
   struct pulse_rxq_ent* ent = mt_queue_peek(queue);
@@ -362,7 +362,7 @@ error:
 static void* pulse_publish_reserve(struct pulse_inst* pulse,
                                    struct pulse_bp_ent** bp_ent,
                                    size_t pkt_size) {
-  FPC_CHECK(NULL, NULL != pulse, NULL != bp_ent, pkt_size > 0);
+  RCSW_FPC_NV(NULL, NULL != pulse, NULL != bp_ent, pkt_size > 0);
 
   DBGD("Reserving %zu byte buffer on bus %s\n", pkt_size, pulse->name);
   for (size_t i = 0; i < pulse->n_pools; i++) {
@@ -394,7 +394,7 @@ error:
 status_t pulse_subscriber_notify(struct pulse_bp_ent* bp_ent,
                                  const struct pulse_sub_ent* sub,
                                  struct pulse_rxq_ent* rxq_ent) {
-  FPC_CHECK(ERROR,
+  RCSW_FPC_NV(ERROR,
             NULL != bp_ent,
             NULL != sub,
             NULL != sub->subscriber,

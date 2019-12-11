@@ -50,7 +50,7 @@ error:
 } /* mt_cond_init() */
 
 void mt_cond_destroy(mt_cond_t* const cv) {
-  FPC_CHECKV(FPC_VOID, NULL != cv);
+  RCSW_FPC_V(NULL != cv);
 
   pthread_cond_destroy(&cv->cv);
   if (cv->flags & MT_APP_DOMAIN_MEM) {
@@ -59,7 +59,7 @@ void mt_cond_destroy(mt_cond_t* const cv) {
 } /* mt_cond_destroy() */
 
 status_t mt_cond_signal(mt_cond_t* const cv) {
-  FPC_CHECK(ERROR, NULL != cv);
+  RCSW_FPC_NV(ERROR, NULL != cv);
   RCSW_CHECK(0 == pthread_cond_signal(&cv->cv));
   return OK;
 
@@ -68,7 +68,7 @@ error:
 } /* mt_cond_signal() */
 
 status_t mt_cond_wait(mt_cond_t* const cv, mt_mutex_t* const mutex) {
-  FPC_CHECK(ERROR, NULL != cv);
+  RCSW_FPC_NV(ERROR, NULL != cv);
   RCSW_CHECK(0 == pthread_cond_wait(&cv->cv, &mutex->mutex));
   return OK;
 
@@ -79,7 +79,7 @@ error:
 status_t mt_cond_timedwait(mt_cond_t* const cv,
                            mt_mutex_t* const mutex,
                            const struct timespec* const to) {
-  FPC_CHECK(ERROR, NULL != cv, NULL != to);
+  RCSW_FPC_NV(ERROR, NULL != cv, NULL != to);
   struct timespec ts = {.tv_sec = 0, .tv_nsec = 0};
 
   /* Get current time */
@@ -92,7 +92,7 @@ error:
 } /* mt_cond_timedwait() */
 
 status_t mt_cond_broadcast(mt_cond_t* const cv) {
-  FPC_CHECK(ERROR, NULL != cv);
+  RCSW_FPC_NV(ERROR, NULL != cv);
   RCSW_CHECK(0 == pthread_cond_broadcast(&cv->cv));
   return OK;
 

@@ -31,7 +31,7 @@
  * API Functions
  ******************************************************************************/
 size_t alg_arr_largest_num(const size_t* const array, size_t n_elts) {
-  FPC_CHECK(-1, NULL != array);
+  RCSW_FPC_NV(-1, NULL != array);
   size_t largest = 0;
 
   for (size_t i = 0; i < n_elts; i++) {
@@ -43,7 +43,7 @@ size_t alg_arr_largest_num(const size_t* const array, size_t n_elts) {
 } /* largest_num() */
 
 int alg_arr_largest_num2(const int* const array, size_t n_elts) {
-  FPC_CHECK(-1, NULL != array);
+  RCSW_FPC_NV(-1, NULL != array);
   int largest = 0;
 
   for (size_t i = 0; i < n_elts; i++) {
@@ -58,7 +58,7 @@ bool_t str_is_parenthesizable(const char* const x,
                               char* const r,
                               char el,
                               char (*multiply_cb)(char x, char y)) {
-  FPC_CHECK(FALSE, NULL != x, NULL != r, NULL != multiply_cb);
+  RCSW_FPC_NV(FALSE, NULL != x, NULL != r, NULL != multiply_cb);
 
   size_t len = strlen(x);
   memset(r, '\0', len * len);

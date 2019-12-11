@@ -66,7 +66,7 @@ static void bin_heap_swap(struct bin_heap* heap, size_t i1, size_t i2);
  ******************************************************************************/
 struct bin_heap* bin_heap_init(struct bin_heap* bin_heap_in,
                                const struct ds_params* const params) {
-  FPC_CHECK(NULL,
+  RCSW_FPC_NV(NULL,
             params != NULL,
             params->tag == DS_BIN_HEAP,
             params->max_elts > 0,
@@ -117,7 +117,7 @@ error:
 } /* bin_heap_init() */
 
 void bin_heap_destroy(struct bin_heap* heap) {
-  FPC_CHECKV(FPC_VOID, NULL != heap);
+  RCSW_FPC_V(NULL != heap);
   darray_destroy(&heap->arr);
   if (!(heap->flags & DS_APP_DOMAIN_HANDLE)) {
     free(heap);
@@ -125,7 +125,7 @@ void bin_heap_destroy(struct bin_heap* heap) {
 } /* bin_heap_destroy() */
 
 status_t bin_heap_insert(struct bin_heap* const heap, const void* const e) {
-  FPC_CHECK(ERROR, heap != NULL, e != NULL, !bin_heap_isfull(heap));
+  RCSW_FPC_NV(ERROR, heap != NULL, e != NULL, !bin_heap_isfull(heap));
 
   RCSW_CHECK(OK == darray_insert(&heap->arr, e, heap->arr.current));
 
@@ -140,7 +140,7 @@ error:
 status_t bin_heap_make(struct bin_heap* const heap,
                        const void* const data,
                        size_t n_elts) {
-  FPC_CHECK(ERROR, NULL != heap, NULL != data, n_elts > 0);
+  RCSW_FPC_NV(ERROR, NULL != heap, NULL != data, n_elts > 0);
 
   DBGD("Making heap from %zu %zu-byte elements\n", n_elts, heap->arr.el_size);
   for (size_t i = 0; i < n_elts; ++i) {
@@ -165,7 +165,7 @@ error:
 } /* bin_heap_make() */
 
 status_t bin_heap_extract(struct bin_heap* const heap, void* const e) {
-  FPC_CHECK(ERROR, heap != NULL, !bin_heap_isempty(heap));
+  RCSW_FPC_NV(ERROR, heap != NULL, !bin_heap_isempty(heap));
 
   if (e) {
     ds_elt_copy(e, darray_data_get(&heap->arr, 1), heap->arr.el_size);
@@ -186,7 +186,7 @@ error:
 status_t bin_heap_update_key(struct bin_heap* const heap,
                              size_t index,
                              const void* const new_val) {
-  FPC_CHECK(ERROR, NULL != heap, index > 0, NULL != new_val);
+  RCSW_FPC_NV(ERROR, NULL != heap, index > 0, NULL != new_val);
   RCSW_CHECK(OK == darray_data_set(&heap->arr, index, new_val));
   bin_heap_sift_up(heap, index);
 
@@ -199,7 +199,7 @@ error:
 status_t bin_heap_delete_key(struct bin_heap* const heap,
                              size_t index,
                              const void* const min_val) {
-  FPC_CHECK(ERROR, NULL != heap, index > 0, NULL != min_val);
+  RCSW_FPC_NV(ERROR, NULL != heap, index > 0, NULL != min_val);
   RCSW_CHECK(OK == bin_heap_update_key(heap, index, min_val));
   RCSW_CHECK(OK == bin_heap_extract(heap, NULL));
   return OK;

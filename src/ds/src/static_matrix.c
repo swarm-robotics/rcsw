@@ -39,7 +39,7 @@ BEGIN_C_DECLS
  ******************************************************************************/
 struct static_matrix* static_matrix_init(struct static_matrix* const matrix_in,
                                          const struct ds_params* const params) {
-  FPC_CHECK(NULL,
+  RCSW_FPC_NV(NULL,
             NULL != params,
             params->tag == DS_STATIC_MATRIX,
             params->type.smat.n_rows > 0,
@@ -72,7 +72,7 @@ error:
 } /* static_matrix_init() */
 
 void static_matrix_destroy(struct static_matrix* const matrix) {
-  FPC_CHECKV(FPC_VOID, NULL != matrix);
+  RCSW_FPC_V(NULL != matrix);
   if (!(matrix->flags & DS_APP_DOMAIN_DATA)) {
     free(matrix->elements);
   }
@@ -82,7 +82,7 @@ void static_matrix_destroy(struct static_matrix* const matrix) {
 } /* static_matrix_destroy() */
 
 status_t static_matrix_transpose(struct static_matrix* const matrix) {
-  FPC_CHECK(ERROR, NULL != matrix, matrix->n_rows == matrix->n_cols);
+  RCSW_FPC_NV(ERROR, NULL != matrix, matrix->n_rows == matrix->n_cols);
 
   /*
    * Assuming matrix is square, the simple algorithm can be used. First and
@@ -100,7 +100,7 @@ status_t static_matrix_transpose(struct static_matrix* const matrix) {
 } /* static_matrix_transpose() */
 
 void static_matrix_print(const struct static_matrix* const matrix) {
-  FPC_CHECKV(FPC_VOID, NULL != matrix, NULL != matrix->printe);
+  RCSW_FPC_V(NULL != matrix, NULL != matrix->printe);
 
   DPRINTF("{");
   for (size_t i = 0; i < matrix->n_rows; ++i) {

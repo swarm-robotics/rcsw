@@ -147,7 +147,7 @@
  * You can obviously do this without a macro, but this is (1) more self
  * documenting, and (2) less error prone.
  */
-#define RCSW_IS_ODD(n) ((n)&1)
+#define RCSW_IS_ODD(n) ((n)&1U)
 
 /**
  * @def RCSW_IS_EVEN(n)
@@ -157,7 +157,7 @@
  * You can obviously do this without a macro, but this is (1) more self
  * documenting, and (2) less error prone.
  */
-#define RCSW_IS_EVEN(n) (!IS_ODD((n)))
+#define RCSW_IS_EVEN(n) (!RCSW_IS_ODD((n)))
 
 /**
  * @def RCSW_IS_BETWEEN(n, low, high)
@@ -495,5 +495,4 @@
 #define RCSW_STATIC_ASSERT(expr, msg)                                   \
     extern int(*assert_function__(void))[STATIC_ASSERT_HELPER(expr, msg)]
 
-#define RCSW_
 #endif /* INCLUDE_RCSW_COMMON_COMMON_H_ */

@@ -52,7 +52,7 @@ error:
 } /* mt_csem_init() */
 
 void mt_csem_destroy(mt_csem_t* sem) {
-  FPC_CHECKV(FPC_VOID, NULL != sem);
+  RCSW_FPC_V(NULL != sem);
 
   sem_destroy(&sem->sem);
   if (sem->flags & MT_APP_DOMAIN_MEM) {
@@ -61,7 +61,7 @@ void mt_csem_destroy(mt_csem_t* sem) {
 } /* mt_csem_destroy() */
 
 status_t mt_csem_wait(mt_csem_t* sem) {
-  FPC_CHECK(ERROR, NULL != sem);
+  RCSW_FPC_NV(ERROR, NULL != sem);
   RCSW_CHECK(0 == sem_wait(&sem->sem));
   return OK;
 
@@ -70,7 +70,7 @@ error:
 } /* mt_csem_wait() */
 
 status_t mt_csem_trywait(mt_csem_t* sem) {
-  FPC_CHECK(ERROR, NULL != sem);
+  RCSW_FPC_NV(ERROR, NULL != sem);
   RCSW_CHECK(0 == sem_trywait(&sem->sem));
   return OK;
 
@@ -80,7 +80,7 @@ error:
 
 status_t mt_csem_timedwait(mt_csem_t* const sem,
                            const struct timespec* const to) {
-  FPC_CHECK(ERROR, NULL != sem, NULL != to);
+  RCSW_FPC_NV(ERROR, NULL != sem, NULL != to);
   struct timespec ts = {.tv_sec = 0, .tv_nsec = 0};
   RCSW_CHECK(OK == time_ts_ref_conv(to, &ts));
   RCSW_CHECK(0 == sem_timedwait(&sem->sem, &ts));
@@ -91,7 +91,7 @@ error:
 } /* mt_csem_timedwait() */
 
 status_t mt_csem_post(mt_csem_t* sem) {
-  FPC_CHECK(ERROR, NULL != sem);
+  RCSW_FPC_NV(ERROR, NULL != sem);
   RCSW_CHECK(0 == sem_post(&sem->sem));
   return OK;
 

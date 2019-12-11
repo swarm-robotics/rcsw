@@ -38,7 +38,7 @@ BEGIN_C_DECLS
 
 struct llist* llist_init(struct llist* list_in,
                          const struct ds_params* const params) {
-  FPC_CHECK(NULL,
+  RCSW_FPC_NV(NULL,
             params != NULL,
             params->tag == DS_LLIST,
             params->max_elts != 0,
@@ -110,7 +110,7 @@ error:
 } /* llist_init() */
 
 void llist_destroy(struct llist* list) {
-  FPC_CHECKV(FPC_VOID, NULL != list);
+  RCSW_FPC_V(NULL != list);
 
   struct llist_node* curr = list->first;
   struct llist_node* next;
@@ -128,7 +128,7 @@ void llist_destroy(struct llist* list) {
 } /* llist_destroy() */
 
 status_t llist_clear(struct llist* const list) {
-  FPC_CHECK(ERROR, list != NULL);
+  RCSW_FPC_NV(ERROR, list != NULL);
 
   struct llist_node* curr = list->first;
   struct llist_node* next;
@@ -145,7 +145,7 @@ status_t llist_clear(struct llist* const list) {
 } /* llist_clear() */
 
 status_t llist_remove(struct llist* const list, const void* const e) {
-  FPC_CHECK(ERROR, list != NULL, e != NULL);
+  RCSW_FPC_NV(ERROR, list != NULL, e != NULL);
 
   /* can't remove from an empty list */
   if (llist_isempty(list)) {
@@ -188,7 +188,7 @@ status_t llist_delete(struct llist* const list,
 } /* llist_delete() */
 
 status_t llist_append(struct llist* const list, void* const data) {
-  FPC_CHECK(ERROR, list != NULL, data != NULL);
+  RCSW_FPC_NV(ERROR, list != NULL, data != NULL);
 
   if (llist_isfull(list) && list->max_elts != -1) {
     DBGE("ERROR: Cannot insert element: no space\n");
@@ -223,7 +223,7 @@ error:
 } /* llist_append() */
 
 status_t llist_prepend(struct llist* const list, void* const data) {
-  FPC_CHECK(ERROR, list != NULL, data != NULL);
+  RCSW_FPC_NV(ERROR, list != NULL, data != NULL);
 
   if (llist_isfull(list) && list->max_elts != -1) {
     DBGE("ERROR: Cannot insert element: no space\n");
@@ -278,7 +278,7 @@ void llist_print(struct llist* const list) {
 } /* llist_print() */
 
 void* llist_data_query(struct llist* const list, const void* const e) {
-  FPC_CHECK(NULL, list != NULL, e != NULL);
+  RCSW_FPC_NV(NULL, list != NULL, e != NULL);
 
   if (list->cmpe == NULL && !(list->flags & DS_LLIST_PTR_CMP)) {
     DBGE("ERROR: Cannot search list: NULL cmpe()\n");
@@ -291,7 +291,7 @@ void* llist_data_query(struct llist* const list, const void* const e) {
 
 struct llist_node* llist_node_query(struct llist* const list,
                                     const void* const e) {
-  FPC_CHECK(NULL, list != NULL, e != NULL);
+  RCSW_FPC_NV(NULL, list != NULL, e != NULL);
 
   if (list->cmpe == NULL && !(list->flags & DS_LLIST_PTR_CMP)) {
     DBGE("ERROR: Cannot search list: NULL cmpe()\n");
@@ -316,7 +316,7 @@ struct llist_node* llist_node_query(struct llist* const list,
 } /* llist_node_query() */
 
 status_t llist_sort(struct llist* const list, enum alg_sort_type type) {
-  FPC_CHECK(ERROR, list != NULL, list->cmpe != NULL);
+  RCSW_FPC_NV(ERROR, list != NULL, list->cmpe != NULL);
 
   status_t rval = OK;
 
@@ -355,7 +355,7 @@ status_t llist_sort(struct llist* const list, enum alg_sort_type type) {
 
 struct llist* llist_copy(struct llist* const list,
                          const struct ds_params* const cparams) {
-  FPC_CHECK(NULL, list != NULL);
+  RCSW_FPC_NV(NULL, list != NULL);
 
   struct ds_params params = {.cmpe = list->cmpe,
                              .printe = list->printe,
@@ -380,7 +380,7 @@ error:
 struct llist* llist_copy2(struct llist* const list,
                           bool_t (*pred)(const void* const e),
                           const struct ds_params* const cparams) {
-  FPC_CHECK(NULL, list != NULL, pred != NULL);
+  RCSW_FPC_NV(NULL, list != NULL, pred != NULL);
 
   struct ds_params params = {.cmpe = list->cmpe,
                              .printe = list->printe,
@@ -412,7 +412,7 @@ error:
 struct llist* llist_filter(struct llist* list,
                            bool_t (*pred)(const void* const e),
                            const struct ds_params* const fparams) {
-  FPC_CHECK(NULL, list != NULL, pred != NULL);
+  RCSW_FPC_NV(NULL, list != NULL, pred != NULL);
 
   struct ds_params params = {.cmpe = list->cmpe,
                              .printe = list->printe,
@@ -462,7 +462,7 @@ error:
 } /* llist_filter() */
 
 status_t llist_filter2(struct llist* list, bool_t (*pred)(const void* const e)) {
-  FPC_CHECK(ERROR, list != NULL, pred != NULL);
+  RCSW_FPC_NV(ERROR, list != NULL, pred != NULL);
 
   /*
    * Iterate through list, removing matching elements AFTER you have advanced
@@ -504,7 +504,7 @@ error:
 status_t llist_splice(struct llist* list1,
                       struct llist* list2,
                       const struct llist_node* const node) {
-  FPC_CHECK(ERROR, list1 != NULL, list2 != NULL, node != NULL);
+  RCSW_FPC_NV(ERROR, list1 != NULL, list2 != NULL, node != NULL);
 
   if (list1->current + list2->current > (size_t)list1->max_elts &&
       list1->max_elts != -1) {
@@ -571,7 +571,7 @@ error:
 } /* llist_splice() */
 
 status_t llist_map(struct llist* list, void (*f)(void* e)) {
-  FPC_CHECK(ERROR, list != NULL, f != NULL);
+  RCSW_FPC_NV(ERROR, list != NULL, f != NULL);
 
   LLIST_FOREACH(list, next, curr) { f(curr->data); }
 
@@ -581,7 +581,7 @@ status_t llist_map(struct llist* list, void (*f)(void* e)) {
 status_t llist_inject(struct llist* const list,
                       void (*f)(void* e, void* res),
                       void* result) {
-  FPC_CHECK(ERROR, list != NULL, f != NULL, result != NULL);
+  RCSW_FPC_NV(ERROR, list != NULL, f != NULL, result != NULL);
 
   LLIST_FOREACH(list, next, curr) { f(curr->data, result); }
 
@@ -589,7 +589,7 @@ status_t llist_inject(struct llist* const list,
 } /* llist_inject() */
 
 size_t llist_heap_footprint(const struct llist* const list) {
-  FPC_CHECK(0, NULL != list);
+  RCSW_FPC_NV(0, NULL != list);
 
   size_t size = 0;
   if (list->flags & DS_APP_DOMAIN_HANDLE) {

@@ -101,7 +101,7 @@ status_t edit_dist_init(struct edit_dist_finder* finder,
                         size_t el_size,
                         bool_t (*cmpe)(const void* e1, const void* e2),
                         size_t (*seq_len)(const void* seq)) {
-  FPC_CHECK(ERROR,
+  RCSW_FPC_NV(ERROR,
             NULL != finder,
             NULL != a,
             NULL != b,
@@ -135,7 +135,7 @@ void edit_dist_destroy(struct edit_dist_finder* finder) {
 
 int edit_dist_find(struct edit_dist_finder* finder,
                    enum edit_dist_exec_type type) {
-  FPC_CHECK(-1, NULL != finder);
+  RCSW_FPC_NV(-1, NULL != finder);
   if (EDIT_DIST_ITER == type) {
     return edit_dist_iter(finder->a_,
                           finder->b_,
@@ -161,7 +161,7 @@ static int edit_dist_rec(const char* a,
                          size_t (*seq_len)(const void* seq),
                          bool_t (*cmpe)(const void* e1, const void* e2),
                          size_t el_size) {
-  FPC_CHECK(-1, NULL != a, NULL != b, NULL != c);
+  RCSW_FPC_NV(-1, NULL != a, NULL != b, NULL != c);
   size_t len_x = seq_len(a);
   size_t len_y = seq_len(b);
 

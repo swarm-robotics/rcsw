@@ -79,7 +79,7 @@ void llist_node_dealloc(struct llist* const list, struct llist_node* node) {
 } /* llist_node_dealloc() */
 
 void llist_node_destroy(struct llist* const list, struct llist_node* node) {
-  FPC_CHECKV(FPC_VOID, NULL != node);
+  RCSW_FPC_V(NULL != node);
 
   /* deallocate data block, first, then llist_node */
   llist_node_datablock_dealloc(list, node->data);

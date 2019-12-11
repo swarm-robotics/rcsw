@@ -55,7 +55,7 @@ static void static_adj_matrix_printew(const void* e);
 struct static_adj_matrix* static_adj_matrix_init(
     struct static_adj_matrix* const matrix_in,
     const struct ds_params* const params) {
-  FPC_CHECK(NULL, NULL != params, params->tag == DS_ADJ_MATRIX);
+  RCSW_FPC_NV(NULL, NULL != params, params->tag == DS_ADJ_MATRIX);
   struct static_adj_matrix* matrix = NULL;
 
   if (params->flags & DS_APP_DOMAIN_HANDLE) {
@@ -110,7 +110,7 @@ error:
 } /* static_adj_matrix_init() */
 
 void static_adj_matrix_destroy(struct static_adj_matrix* const matrix) {
-  FPC_CHECKV(FPC_VOID, NULL != matrix);
+  RCSW_FPC_V(NULL != matrix);
   static_matrix_destroy(&matrix->matrix);
   if (!(matrix->flags & DS_APP_DOMAIN_HANDLE)) {
     free(matrix);
@@ -120,7 +120,7 @@ void static_adj_matrix_destroy(struct static_adj_matrix* const matrix) {
 status_t static_adj_matrix_edge_addu(struct static_adj_matrix* const matrix,
                                      size_t u,
                                      size_t v) {
-  FPC_CHECK(ERROR,
+  RCSW_FPC_NV(ERROR,
             NULL != matrix,
             !matrix->is_directed,
             u < matrix->n_vertices,
@@ -144,7 +144,7 @@ status_t static_adj_matrix_edge_addd(struct static_adj_matrix* const matrix,
                                      size_t u,
                                      size_t v,
                                      const double* const w) {
-  FPC_CHECK(ERROR,
+  RCSW_FPC_NV(ERROR,
             NULL != matrix,
             matrix->is_directed,
             u < matrix->n_vertices,
@@ -167,7 +167,7 @@ error:
 status_t static_adj_matrix_edge_remove(struct static_adj_matrix* const matrix,
                                        size_t u,
                                        size_t v) {
-  FPC_CHECK(
+  RCSW_FPC_NV(
       ERROR, NULL != matrix, u < matrix->n_vertices, v < matrix->n_vertices);
   DBGV("Remove edge: (%zu, %zu)\n", u, v);
   if (matrix->is_weighted) {

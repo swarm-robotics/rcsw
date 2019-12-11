@@ -36,7 +36,7 @@ status_t rawfifo_init(struct rawfifo* const fifo,
                       uint8_t* const buf,
                       size_t max_elts,
                       size_t el_size) {
-  FPC_CHECK(ERROR, NULL != fifo, NULL != buf);
+  RCSW_FPC_NV(ERROR, NULL != fifo, NULL != buf);
   fifo->elements = buf;
   fifo->max_elts = max_elts; /* fifo elts + 1 */
   fifo->el_size = el_size;
@@ -47,7 +47,7 @@ status_t rawfifo_init(struct rawfifo* const fifo,
 } /* rawfifo_init() */
 
 size_t rawfifo_deq(struct rawfifo* fifo, void* e, size_t n_elts) {
-  FPC_CHECK(-1, NULL != fifo, NULL != e);
+  RCSW_FPC_NV(-1, NULL != fifo, NULL != e);
 
   /* If they try to remove more elements than are in the fifo, cap it. */
   n_elts = RCSW_MAX(rawfifo_n_elts(fifo), n_elts);
@@ -66,7 +66,7 @@ size_t rawfifo_deq(struct rawfifo* fifo, void* e, size_t n_elts) {
 size_t rawfifo_enq(struct rawfifo* const fifo,
                    const void* const elts,
                    size_t n_elts) {
-  FPC_CHECK(0, NULL != fifo, NULL != elts);
+  RCSW_FPC_NV(0, NULL != fifo, NULL != elts);
   n_elts = RCSW_MAX(rawfifo_n_free(fifo), n_elts);
   size_t i;
 

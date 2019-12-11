@@ -33,7 +33,7 @@ BEGIN_C_DECLS
 
 struct mpool* mpool_init(struct mpool* const pool_in,
                          const struct mpool_params* const params) {
-  FPC_CHECK(NULL, params != NULL, params->max_elts > 0, params->el_size > 0);
+  RCSW_FPC_NV(NULL, params != NULL, params->max_elts > 0, params->el_size > 0);
 
   struct mpool* the_pool = NULL;
   if (params->flags & DS_APP_DOMAIN_HANDLE ||
@@ -106,7 +106,7 @@ error:
 } /* mpool_init() */
 
 void mpool_destroy(struct mpool* const the_pool) {
-  FPC_CHECKV(FPC_VOID, NULL != the_pool);
+  RCSW_FPC_V(NULL != the_pool);
 
   llist_destroy(&the_pool->free);
   llist_destroy(&the_pool->alloc);
@@ -126,7 +126,7 @@ void mpool_destroy(struct mpool* const the_pool) {
 } /* mpool_destroy() */
 
 uint8_t* mpool_req(struct mpool* const the_pool) {
-  FPC_CHECK(NULL, NULL != the_pool);
+  RCSW_FPC_NV(NULL, NULL != the_pool);
 
   uint8_t* ptr = NULL;
 
@@ -149,7 +149,7 @@ uint8_t* mpool_req(struct mpool* const the_pool) {
 } /* mpool_req() */
 
 status_t mpool_release(struct mpool* const the_pool, uint8_t* const ptr) {
-  FPC_CHECK(ERROR, NULL != the_pool, NULL != ptr);
+  RCSW_FPC_NV(ERROR, NULL != the_pool, NULL != ptr);
 
   size_t index = (size_t)(ptr - the_pool->elements) / the_pool->el_size;
   mt_mutex_lock(&the_pool->mutex);
@@ -177,7 +177,7 @@ status_t mpool_release(struct mpool* const the_pool, uint8_t* const ptr) {
 } /* mpool_release() */
 
 status_t mpool_ref_add(struct mpool* const the_pool, const uint8_t* const ptr) {
-  FPC_CHECK(ERROR, NULL != the_pool, NULL != ptr);
+  RCSW_FPC_NV(ERROR, NULL != the_pool, NULL != ptr);
 
   status_t rstat = ERROR;
   mt_mutex_lock(&the_pool->mutex);
@@ -193,7 +193,7 @@ error:
 
 status_t mpool_ref_remove(struct mpool* const the_pool,
                           const uint8_t* const ptr) {
-  FPC_CHECK(ERROR, NULL != the_pool, NULL != ptr);
+  RCSW_FPC_NV(ERROR, NULL != the_pool, NULL != ptr);
 
   status_t rstat = ERROR;
   mt_mutex_lock(&the_pool->mutex);
@@ -208,7 +208,7 @@ error:
 } /* mpool_ref_remove() */
 
 int mpool_ref_query(struct mpool* const the_pool, const uint8_t* const ptr) {
-  FPC_CHECK(-1, NULL != the_pool, NULL != ptr);
+  RCSW_FPC_NV(-1, NULL != the_pool, NULL != ptr);
 
   /*
    * If this is not true, then ptr did not come from this pool, or has not

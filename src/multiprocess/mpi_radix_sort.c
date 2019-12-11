@@ -56,7 +56,7 @@ static status_t mpi_radix_sorter_step(struct mpi_radix_sorter* const sorter,
  ******************************************************************************/
 struct mpi_radix_sorter* mpi_radix_sorter_init(
     const struct mpi_radix_sorter_params* const params) {
-  FPC_CHECK(NULL, NULL != params, NULL != params->data);
+  RCSW_FPC_NV(NULL, NULL != params, NULL != params->data);
 
   /* All MPI processes perform the same basic initialization */
   struct mpi_radix_sorter* sorter = malloc(sizeof(struct mpi_radix_sorter));

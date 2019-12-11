@@ -83,7 +83,7 @@ BEGIN_C_DECLS
  */
 static inline void* dynamic_matrix_access(const struct dynamic_matrix* const matrix,
                                           size_t u, size_t v) {
-    FPC_CHECK(NULL, NULL != matrix, u < matrix->n_rows,
+    RCSW_FPC_NV(NULL, NULL != matrix, u < matrix->n_rows,
               v < matrix->n_cols);
     return darray_data_get((struct darray*)darray_data_get(matrix->rows, u), v);
 }
@@ -115,7 +115,7 @@ static inline size_t dynamic_matrix_space(size_t n_rows, size_t n_cols,
  */
 static inline status_t dynamic_matrix_clear(struct dynamic_matrix* const matrix,
                                            size_t u, size_t v) {
-    FPC_CHECK(ERROR, NULL != matrix, u < matrix->n_rows, v < matrix->n_cols);
+    RCSW_FPC_NV(ERROR, NULL != matrix, u < matrix->n_rows, v < matrix->n_cols);
     ds_elt_clear(dynamic_matrix_access(matrix, u, v), matrix->el_size);
     return OK;
 }

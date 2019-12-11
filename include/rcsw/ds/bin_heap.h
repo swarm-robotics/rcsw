@@ -62,7 +62,7 @@ struct bin_heap {
  * @return \ref bool_t
  */
 static inline bool_t bin_heap_isfull(const struct bin_heap* const heap) {
-    FPC_CHECK(FALSE, NULL != heap);
+    RCSW_FPC_NV(FALSE, NULL != heap);
     return darray_isfull(&heap->arr);
 }
 
@@ -74,7 +74,7 @@ static inline bool_t bin_heap_isfull(const struct bin_heap* const heap) {
  * @return \ref bool_t
  */
 static inline bool_t bin_heap_isempty(const struct bin_heap* const heap) {
-    FPC_CHECK(FALSE, NULL != heap);
+    RCSW_FPC_NV(FALSE, NULL != heap);
     return (bool_t)(darray_n_elts(&heap->arr) == 1);
 }
 
@@ -86,7 +86,7 @@ static inline bool_t bin_heap_isempty(const struct bin_heap* const heap) {
  * @return # elements in heap, or 0 on ERROR.
  */
 static inline size_t bin_heap_n_elts(const struct bin_heap* const heap) {
-    FPC_CHECK(0, NULL != heap);
+    RCSW_FPC_NV(0, NULL != heap);
     return darray_n_elts(&heap->arr) - 1; /* -1 for tmp element */
 }
 
@@ -122,7 +122,7 @@ static inline size_t bin_heap_element_space(size_t max_elts, size_t el_size) {
  * @return \ref status_t.
  */
 static inline status_t bin_heap_clear(struct bin_heap * heap) {
-    FPC_CHECK(ERROR, heap != NULL);
+    RCSW_FPC_NV(ERROR, heap != NULL);
     return darray_clear(&heap->arr);
 }
 
@@ -134,7 +134,7 @@ static inline status_t bin_heap_clear(struct bin_heap * heap) {
  * @return Reference to top element on heap, or NULL if an error occurred.
  */
 static inline void* bin_heap_peek(const struct bin_heap * heap) {
-    FPC_CHECK(NULL, heap != NULL, !bin_heap_isempty(heap));
+    RCSW_FPC_NV(NULL, heap != NULL, !bin_heap_isempty(heap));
     return darray_data_get(&heap->arr, 1);
 }
 

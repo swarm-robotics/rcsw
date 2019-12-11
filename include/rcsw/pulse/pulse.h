@@ -180,13 +180,13 @@ struct pulse_inst {
  ******************************************************************************/
 static inline size_t pulse_rxq_n_elts(const struct pulse_inst* const pulse,
                       const struct mt_queue *const queue) {
-    FPC_CHECK(0, pulse != NULL, queue != NULL);
+    RCSW_FPC_NV(0, pulse != NULL, queue != NULL);
     return mt_queue_n_elts(queue);
 }
 
 static inline size_t pulse_rxq_n_free(const struct pulse_inst* const pulse,
                                     const struct mt_queue *const queue) {
-    FPC_CHECK(0, pulse != NULL, queue != NULL);
+    RCSW_FPC_NV(0, pulse != NULL, queue != NULL);
     return mt_queue_n_free(queue);
 }
 
@@ -197,7 +197,7 @@ static inline size_t pulse_rxq_n_free(const struct pulse_inst* const pulse,
  */
 static inline uint8_t * pulse_get_top(struct pulse_inst* const pulse,
                                     struct mt_queue *const queue) {
-    FPC_CHECK(NULL, pulse != NULL, queue != NULL);
+    RCSW_FPC_NV(NULL, pulse != NULL, queue != NULL);
     return (uint8_t*)mt_queue_peek(queue);
 }
 

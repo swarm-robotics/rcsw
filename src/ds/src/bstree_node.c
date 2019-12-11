@@ -78,7 +78,7 @@ error:
 
 int bstree_node_destroy(const struct bstree* const tree,
                         struct bstree_node* node) {
-  FPC_CHECK(0, NULL != node);
+  RCSW_FPC_NV(0, NULL != node);
 
   /* deallocate data block */
   bstree_node_datablock_dealloc(tree, node->data);

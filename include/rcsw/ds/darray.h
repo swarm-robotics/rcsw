@@ -88,7 +88,7 @@ struct darray {
  * @return \ref bool_t
  */
 static inline bool_t darray_isfull(const struct darray* const arr) {
-    FPC_CHECK(FALSE, NULL != arr);
+    RCSW_FPC_NV(FALSE, NULL != arr);
     return (bool_t)(arr->current == (size_t)arr->max_elts);
 }
 
@@ -100,7 +100,7 @@ static inline bool_t darray_isfull(const struct darray* const arr) {
  * @return \ref bool_t
  */
 static inline bool_t darray_isempty(const struct darray* const arr) {
-    FPC_CHECK(FALSE, NULL != arr);
+    RCSW_FPC_NV(FALSE, NULL != arr);
     return (bool_t)(arr->current == 0);
 }
 
@@ -112,7 +112,7 @@ static inline bool_t darray_isempty(const struct darray* const arr) {
  * @return # elements in arr, or 0 on ERROR
  */
 static inline size_t darray_n_elts(const struct darray* const arr) {
-    FPC_CHECK(0, NULL != arr);
+    RCSW_FPC_NV(0, NULL != arr);
     return arr->current;
 }
 
@@ -124,7 +124,7 @@ static inline size_t darray_n_elts(const struct darray* const arr) {
  * @return # elements in arr, or 0 on ERROR.
  */
 static inline size_t darray_capacity(const struct darray* const arr) {
-    FPC_CHECK(0, NULL != arr);
+    RCSW_FPC_NV(0, NULL != arr);
     return arr->capacity;
 }
 
@@ -139,7 +139,7 @@ static inline size_t darray_capacity(const struct darray* const arr) {
  */
 static inline status_t darray_set_n_elts(struct darray* const arr,
                                          size_t n_elts) {
-    FPC_CHECK(ERROR, NULL != arr, n_elts <= arr->capacity);
+    RCSW_FPC_NV(ERROR, NULL != arr, n_elts <= arr->capacity);
     arr->current = n_elts;
     return OK;
 }

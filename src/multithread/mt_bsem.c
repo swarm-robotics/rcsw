@@ -52,7 +52,7 @@ error:
 } /* mt_bsem_init() */
 
 void mt_bsem_destroy(mt_bsem_t* const sem_p) {
-  FPC_CHECKV(FPC_VOID, NULL != sem_p);
+  RCSW_FPC_V(NULL != sem_p);
 
   mt_mutex_destroy(&sem_p->mutex);
   mt_cond_destroy(&sem_p->cv);
@@ -62,7 +62,7 @@ void mt_bsem_destroy(mt_bsem_t* const sem_p) {
 } /* mt_bsem_destroy() */
 
 status_t mt_bsem_post(mt_bsem_t* const sem_p) {
-  FPC_CHECK(ERROR, NULL != sem_p);
+  RCSW_FPC_NV(ERROR, NULL != sem_p);
   RCSW_CHECK(OK == mt_mutex_lock(&sem_p->mutex));
   RCSW_CHECK(1 != sem_p->val);
   sem_p->val += 1;
@@ -75,7 +75,7 @@ error:
 
 status_t mt_bsem_timedwait(mt_bsem_t* const sem_p,
                            const struct timespec* const to) {
-  FPC_CHECK(ERROR, NULL != sem_p, NULL != to);
+  RCSW_FPC_NV(ERROR, NULL != sem_p, NULL != to);
 
   RCSW_CHECK(OK == mt_mutex_lock(&sem_p->mutex));
   while (0 == sem_p->val) {
@@ -90,7 +90,7 @@ error:
 } /* mt_bsem_timedwait() */
 
 status_t mt_bsem_wait(mt_bsem_t* const sem_p) {
-  FPC_CHECK(ERROR, NULL != sem_p);
+  RCSW_FPC_NV(ERROR, NULL != sem_p);
 
   RCSW_CHECK(OK == mt_mutex_lock(&sem_p->mutex));
   while (0 == sem_p->val) {
@@ -105,7 +105,7 @@ error:
 } /* mt_bsem_wait() */
 
 status_t mt_bsem_flush(mt_bsem_t* const sem_p) {
-  FPC_CHECK(ERROR, NULL != sem_p);
+  RCSW_FPC_NV(ERROR, NULL != sem_p);
 
   RCSW_CHECK(OK == mt_mutex_lock(&sem_p->mutex));
   RCSW_CHECK(1 != sem_p->val);

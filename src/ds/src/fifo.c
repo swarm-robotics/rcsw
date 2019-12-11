@@ -31,7 +31,7 @@ BEGIN_C_DECLS
 
 struct fifo* fifo_init(struct fifo* fifo_in,
                        const struct ds_params* const params) {
-  FPC_CHECK(NULL,
+  RCSW_FPC_NV(NULL,
             params != NULL,
             params->tag == DS_FIFO,
             params->max_elts > 0,
@@ -65,7 +65,7 @@ error:
 } /* fifo_init() */
 
 void fifo_destroy(struct fifo* const fifo) {
-  FPC_CHECKV(FPC_VOID, NULL != fifo);
+  RCSW_FPC_V(NULL != fifo);
 
   rbuffer_destroy(&fifo->rb);
   if (!(fifo->flags & DS_APP_DOMAIN_HANDLE)) {
@@ -74,29 +74,29 @@ void fifo_destroy(struct fifo* const fifo) {
 } /* fifo_destroy() */
 
 status_t fifo_enq(struct fifo* const fifo, const void* const e) {
-  FPC_CHECK(ERROR, NULL != fifo, NULL != e);
+  RCSW_FPC_NV(ERROR, NULL != fifo, NULL != e);
   return rbuffer_add(&fifo->rb, e);
 } /* fifo_enq() */
 
 status_t fifo_deq(struct fifo* const fifo, void* const e) {
-  FPC_CHECK(ERROR, NULL != fifo, NULL != e);
+  RCSW_FPC_NV(ERROR, NULL != fifo, NULL != e);
   return rbuffer_remove(&fifo->rb, e);
 } /* fifo_deq() */
 
 status_t fifo_clear(struct fifo* const fifo) {
-  FPC_CHECK(ERROR, NULL != fifo);
+  RCSW_FPC_NV(ERROR, NULL != fifo);
   return rbuffer_clear(&fifo->rb);
 } /* fifo_clear() */
 
 status_t fifo_map(struct fifo* const fifo, void (*f)(void* e)) {
-  FPC_CHECK(ERROR, NULL != fifo);
+  RCSW_FPC_NV(ERROR, NULL != fifo);
   return rbuffer_map(&fifo->rb, f);
 } /* fifo_map() */
 
 status_t fifo_inject(struct fifo* const fifo,
                      void (*f)(void* e, void* res),
                      void* result) {
-  FPC_CHECK(ERROR, NULL != fifo);
+  RCSW_FPC_NV(ERROR, NULL != fifo);
   return rbuffer_inject(&fifo->rb, f, result);
 } /* fifo_inject() */
 

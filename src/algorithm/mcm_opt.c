@@ -78,7 +78,7 @@ static void mcm_opt_report_parens(const size_t* arr,
 status_t mcm_opt_init(struct mcm_optimizer* mcm,
                       const size_t* matrices,
                       size_t size) {
-  FPC_CHECK(ERROR, NULL != mcm, NULL != matrices, size >= 2);
+  RCSW_FPC_NV(ERROR, NULL != mcm, NULL != matrices, size >= 2);
   mcm->matrices = matrices;
   mcm->size = size;
 
@@ -109,7 +109,7 @@ void mcm_opt_destroy(struct mcm_optimizer* mcm) {
 } /* mcm_opt_destroy() */
 
 status_t mcm_opt_optimize(struct mcm_optimizer* mcm) {
-  FPC_CHECK(ERROR, NULL != mcm);
+  RCSW_FPC_NV(ERROR, NULL != mcm);
 
   size_t n = mcm->size - 1;
   size_t i, j, k, q, num = 0;
@@ -162,7 +162,7 @@ status_t mcm_opt_optimize(struct mcm_optimizer* mcm) {
 } /* mcm_opt_optimize() */
 
 status_t mcm_opt_report(const struct mcm_optimizer* mcm, size_t* ordering) {
-  FPC_CHECK(ERROR, NULL != mcm, NULL != ordering);
+  RCSW_FPC_NV(ERROR, NULL != mcm, NULL != ordering);
   size_t count = 0;
   mcm_opt_report_parens(
       mcm->route, 1, mcm->size - 1, mcm->size, ordering, &count);
@@ -170,7 +170,7 @@ status_t mcm_opt_report(const struct mcm_optimizer* mcm, size_t* ordering) {
 } /* mcm_opt_report() */
 
 status_t mcm_opt_print(const struct mcm_optimizer* mcm) {
-  FPC_CHECK(ERROR, NULL != mcm);
+  RCSW_FPC_NV(ERROR, NULL != mcm);
   printf("Minimum scalar multiplications: %zu\n", mcm->min_mults);
   printf("Parenthesization:\n");
   mcm_opt_print_parens(mcm->route, 1, mcm->size - 1, mcm->size);

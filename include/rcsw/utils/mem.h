@@ -48,7 +48,7 @@ BEGIN_C_DECLS
  * @return \ref status_t
  */
 static inline status_t mem_write(size_t addr, size_t wval) {
-    FPC_CHECK(ERROR, RCSW_IS_MEM_ALIGNED(addr, sizeof(uint32_t)));
+    RCSW_FPC_NV(ERROR, RCSW_IS_MEM_ALIGNED(addr, sizeof(uint32_t)));
     *((volatile uintptr_t *)addr) = wval;
     return OK;
 } /* mem_write() */
@@ -61,7 +61,7 @@ static inline status_t mem_write(size_t addr, size_t wval) {
  * @return: The value of the register, or 0xFFFFFFFF if non word-aligned
  */
 static inline uint32_t mem_read(size_t addr) {
-    FPC_CHECK(0, (RCSW_IS_MEM_ALIGNED(addr, sizeof(uint32_t))));
+    RCSW_FPC_NV(0, (RCSW_IS_MEM_ALIGNED(addr, sizeof(uint32_t))));
     return *((volatile uint32_t*)addr);
 } /* mem_read() */
 
@@ -78,7 +78,7 @@ static inline uint32_t mem_read(size_t addr) {
  * @return \ref status_t
  */
 static inline status_t mem_rmwr(uint32_t addr, uint32_t wval, uint32_t mask) {
-    FPC_CHECK(ERROR, RCSW_IS_MEM_ALIGNED(addr, sizeof(uint32_t)));
+    RCSW_FPC_NV(ERROR, RCSW_IS_MEM_ALIGNED(addr, sizeof(uint32_t)));
 
     volatile uint32_t curr_val = 0;
 

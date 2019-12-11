@@ -51,7 +51,7 @@ error:
 } /* mt_cvm_init() */
 
 void mt_cvm_destroy(mt_cvm_t* const cvm) {
-  FPC_CHECKV(FPC_VOID, NULL != cvm);
+  RCSW_FPC_V(NULL != cvm);
 
   mt_cond_destroy(&cvm->cv);
   mt_mutex_destroy(&cvm->mutex);
@@ -60,7 +60,7 @@ void mt_cvm_destroy(mt_cvm_t* const cvm) {
   }
 } /* mt_cvm_destroy() */
 status_t cvm_signal(mt_cvm_t* const cvm) {
-  FPC_CHECK(ERROR, NULL != cvm);
+  RCSW_FPC_NV(ERROR, NULL != cvm);
   RCSW_CHECK(0 == mt_cond_signal(&cvm->cv));
   return OK;
 
@@ -69,7 +69,7 @@ error:
 } /* mt_cvm_signal() */
 
 status_t cvm_wait(mt_cvm_t* const cvm) {
-  FPC_CHECK(ERROR, NULL != cvm);
+  RCSW_FPC_NV(ERROR, NULL != cvm);
   RCSW_CHECK(0 == mt_cond_wait(&cvm->cv, &cvm->mutex));
   return OK;
 
@@ -78,7 +78,7 @@ error:
 } /* mt_cvm_wait() */
 
 status_t cvm_timedwait(mt_cvm_t* const cvm, const struct timespec* const to) {
-  FPC_CHECK(ERROR, NULL != cvm, NULL != to);
+  RCSW_FPC_NV(ERROR, NULL != cvm, NULL != to);
   struct timespec ts = {.tv_sec = 0, .tv_nsec = 0};
 
   RCSW_CHECK(OK == time_ts_ref_conv(to, &ts));
@@ -90,7 +90,7 @@ error:
 } /* mt_cvm_timedwait() */
 
 status_t cvm_broadcast(mt_cvm_t* const cvm) {
-  FPC_CHECK(ERROR, NULL != cvm);
+  RCSW_FPC_NV(ERROR, NULL != cvm);
   RCSW_CHECK(0 == mt_cond_broadcast(&cvm->cv));
   return OK;
 

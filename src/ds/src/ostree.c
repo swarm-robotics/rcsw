@@ -43,7 +43,7 @@ void ostree_init_helper(struct bstree* const tree) {
 struct ostree_node* ostree_select(const struct bstree* const tree,
                                   struct bstree_node* const node_in,
                                   size_t i) {
-  FPC_CHECK(NULL, NULL != tree, NULL != node_in, i <= tree->current - 1);
+  RCSW_FPC_NV(NULL, NULL != tree, NULL != node_in, i <= tree->current - 1);
 
   if (node_in == tree->nil) {
     return NULL;
@@ -62,7 +62,7 @@ struct ostree_node* ostree_select(const struct bstree* const tree,
 
 int ostree_rank(const struct bstree* const tree,
                 const struct ostree_node* const node) {
-  FPC_CHECK(-1, NULL != tree, NULL != node);
+  RCSW_FPC_NV(-1, NULL != tree, NULL != node);
   int r = node->left->count;
   const struct ostree_node* y = node;
 

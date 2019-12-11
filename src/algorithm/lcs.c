@@ -53,7 +53,7 @@ static int lcs_rec_sub(const char* x,
  * API Functions
  ******************************************************************************/
 status_t lcs_init(struct lcs_calculator* lcs, const char* x, const char* y) {
-  FPC_CHECK(ERROR, NULL != lcs, NULL != x, NULL != y);
+  RCSW_FPC_NV(ERROR, NULL != lcs, NULL != x, NULL != y);
 
   lcs->len_x = strlen(x);
   lcs->len_y = strlen(y);

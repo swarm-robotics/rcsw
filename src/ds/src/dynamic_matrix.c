@@ -39,7 +39,7 @@ BEGIN_C_DECLS
  ******************************************************************************/
 struct dynamic_matrix* dynamic_matrix_init(struct dynamic_matrix* const matrix_in,
                                            const struct ds_params* const params) {
-  FPC_CHECK(NULL,
+  RCSW_FPC_NV(NULL,
             NULL != params,
             params->tag == DS_DYNAMIC_MATRIX,
             params->type.dmat.n_rows > 0,
@@ -92,7 +92,7 @@ error:
 } /* dynamic_matrix_init() */
 
 void dynamic_matrix_destroy(struct dynamic_matrix* const matrix) {
-  FPC_CHECKV(FPC_VOID, NULL != matrix);
+  RCSW_FPC_V(NULL != matrix);
 
   for (size_t i = 0; i < matrix->n_rows; ++i) {
     darray_destroy(darray_data_get(matrix->rows, i));
@@ -108,7 +108,7 @@ status_t dynamic_matrix_set(struct dynamic_matrix* const matrix,
                             size_t u,
                             size_t v,
                             const void* const w) {
-  FPC_CHECK(ERROR, NULL != matrix);
+  RCSW_FPC_NV(ERROR, NULL != matrix);
   if (u >= matrix->n_rows || v >= matrix->n_cols) {
     RCSW_CHECK(OK == dynamic_matrix_resize(matrix, u + 1, v + 1));
   }
@@ -122,7 +122,7 @@ error:
 status_t dynamic_matrix_resize(struct dynamic_matrix* const matrix,
                                size_t u,
                                size_t v) {
-  FPC_CHECK(ERROR, NULL != matrix);
+  RCSW_FPC_NV(ERROR, NULL != matrix);
   DBGD("Resizing matrix [%zu x %zu] -> [%zu x %zu]\n",
        matrix->n_rows,
        matrix->n_cols,
@@ -158,7 +158,7 @@ error:
 } /* dynamic_matrix_resize() */
 
 status_t dynamic_matrix_transpose(struct dynamic_matrix* const matrix) {
-  FPC_CHECK(ERROR, NULL != matrix, matrix->n_rows == matrix->n_cols);
+  RCSW_FPC_NV(ERROR, NULL != matrix, matrix->n_rows == matrix->n_cols);
 
   /*
    * Assuming matrix is square, the simple algorithm can be used. First and
@@ -176,7 +176,7 @@ status_t dynamic_matrix_transpose(struct dynamic_matrix* const matrix) {
 } /* dynamic_matrix_transpose() */
 
 void dynamic_matrix_print(const struct dynamic_matrix* const matrix) {
-  FPC_CHECKV(FPC_VOID, NULL != matrix, NULL != matrix->printe);
+  RCSW_FPC_V(NULL != matrix, NULL != matrix->printe);
 
   DPRINTF("{");
   for (size_t i = 0; i < matrix->n_rows; ++i) {

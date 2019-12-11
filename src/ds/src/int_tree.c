@@ -65,7 +65,7 @@ struct int_tree_node* int_tree_overlap_search(
     const struct bstree* tree,
     struct int_tree_node* root,
     const struct interval_data* interval) {
-  FPC_CHECK(NULL, NULL != tree, NULL != root, NULL != interval);
+  RCSW_FPC_NV(NULL, NULL != tree, NULL != root, NULL != interval);
 
   /*
    * Not found in an empty subtree (obviously)

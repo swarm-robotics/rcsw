@@ -72,7 +72,7 @@ static status_t darray_shrink(struct darray* arr, size_t size);
  ******************************************************************************/
 struct darray* darray_init(struct darray* arr_in,
                            const struct ds_params* const params) {
-  FPC_CHECK(NULL,
+  RCSW_FPC_NV(NULL,
             params != NULL,
             params->tag == DS_DARRAY,
             params->el_size > 0,
@@ -131,7 +131,7 @@ error:
 } /* darray_init() */
 
 void darray_destroy(struct darray* arr) {
-  FPC_CHECKV(FPC_VOID, NULL != arr);
+  RCSW_FPC_V(NULL != arr);
 
   if (arr->elements && !(arr->flags & DS_APP_DOMAIN_DATA)) {
     free(arr->elements);
@@ -143,7 +143,7 @@ void darray_destroy(struct darray* arr) {
 } /* darray_destroy() */
 
 status_t darray_clear(struct darray* const arr) {
-  FPC_CHECK(ERROR, arr != NULL);
+  RCSW_FPC_NV(ERROR, arr != NULL);
 
   darray_data_clear(arr);
   arr->current = 0;
@@ -151,7 +151,7 @@ status_t darray_clear(struct darray* const arr) {
 } /* darray_clear() */
 
 status_t darray_data_clear(struct darray* const arr) {
-  FPC_CHECK(ERROR, arr != NULL);
+  RCSW_FPC_NV(ERROR, arr != NULL);
 
   memset(arr->elements, 0, arr->current * arr->el_size);
   return OK;
@@ -160,7 +160,7 @@ status_t darray_data_clear(struct darray* const arr) {
 status_t darray_insert(struct darray* const arr,
                        const void* const e,
                        size_t index) {
-  FPC_CHECK(ERROR, arr != NULL, e != NULL, (index <= arr->current));
+  RCSW_FPC_NV(ERROR, arr != NULL, e != NULL, (index <= arr->current));
 
   /* cannot insert--no space left */
   if (darray_isfull(arr) && arr->max_elts != -1) {
@@ -205,7 +205,7 @@ error:
 } /* darray_insert() */
 
 status_t darray_remove(struct darray* const arr, void* const e, size_t index) {
-  FPC_CHECK(ERROR, arr != NULL, (index <= arr->current));
+  RCSW_FPC_NV(ERROR, arr != NULL, (index <= arr->current));
 
   if (e != NULL) {
     darray_index_serve(arr, e, index);
@@ -240,13 +240,13 @@ error:
 status_t darray_index_serve(const struct darray* const arr,
                             void* const e,
                             size_t index) {
-  FPC_CHECK(ERROR, arr != NULL, e != NULL, index <= arr->current);
+  RCSW_FPC_NV(ERROR, arr != NULL, e != NULL, index <= arr->current);
   memmove(e, darray_data_get(arr, index), arr->el_size);
   return OK;
 } /* darray_index_serve() */
 
 int darray_index_query(const struct darray* const arr, const void* const e) {
-  FPC_CHECK(ERROR, NULL != arr, NULL != e, NULL != arr->cmpe);
+  RCSW_FPC_NV(ERROR, NULL != arr, NULL != e, NULL != arr->cmpe);
 
   int rval = -1;
   if (arr->sorted) {
@@ -266,20 +266,20 @@ int darray_index_query(const struct darray* const arr, const void* const e) {
 } /* darray_index_query() */
 
 void* darray_data_get(const struct darray* const arr, size_t index) {
-  FPC_CHECK(NULL, arr != NULL);
+  RCSW_FPC_NV(NULL, arr != NULL);
   return (arr->elements + (index * arr->el_size));
 } /* darray_data_get() */
 
 status_t darray_data_set(const struct darray* const arr,
                          size_t index,
                          const void* const e) {
-  FPC_CHECK(ERROR, NULL != arr, NULL != e);
+  RCSW_FPC_NV(ERROR, NULL != arr, NULL != e);
   return ds_elt_copy(arr->elements + index * arr->el_size, e, arr->el_size);
 } /* darray_data_set() */
 
 status_t darray_data_copy(const struct darray* const arr1,
                           const struct darray* const arr2) {
-  FPC_CHECK(ERROR,
+  RCSW_FPC_NV(ERROR,
             NULL != arr1,
             NULL != arr2,
             arr1->el_size == arr2->el_size,
@@ -290,7 +290,7 @@ status_t darray_data_copy(const struct darray* const arr1,
 } /* darray_data_copy() */
 
 status_t darray_resize(struct darray* const arr, size_t size) {
-  FPC_CHECK(ERROR, NULL != arr);
+  RCSW_FPC_NV(ERROR, NULL != arr);
   if (size > arr->capacity) {
     return darray_extend(arr, size);
   }
@@ -321,7 +321,7 @@ void darray_print(const struct darray* const arr) {
 } /* darray_print() */
 
 status_t darray_sort(struct darray* const arr, enum alg_sort_type type) {
-  FPC_CHECK(ERROR, NULL != arr, NULL != arr->cmpe);
+  RCSW_FPC_NV(ERROR, NULL != arr, NULL != arr->cmpe);
 
   /*
    * Lists with 0 or 1 elements or that have the sorted flag set are
@@ -346,7 +346,7 @@ status_t darray_sort(struct darray* const arr, enum alg_sort_type type) {
 struct darray* darray_filter(struct darray* const arr,
                              bool_t (*pred)(const void* const e),
                              const struct ds_params* const fparams) {
-  FPC_CHECK(NULL, NULL != arr, NULL != pred);
+  RCSW_FPC_NV(NULL, NULL != arr, NULL != pred);
 
   struct ds_params params = {.type = {.da = {.init_size = 0}},
                              .cmpe = arr->cmpe,
@@ -394,7 +394,7 @@ error:
 
 struct darray* darray_copy(const struct darray* const arr,
                            const struct ds_params* const cparams) {
-  FPC_CHECK(NULL, arr != NULL);
+  RCSW_FPC_NV(NULL, arr != NULL);
 
   struct ds_params params = {.type = {.da =
                                           {
@@ -430,7 +430,7 @@ error:
 } /* darray_copy() */
 
 status_t darray_map(struct darray* arr, void (*f)(void* e)) {
-  FPC_CHECK(ERROR, arr != NULL, f != NULL);
+  RCSW_FPC_NV(ERROR, arr != NULL, f != NULL);
 
   size_t i;
   for (i = 0; i < arr->current; ++i) {
@@ -443,7 +443,7 @@ status_t darray_map(struct darray* arr, void (*f)(void* e)) {
 status_t darray_inject(const struct darray* const arr,
                        void (*f)(void* e, void* res),
                        void* result) {
-  FPC_CHECK(ERROR, arr != NULL, f != NULL, result != NULL);
+  RCSW_FPC_NV(ERROR, arr != NULL, f != NULL, result != NULL);
 
   size_t i;
   for (i = 0; i < arr->current; ++i) {
@@ -482,7 +482,7 @@ error:
 } /* darray_extend() */
 
 static status_t darray_shrink(struct darray* const arr, size_t size) {
-  FPC_CHECK(ERROR, arr != NULL);
+  RCSW_FPC_NV(ERROR, arr != NULL);
 
   size_t old_size = arr->capacity;
   arr->capacity = size;

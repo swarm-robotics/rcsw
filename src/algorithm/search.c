@@ -37,7 +37,7 @@ int bsearch_iter(const void* const a,
                  size_t el_size,
                  size_t high,
                  size_t low) {
-  FPC_CHECK(-1, NULL != a, NULL != e, NULL != cmpe);
+  RCSW_FPC_NV(-1, NULL != a, NULL != e, NULL != cmpe);
 
   const uint8_t* const arr = a;
   while (low <= high) {
@@ -60,7 +60,7 @@ int bsearch_rec(const void* const a,
                 size_t el_size,
                 size_t low,
                 size_t high) {
-  FPC_CHECK(-1, NULL != a, NULL != e, NULL != cmpe);
+  RCSW_FPC_NV(-1, NULL != a, NULL != e, NULL != cmpe);
 
   if (low > high) {
     return -1;

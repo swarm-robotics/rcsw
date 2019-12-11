@@ -49,7 +49,7 @@ error:
 } /* mt_mutex_init() */
 
 void mt_mutex_destroy(mt_mutex_t* mutex) {
-  FPC_CHECKV(FPC_VOID, NULL != mutex);
+  RCSW_FPC_V(NULL != mutex);
 
   pthread_mutex_destroy(&mutex->mutex);
   if (mutex->flags & MT_APP_DOMAIN_MEM) {
@@ -58,7 +58,7 @@ void mt_mutex_destroy(mt_mutex_t* mutex) {
 } /* mt_mutex_destroy() */
 
 status_t mt_mutex_lock(mt_mutex_t* mutex) {
-  FPC_CHECK(ERROR, NULL != mutex);
+  RCSW_FPC_NV(ERROR, NULL != mutex);
   RCSW_CHECK(0 == pthread_mutex_lock(&mutex->mutex));
   return OK;
 
@@ -67,7 +67,7 @@ error:
 } /* mt_mutex_lock() */
 
 status_t mt_mutex_unlock(mt_mutex_t* mutex) {
-  FPC_CHECK(ERROR, NULL != mutex);
+  RCSW_FPC_NV(ERROR, NULL != mutex);
   RCSW_CHECK(0 == pthread_mutex_unlock(&mutex->mutex));
   return OK;
 

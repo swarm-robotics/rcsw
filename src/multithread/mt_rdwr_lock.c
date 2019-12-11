@@ -54,7 +54,7 @@ error:
 } /* mt_rdwr_lock_init() */
 
 void mt_rdwr_lock_destroy(mt_rdwr_lock_t* const rdwr) {
-  FPC_CHECKV(FPC_VOID, NULL != rdwr);
+  RCSW_FPC_V(NULL != rdwr);
 
   mt_csem_destroy(&rdwr->order);
   mt_csem_destroy(&rdwr->access);
