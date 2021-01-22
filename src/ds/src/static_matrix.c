@@ -37,17 +37,20 @@ BEGIN_C_DECLS
 /*******************************************************************************
  * API Functions
  ******************************************************************************/
-struct static_matrix *static_matrix_init(struct static_matrix *const matrix_in,
-                                         const struct ds_params *const params) {
-  FPC_CHECK(NULL, NULL != params, params->tag == DS_STATIC_MATRIX,
-            params->type.smat.n_rows > 0, params->type.smat.n_cols > 0)
-  struct static_matrix *matrix = NULL;
+struct static_matrix* static_matrix_init(struct static_matrix* const matrix_in,
+                                         const struct ds_params* const params) {
+  RCSW_FPC_NV(NULL,
+            NULL != params,
+            params->tag == DS_STATIC_MATRIX,
+            params->type.smat.n_rows > 0,
+            params->type.smat.n_cols > 0)
+  struct static_matrix* matrix = NULL;
   if (params->flags & DS_APP_DOMAIN_HANDLE) {
-    CHECK_PTR(matrix_in);
+    RCSW_CHECK_PTR(matrix_in);
     matrix = matrix_in;
   } else {
     matrix = malloc(sizeof(struct static_matrix));
-    CHECK_PTR(matrix);
+    RCSW_CHECK_PTR(matrix);
   }
   matrix->flags = params->flags;
   matrix->el_size = params->el_size;
@@ -60,7 +63,7 @@ struct static_matrix *static_matrix_init(struct static_matrix *const matrix_in,
   } else {
     matrix->elements = calloc(matrix->n_rows * matrix->n_cols, matrix->el_size);
   }
-  CHECK_PTR(matrix->elements);
+  RCSW_CHECK_PTR(matrix->elements);
   return matrix;
 
 error:
@@ -68,8 +71,8 @@ error:
   return NULL;
 } /* static_matrix_init() */
 
-void static_matrix_destroy(struct static_matrix *const matrix) {
-  FPC_CHECKV(FPC_VOID, NULL != matrix);
+void static_matrix_destroy(struct static_matrix* const matrix) {
+  RCSW_FPC_V(NULL != matrix);
   if (!(matrix->flags & DS_APP_DOMAIN_DATA)) {
     free(matrix->elements);
   }
@@ -78,8 +81,8 @@ void static_matrix_destroy(struct static_matrix *const matrix) {
   }
 } /* static_matrix_destroy() */
 
-status_t static_matrix_transpose(struct static_matrix *const matrix) {
-  FPC_CHECK(ERROR, NULL != matrix, matrix->n_rows == matrix->n_cols);
+status_t static_matrix_transpose(struct static_matrix* const matrix) {
+  RCSW_FPC_NV(ERROR, NULL != matrix, matrix->n_rows == matrix->n_cols);
 
   /*
    * Assuming matrix is square, the simple algorithm can be used. First and
@@ -89,14 +92,15 @@ status_t static_matrix_transpose(struct static_matrix *const matrix) {
   for (size_t i = 1; i < matrix->n_rows; ++i) {
     for (size_t j = 0; j < i; ++j) {
       ds_elt_swap(static_matrix_access(matrix, i, j),
-                  static_matrix_access(matrix, j, i), matrix->el_size);
+                  static_matrix_access(matrix, j, i),
+                  matrix->el_size);
     } /* for(j..) */
   }   /* for(i..) */
   return OK;
 } /* static_matrix_transpose() */
 
-void static_matrix_print(const struct static_matrix *const matrix) {
-  FPC_CHECKV(FPC_VOID, NULL != matrix, NULL != matrix->printe);
+void static_matrix_print(const struct static_matrix* const matrix) {
+  RCSW_FPC_V(NULL != matrix, NULL != matrix->printe);
 
   DPRINTF("{");
   for (size_t i = 0; i < matrix->n_rows; ++i) {

@@ -18,74 +18,8 @@
  * RCSW.  If not, see <http://www.gnu.org/licenses/
  */
 
-#ifndef INCLUDE_RCSW_H_
-#define INCLUDE_RCSW_H_
-
-/*******************************************************************************
- * Includes
- ******************************************************************************/
-#include "rcsw/common/common.h"
-#include "rcsw/common/dbg.h"
-#include "rcsw/common/exception.h"
-#include "rcsw/common/fpc.h"
-#include "rcsw/common/test_frmwk.h"
-
-#include "rcsw/adapter/simple_image.h"
-
-#include "rcsw/algorithm/algorithm.h"
-#include "rcsw/algorithm/edit_dist.h"
-#include "rcsw/algorithm/lcs.h"
-#include "rcsw/algorithm/mcm_opt.h"
-#include "rcsw/algorithm/search.h"
-#include "rcsw/algorithm/sort.h"
-
-#include "rcsw/ds/adj_list.h"
-#include "rcsw/ds/adj_matrixs.h"
-#include "rcsw/ds/bin_heap.h"
-#include "rcsw/ds/bstree.h"
-#include "rcsw/ds/bstree_node.h"
-#include "rcsw/ds/csmatrix.h"
-#include "rcsw/ds/darray.h"
-#include "rcsw/ds/ds.h"
-#include "rcsw/ds/fifo.h"
-#include "rcsw/ds/hashmap.h"
-#include "rcsw/ds/int_tree.h"
-#include "rcsw/ds/int_tree_node.h"
-#include "rcsw/ds/llist.h"
-#include "rcsw/ds/llist_node.h"
-#include "rcsw/ds/ostree.h"
-#include "rcsw/ds/ostree_node.h"
-#include "rcsw/ds/rawfifo.h"
-#include "rcsw/ds/rbtree.h"
-#include "rcsw/ds/rbuffer.h"
-#include "rcsw/ds/static_matrix.h"
-
-#include "rcsw/multiprocess/mpi_radix_sort.h"
-#include "rcsw/multiprocess/mpi_spmv_mult.h"
-#include "rcsw/multiprocess/procm.h"
-
-#include "rcsw/multithread/"
-#include "rcsw/multithread/mpool.h"
-#include "rcsw/multithread/mt_bsem.h"
-#include "rcsw/multithread/mt_cond.h"
-#include "rcsw/multithread/mt_csem.h"
-#include "rcsw/multithread/mt_cvm.h"
-#include "rcsw/multithread/mt.h"
-#include "rcsw/multithread/mt_mutex.h"
-#include "rcsw/multithread/mt_queue.h"
-#include "rcsw/multithread/mt_rdwr_lock.h"
-#include "rcsw/multithread/omp_kernel2d.h"
-#include "rcsw/multithread/omp_radix_sort.h"
-#include "rcsw/multithread/threadm.h"
-
-#include "rcsw/pulse/pulse.h"
-#include "rcsw/stdio/sstdio.h"
-#include "rcsw/stdio/sstring.h"
-#include "rcsw/utils/checksum.h"
-#include "rcsw/utils/hash.h"
-#include "rcsw/utils/mem.h"
-#include "rcsw/utils/time_utils.h"
-#include "rcsw/utils/utils.h"
+#ifndef INCLUDE_RCSW_RCSW_H_
+#define INCLUDE_RCSW_RCSW_H_
 
 /** \mainpage
 *
@@ -113,4 +47,4 @@
 * @defgroup adapter adapter
 */
 
-#endif /* INCLUDE_RCSW_H_ */
+#endif /* INCLUDE_RCSW_RCSW_H_ */

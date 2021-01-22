@@ -123,7 +123,7 @@ struct bstree {
  * @return \ref bool_t
  */
 static inline bool_t bstree_isfull(const struct bstree* const bst) {
-    FPC_CHECK(FALSE, NULL != bst);
+    RCSW_FPC_NV(FALSE, NULL != bst);
     return (bool_t)(bst->current == (size_t)bst->max_elts);
 }
 
@@ -135,7 +135,7 @@ static inline bool_t bstree_isfull(const struct bstree* const bst) {
  * @return \ref bool_t
  */
 static inline bool_t bstree_isempty(const struct bstree* const bst) {
-    FPC_CHECK(FALSE, NULL != bst);
+    RCSW_FPC_NV(FALSE, NULL != bst);
     return (bool_t)(bst->current == 0);
 }
 
@@ -148,7 +148,7 @@ static inline bool_t bstree_isempty(const struct bstree* const bst) {
  */
 
 static inline size_t bstree_n_elts(const struct bstree* const bst) {
-    FPC_CHECK(0, NULL != bst);
+    RCSW_FPC_NV(0, NULL != bst);
     return bst->current;
 }
 
@@ -236,7 +236,7 @@ BEGIN_C_DECLS
  */
 struct bstree *bstree_init_internal(struct bstree *tree_in,
                                     const struct ds_params * params,
-                                    size_t node_size) __check_return;
+                                    size_t node_size) RCSW_CHECK_RET;
 
 /**
  * @brief Destroy a binary search tree

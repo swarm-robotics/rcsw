@@ -31,6 +31,9 @@
 /*******************************************************************************
  * Structure Definitions
  ******************************************************************************/
+/**
+ * @brief Parameters for \ref mpi_radix_sorter.
+ */
 struct mpi_radix_sorter_params {
     size_t* data;        /// Array to sort.
     size_t n_elts;       /// # elements to sort.
@@ -39,6 +42,9 @@ struct mpi_radix_sorter_params {
     int mpi_world_size;  /// Total # processes.
 };
 
+/**
+ * @brief Handle for MPI implementation of radix sort.
+ */
 struct mpi_radix_sorter {
     size_t* data;       /// The data a rank is working on.
     size_t* cum_data;   /// The total data to be sorted. Only valid at root.
@@ -75,7 +81,7 @@ BEGIN_C_DECLS
  * @return The initialized sorter, or NULL if an error occurred.
  */
 struct mpi_radix_sorter* mpi_radix_sorter_init(
-    const struct mpi_radix_sorter_params* const params) __check_return;
+    const struct mpi_radix_sorter_params* const params) RCSW_CHECK_RET;
 
 /**
  * @brief Deallocate/destroy a sorter after use.

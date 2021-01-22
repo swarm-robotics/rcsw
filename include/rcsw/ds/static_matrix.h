@@ -71,7 +71,7 @@ BEGIN_C_DECLS
  */
 static inline void* static_matrix_access(const struct static_matrix* const matrix,
                                          size_t u, size_t v) {
-  FPC_CHECK(NULL, NULL != matrix, u < matrix->n_rows,
+  RCSW_FPC_NV(NULL, NULL != matrix, u < matrix->n_rows,
             v < matrix->n_cols);
   return matrix->elements + (matrix->n_cols * matrix->el_size * u) +
       (matrix->el_size * v);
@@ -102,7 +102,7 @@ static inline size_t static_matrix_space(size_t n_rows, size_t n_cols,
  */
 static inline status_t static_matrix_clear(struct static_matrix* const matrix,
                                            size_t u, size_t v) {
-  FPC_CHECK(ERROR, NULL != matrix, u < matrix->n_rows, v < matrix->n_cols);
+  RCSW_FPC_NV(ERROR, NULL != matrix, u < matrix->n_rows, v < matrix->n_cols);
   ds_elt_clear(static_matrix_access(matrix, u, v), matrix->el_size);
   return OK;
 }
@@ -120,7 +120,7 @@ static inline status_t static_matrix_clear(struct static_matrix* const matrix,
 static inline status_t static_matrix_set(struct static_matrix* const matrix,
                                          size_t u, size_t v,
                                          const void *const w) {
-  FPC_CHECK(ERROR, NULL != matrix, NULL != w, u < matrix->n_rows,
+  RCSW_FPC_NV(ERROR, NULL != matrix, NULL != w, u < matrix->n_rows,
             v < matrix->n_cols);
 
   ds_elt_copy(static_matrix_access(matrix, u, v), w, matrix->el_size);

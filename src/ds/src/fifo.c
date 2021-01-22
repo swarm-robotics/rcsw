@@ -29,18 +29,21 @@
  ******************************************************************************/
 BEGIN_C_DECLS
 
-struct fifo *fifo_init(struct fifo *fifo_in,
-                       const struct ds_params *const params) {
-  FPC_CHECK(NULL, params != NULL, params->tag == DS_FIFO, params->max_elts > 0,
+struct fifo* fifo_init(struct fifo* fifo_in,
+                       const struct ds_params* const params) {
+  RCSW_FPC_NV(NULL,
+            params != NULL,
+            params->tag == DS_FIFO,
+            params->max_elts > 0,
             params->el_size > 0);
 
-  struct fifo *fifo = NULL;
+  struct fifo* fifo = NULL;
   if (params->flags & DS_APP_DOMAIN_HANDLE) {
-    CHECK_PTR(fifo_in);
+    RCSW_CHECK_PTR(fifo_in);
     fifo = fifo_in;
   } else {
     fifo = malloc(sizeof(struct fifo));
-    CHECK_PTR(fifo);
+    RCSW_CHECK_PTR(fifo);
   }
   fifo->flags = params->flags;
 
@@ -52,7 +55,7 @@ struct fifo *fifo_init(struct fifo *fifo_in,
                                 .elements = params->elements,
                                 .flags = params->flags};
   rb_params.flags |= (DS_APP_DOMAIN_HANDLE | DS_RBUFFER_AS_FIFO);
-  CHECK(NULL != rbuffer_init(&fifo->rb, &rb_params));
+  RCSW_CHECK(NULL != rbuffer_init(&fifo->rb, &rb_params));
   return fifo;
 
 error:
@@ -61,8 +64,8 @@ error:
   return NULL;
 } /* fifo_init() */
 
-void fifo_destroy(struct fifo *const fifo) {
-  FPC_CHECKV(FPC_VOID, NULL != fifo);
+void fifo_destroy(struct fifo* const fifo) {
+  RCSW_FPC_V(NULL != fifo);
 
   rbuffer_destroy(&fifo->rb);
   if (!(fifo->flags & DS_APP_DOMAIN_HANDLE)) {
@@ -70,33 +73,34 @@ void fifo_destroy(struct fifo *const fifo) {
   }
 } /* fifo_destroy() */
 
-status_t fifo_enq(struct fifo *const fifo, const void *const e) {
-  FPC_CHECK(ERROR, NULL != fifo, NULL != e);
+status_t fifo_enq(struct fifo* const fifo, const void* const e) {
+  RCSW_FPC_NV(ERROR, NULL != fifo, NULL != e);
   return rbuffer_add(&fifo->rb, e);
 } /* fifo_enq() */
 
-status_t fifo_deq(struct fifo *const fifo, void *const e) {
-  FPC_CHECK(ERROR, NULL != fifo, NULL != e);
+status_t fifo_deq(struct fifo* const fifo, void* const e) {
+  RCSW_FPC_NV(ERROR, NULL != fifo, NULL != e);
   return rbuffer_remove(&fifo->rb, e);
 } /* fifo_deq() */
 
-status_t fifo_clear(struct fifo *const fifo) {
-  FPC_CHECK(ERROR, NULL != fifo);
+status_t fifo_clear(struct fifo* const fifo) {
+  RCSW_FPC_NV(ERROR, NULL != fifo);
   return rbuffer_clear(&fifo->rb);
 } /* fifo_clear() */
 
-status_t fifo_map(struct fifo *const fifo, void (*f)(void *e)) {
-  FPC_CHECK(ERROR, NULL != fifo);
+status_t fifo_map(struct fifo* const fifo, void (*f)(void* e)) {
+  RCSW_FPC_NV(ERROR, NULL != fifo);
   return rbuffer_map(&fifo->rb, f);
 } /* fifo_map() */
 
-status_t fifo_inject(struct fifo *const fifo, void (*f)(void *e, void *res),
-                     void *result) {
-  FPC_CHECK(ERROR, NULL != fifo);
+status_t fifo_inject(struct fifo* const fifo,
+                     void (*f)(void* e, void* res),
+                     void* result) {
+  RCSW_FPC_NV(ERROR, NULL != fifo);
   return rbuffer_inject(&fifo->rb, f, result);
 } /* fifo_inject() */
 
-void fifo_print(struct fifo *const fifo) {
+void fifo_print(struct fifo* const fifo) {
   if (NULL == fifo) {
     DPRINTF("NULL FIFO\n");
     return;

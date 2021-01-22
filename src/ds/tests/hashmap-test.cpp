@@ -25,14 +25,17 @@
  ******************************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
-#define CATCH_CONFIG_MAIN
-#define CATCH_CONFIG_PREFIX_ALL
-#include <catch.hpp>
 
+extern "C" {
 #include "rcsw/ds/hashmap.h"
 #include "rcsw/utils/hash.h"
 #include "rcsw/utils/utils.h"
 #include "tests/ds_test.h"
+}
+
+#define CATCH_CONFIG_MAIN
+#define CATCH_CONFIG_PREFIX_ALL
+#include <catch.hpp>
 
 /*******************************************************************************
  * Constant Definitions

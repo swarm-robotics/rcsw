@@ -52,7 +52,7 @@ typedef char int8_t;
 extern uint32_t errno;
 
 /* includes */
-#elif defined(__linux__) || defined(__apple__)
+#elif defined(__linux__)
 
 #include <errno.h>
 #include <stddef.h>
@@ -63,20 +63,12 @@ extern uint32_t errno;
 #include <unistd.h>
 
 #else
-#error UNKNOWN OS! __nos__, __linux__, __apple__ supported.
+#error UNKNOWN OS: __nos__, __linux__ suppored
 #endif
 
 /*******************************************************************************
  * Custom Type Definitions
  ******************************************************************************/
-#ifdef __cplusplus
-#define __ns_start(n) namespace n {
-#define __ns_end(n) }
-#else
-#define __ns_start(n)
-#define __ns_end(n)
-#endif
-
 /**
  * @brief The basic unit of determining if a function has succeeded or not.
  */
@@ -103,9 +95,5 @@ typedef enum {
     FALSE = 0,
     TRUE  = 1
 } bool_t;
-
-/* misc typedefs */
-typedef void (*voidfp_t)(void *arg);
-typedef int (*intfp_t)(void *arg);
 
 #endif /* INCLUDE_RCSW_COMMON_TYPES_H_ */

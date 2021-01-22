@@ -33,7 +33,14 @@
 /*******************************************************************************
  * Constant Definitions
  ******************************************************************************/
-enum search_types { BSEARCH_ITER, BSEARCH_REC };
+/**
+ * @brief The runtime implementation method to use for the binary search
+ * algorithm.
+ */
+enum search_types {
+  BSEARCH_ITER,  /// Use a recursive runtime implementation
+  BSEARCH_REC    /// Use a iterative runtime implementation
+};
 
 /*******************************************************************************
  * Function prototypes

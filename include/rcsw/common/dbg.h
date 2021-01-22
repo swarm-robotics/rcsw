@@ -40,42 +40,44 @@
 /*******************************************************************************
  * Constant Definitions
  ******************************************************************************/
-/**
- * @cond INTERNAL
- * @brief Debug print levels.
- *
- * You shouldn't ever need to use these directly in debug print statements. You
- * will probably need to use them when installing modules/changing the debug
- * level for modules.
- *
- * DBG_OFF: Used when you want to turn debugging OFF for all modules.
- *
- * DBG_E: Used to print things regarding errors, as in something bad happened
- *        in your program.
- *
- * DBG_W: Used to print warning things, as in something happened athat is
- *        somewhat alarming/sub-optimal, but not in of itself
- *        catastrophic/fatal.
- *
- * DBG_N: Normal/nominative printing. Use this for things that you want your
- *        program to print when everything is going smoothly. According to UNIX
- *        philosophy, if your program has nothing interesting to say, it should
- *        say nothing if this is the debugging level.
- *
- * DBG_D: Used to print diagnostic information, as in additional info that
- *        a developer can use to help debug a problem.
- *
- * DBG_V: Used to print verbose information, for use on tough problems when you
- *        want the use to get as much information from your program as
- *        possible.
- * @endcond
- */
+/** @cond INTERNAL */
+
+/** Used when you want to turn debugging OFF for all modules */
 #define DBG_OFF 6
+
+/**
+ * Used to print things regarding errors, as in something bad happened in your
+ * program.
+ */
 #define DBG_E 5
+
+/**
+ * Used to print warning things, as in something happened athat is somewhat
+ * alarming/sub-optimal, but not in of itself catastrophic/fatal.
+ */
 #define DBG_W 4
+
+/**
+ * Normal/nominative printing. Use this for things that you want your program to
+ * print when everything is going smoothly. According to UNIX philosophy, if
+ * your program has nothing interesting to say, it should say nothing if this is
+ * the debugging level.
+ */
 #define DBG_N 3
+
+/**
+ * Used to print diagnostic information, as in additional info that
+ * a developer can use to help debug a problem.
+ */
 #define DBG_D 2
+
+/**
+ * Used to print verbose information, for use on tough problems when you want
+ * the use to get as much information from your program as possible.
+ */
 #define DBG_V 1
+
+/** @endcond */
 
 /**
  * @brief Debug color codes (for producing colored terminal output)
@@ -154,7 +156,7 @@
 #define DPRINTF_FLOAT(...) PRINTF_FLOAT(__VA_ARGS__)
 
 /**
- * @brief debug level statements that have the level encoded into the macro
+ * @brief Debug level statements that have the level encoded into the macro
  * itself so you don't have to type it in yourself.
  */
 #define DBGE(...) DEBUG(DBG_E, __VA_ARGS__)
@@ -229,7 +231,7 @@
 #endif /* NDEBUG */
 
 /**
- * @brief Like \ref CHECK(), but has an additional message that is printed on failure
+ * @brief Like \ref RCSW_CHECK(), but has an additional message that is printed on failure
  * if debugging is enabled for the module it resides in.
  */
 #define SOFT_ASSERT(cond, msg, ...)                             \
@@ -275,14 +277,37 @@
  * When defining your own module codes, you should always start them with
  * M_EXTERNAL, so as to not conflict with the internal codes in rcsw.
  */
-#define DBG_MODULES M_DBG, M_DS_BSTREE, M_DS_DARRAY, M_DS_LLIST, M_DS_HASHMAP, \
-    M_DS_RBUFFER, M_MT_QUEUE, M_DS_MPOOL, M_EVTLOG, M_UTILS, M_GRIND,   \
-    M_PULSE, M_AL, M_STDIO, M_SCS, M_DS_CORE, M_DS_BIN_HEAP, M_DS_CSMATRIX, \
-    M_COMMON, M_COMM, M_DS_FIFO, M_DS_RAWFIFO, M_ALGORITHM, M_DS_RBTREE, \
-    M_TESTING, M_DS_INT_TREE, M_DS_OSTREE, M_DS_STATIC_ADJ_MATRIX,             \
-    M_DS_STATIC_MATRIX, M_DS_DYNAMIC_MATRIX, M_MULTITHREAD, M_MULTIPROCESS, \
+#define RCSW_DBG_MODULES                        \
+  M_DBG,                                        \
+    M_DS_BSTREE,                                \
+    M_DS_DARRAY,                                \
+    M_DS_LLIST,                                 \
+    M_DS_HASHMAP,                               \
+    M_DS_RBUFFER,                               \
+    M_MT_QUEUE,                                 \
+    M_DS_MPOOL,                                 \
+    M_UTILS,                                    \
+    M_PULSE,                                    \
+    M_STDIO,                                    \
+    M_DS_CORE,                                  \
+    M_DS_BIN_HEAP,                              \
+    M_DS_CSMATRIX,                              \
+    M_COMMON,                                   \
+    M_DS_FIFO,                                  \
+    M_DS_RAWFIFO,                               \
+    M_ALGORITHM,                                \
+    M_DS_RBTREE,                                \
+    M_TESTING,                                  \
+    M_DS_INT_TREE,                              \
+    M_DS_OSTREE,                                \
+    M_DS_STATIC_ADJ_MATRIX,                     \
+    M_DS_STATIC_MATRIX,                         \
+    M_DS_DYNAMIC_MATRIX,                        \
+    M_MULTITHREAD,                              \
+    M_MULTIPROCESS,                             \
     M_EXTERNAL
-enum dbg_module_codes {XGEN_ENUMS(DBG_MODULES)};
+
+enum dbg_module_codes {RCSW_XGEN_ENUMS(RCSW_DBG_MODULES)};
 
 /*******************************************************************************
  * Structure Definitions
@@ -398,7 +423,7 @@ static inline void dbg_default_lvl_set(uint8_t lvl) {
  *
  * @return The ID, or -1 if an error occurred.
  */
-int64_t dbg_mod_id_get(const char* name);
+int64_t dbg_mod_id_get(const char* name) RCSW_PURE;
 
 END_C_DECLS
 

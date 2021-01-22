@@ -120,7 +120,7 @@ BEGIN_C_DECLS
  * @return The size of elements in bytes.
  */
 static inline size_t csmatrix_type_size(const struct csmatrix* const matrix) {
-  FPC_CHECK(0, NULL != matrix);
+  RCSW_FPC_NV(0, NULL != matrix);
 
   switch (matrix->type) {
     case CSMATRIX_INT:
@@ -132,6 +132,8 @@ static inline size_t csmatrix_type_size(const struct csmatrix* const matrix) {
     case CSMATRIX_DOUBLE:
         return sizeof(double);
         break;
+    default:
+      break;
     } /* switch() */
   return 0;
 } /* csmatrix_type_size() */
@@ -146,7 +148,7 @@ static inline size_t csmatrix_type_size(const struct csmatrix* const matrix) {
  */
 static inline size_t csmatrix_n_rows(
     const struct csmatrix* const matrix) {
-    FPC_CHECK(0, NULL != matrix);
+    RCSW_FPC_NV(0, NULL != matrix);
 
     /*
      * Last element does not correspond to a row--just there to make math
@@ -165,7 +167,7 @@ static inline size_t csmatrix_n_rows(
  * @return The # of effective columns.
  */
 static inline size_t csmatrix_n_eff_cols(const struct csmatrix* const matrix) {
-    FPC_CHECK(0, NULL != matrix);
+    RCSW_FPC_NV(0, NULL != matrix);
     return matrix->n_eff_cols;
 } /* csmatrix_n_eff_cols() */
 
@@ -181,20 +183,20 @@ static inline size_t csmatrix_n_eff_cols(const struct csmatrix* const matrix) {
  * @return The total # of columns.
  */
 static inline size_t csmatrix_n_cols(const struct csmatrix* const matrix) {
-    FPC_CHECK(0, NULL != matrix);
+    RCSW_FPC_NV(0, NULL != matrix);
     return matrix->n_cols;
 } /* csmatrix_n_eff_cols() */
 
 static inline size_t csmatrix_n_elts(
     const struct csmatrix* const matrix) {
-    FPC_CHECK(0, NULL != matrix);
+    RCSW_FPC_NV(0, NULL != matrix);
     return (size_t)*(int*)darray_data_get(&matrix->outer_starts,
                                           darray_n_elts(&matrix->outer_starts)-1);
 } /* csmatrix_n_elts() */
 
 static inline int* csmatrix_row(const struct csmatrix* const matrix,
                                 size_t row) {
-    FPC_CHECK(0, NULL != matrix);
+    RCSW_FPC_NV(0, NULL != matrix);
     return darray_data_get(&matrix->inner_indices,
                            (size_t)*(int*)darray_data_get(&matrix->outer_starts, row));
 } /* csmatrix_row() */
@@ -210,7 +212,7 @@ static inline int* csmatrix_row(const struct csmatrix* const matrix,
  */
 static inline size_t csmatrix_rsize(
     const struct csmatrix* const matrix, size_t row) {
-    FPC_CHECK(0, NULL != matrix, row < darray_n_elts(&matrix->outer_starts));
+    RCSW_FPC_NV(0, NULL != matrix, row < darray_n_elts(&matrix->outer_starts));
     size_t row_start = (size_t)*(int*)darray_data_get(&matrix->outer_starts,
                                                       row);
     size_t row_end = (size_t)*(int*)darray_data_get(&matrix->outer_starts,
@@ -229,7 +231,7 @@ static inline size_t csmatrix_rsize(
  */
 static inline size_t csmatrix_csize(const struct csmatrix* const matrix,
                                     size_t col) {
-    FPC_CHECK(0, NULL != matrix);
+    RCSW_FPC_NV(0, NULL != matrix);
     return (size_t)matrix->csizes[col];
 } /* csmatrix_csize() */
 
@@ -241,7 +243,7 @@ static inline size_t csmatrix_csize(const struct csmatrix* const matrix,
  * @return Pointer to first element in csizes array
  */
 static inline int* csmatrix_csizes(const struct csmatrix* const matrix) {
-    FPC_CHECK(0, NULL != matrix);
+    RCSW_FPC_NV(0, NULL != matrix);
     return matrix->csizes;
 } /* csmatrix_csize() */
 
@@ -254,7 +256,7 @@ static inline int* csmatrix_csizes(const struct csmatrix* const matrix) {
  */
 static inline int* csmatrix_inner_indices(
     const struct csmatrix* const matrix) {
-    FPC_CHECK(0, NULL != matrix);
+    RCSW_FPC_NV(0, NULL != matrix);
     return darray_data_get(&matrix->inner_indices, 0);
 } /* csmatrix_rsize() */
 
@@ -267,7 +269,7 @@ static inline int* csmatrix_inner_indices(
  */
 static inline int* csmatrix_outer_starts(
     const struct csmatrix* const matrix) {
-    FPC_CHECK(0, NULL != matrix);
+    RCSW_FPC_NV(0, NULL != matrix);
     return darray_data_get(&matrix->outer_starts, 0);
 } /* csmatrix_rsize() */
 
@@ -280,7 +282,7 @@ static inline int* csmatrix_outer_starts(
  */
 static inline double* csmatrix_values(
     const struct csmatrix* const matrix) {
-    FPC_CHECK(0, NULL != matrix);
+    RCSW_FPC_NV(0, NULL != matrix);
     return darray_data_get(&matrix->values, 0);
 } /* csmatrix_rsize() */
 

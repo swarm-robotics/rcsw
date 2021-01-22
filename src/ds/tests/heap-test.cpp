@@ -25,10 +25,14 @@
  ******************************************************************************/
 #include <stdlib.h>
 #include <limits.h>
+
+extern "C" {
 #include "rcsw/ds/bin_heap.h"
 #include "rcsw/utils/utils.h"
 #include "rcsw/utils/mem.h"
 #include "tests/ds_test.h"
+}
+
 #define CATCH_CONFIG_MAIN
 #define CATCH_CONFIG_PREFIX_ALL
 #include <catch.hpp>
@@ -90,7 +94,7 @@ static void verify_heap(struct bin_heap* heap) {
     if (BIN_HEAP_LCHILD(i) <= bin_heap_n_elts(heap)) {
       element* l_child = (element*)darray_data_get(&heap->arr,
                                                    BIN_HEAP_LCHILD(i));
-      if (heap->flags & DS_MIN_HEAP) {
+      if (heap->flags & DS_RCSW_MIN_HEAP) {
         CATCH_REQUIRE(heap->arr.cmpe(parent, l_child) < 0);
       } else {
         CATCH_REQUIRE(heap->arr.cmpe(parent, l_child) > 0);
@@ -99,7 +103,7 @@ static void verify_heap(struct bin_heap* heap) {
     if (BIN_HEAP_RCHILD(i) <= bin_heap_n_elts(heap)) {
       element* r_child = (element*)darray_data_get(&heap->arr,
                                                    BIN_HEAP_RCHILD(i));
-      if (heap->flags & DS_MIN_HEAP) {
+      if (heap->flags & DS_RCSW_MIN_HEAP) {
         CATCH_REQUIRE(heap->arr.cmpe(parent, r_child) < 0);
       } else {
         CATCH_REQUIRE(heap->arr.cmpe(parent, r_child) > 0);

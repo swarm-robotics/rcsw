@@ -24,9 +24,13 @@
  * Includes
  ******************************************************************************/
 #include <stdlib.h>
+
+extern "C" {
 #include "rcsw/ds/darray.h"
 #include "rcsw/algorithm/sort.h"
 #include "tests/ds_test.h"
+}
+
 #define CATCH_CONFIG_MAIN
 #include <catch.hpp>
 

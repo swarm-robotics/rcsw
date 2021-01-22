@@ -63,7 +63,7 @@ struct rawfifo {
  * @return \ref status_t.
  */
 static inline status_t rawfifo_clear(struct rawfifo *const fifo) {
-    FPC_CHECK(ERROR, NULL != fifo);
+    RCSW_FPC_NV(ERROR, NULL != fifo);
     fifo->to_i = fifo->from_i;
     return OK;
 }
@@ -77,7 +77,7 @@ static inline status_t rawfifo_clear(struct rawfifo *const fifo) {
  * @return # element on the FIFO; 0 on ERROR.
  */
 static inline size_t rawfifo_n_elts(const struct rawfifo *const fifo) {
-    FPC_CHECK(0, NULL != fifo);
+    RCSW_FPC_NV(0, NULL != fifo);
     if (fifo->to_i >= fifo->from_i) {
         return fifo->to_i - fifo->from_i;
     }
@@ -92,7 +92,7 @@ static inline size_t rawfifo_n_elts(const struct rawfifo *const fifo) {
  * @return # free elements; 0 on ERROR.
  */
 static inline size_t rawfifo_n_free(const struct rawfifo *const fifo) {
-    FPC_CHECK(0, NULL != fifo);
+    RCSW_FPC_NV(0, NULL != fifo);
     /* One elt must be wasted to make n_elts determination unambiguous */
     return fifo->max_elts - rawfifo_n_elts(fifo) - 1;
 }

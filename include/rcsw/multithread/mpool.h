@@ -124,7 +124,7 @@ static inline size_t  mpool_element_space(size_t max_elts, size_t el_size) {
  * @return \ref bool_t
  */
 static inline bool_t mpool_isfull(const struct mpool* const pool) {
-    FPC_CHECK(FALSE, NULL != pool);
+    RCSW_FPC_NV(FALSE, NULL != pool);
     return llist_isfull(&pool->free);
 }
 
@@ -136,7 +136,7 @@ static inline bool_t mpool_isfull(const struct mpool* const pool) {
  * @return \ref bool_t
  */
 static inline bool_t mpool_isempty(const struct mpool* const pool) {
-    FPC_CHECK(FALSE, NULL != pool);
+    RCSW_FPC_NV(FALSE, NULL != pool);
     return llist_isempty(&pool->alloc);
 }
 
@@ -148,7 +148,7 @@ static inline bool_t mpool_isempty(const struct mpool* const pool) {
  * @return # elements in memory pool, or 0 on ERROR.
  */
 static inline size_t mpool_n_elts(const struct mpool* const pool) {
-    FPC_CHECK(0, NULL != pool);
+    RCSW_FPC_NV(0, NULL != pool);
     return llist_n_elts(&pool->alloc) + llist_n_elts(&pool->free);
 }
 
@@ -167,7 +167,7 @@ BEGIN_C_DECLS
  * @return The initialized pool, or NULL if an error occurred.
  */
 struct mpool*mpool_init(struct mpool * pool_in,
-                        const struct mpool_params * params) __check_return;
+                        const struct mpool_params * params) RCSW_CHECK_RET;
 
 /**
  * @brief Deallocate a memory pool. Any further use of the pool handle after

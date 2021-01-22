@@ -85,6 +85,7 @@ struct pulse_bp_params {
 struct pulse_params {
     size_t n_pools;   /// # of buffer pools for the bus.
     size_t max_rxqs;  /// Max # of receive queues for the bus.
+    size_t max_subs;
     uint32_t flags;   /// Configuration flags.
 
     /**
@@ -179,13 +180,13 @@ struct pulse_inst {
  ******************************************************************************/
 static inline size_t pulse_rxq_n_elts(const struct pulse_inst* const pulse,
                       const struct mt_queue *const queue) {
-    FPC_CHECK(0, pulse != NULL, queue != NULL);
+    RCSW_FPC_NV(0, pulse != NULL, queue != NULL);
     return mt_queue_n_elts(queue);
 }
 
 static inline size_t pulse_rxq_n_free(const struct pulse_inst* const pulse,
                                     const struct mt_queue *const queue) {
-    FPC_CHECK(0, pulse != NULL, queue != NULL);
+    RCSW_FPC_NV(0, pulse != NULL, queue != NULL);
     return mt_queue_n_free(queue);
 }
 
@@ -196,7 +197,7 @@ static inline size_t pulse_rxq_n_free(const struct pulse_inst* const pulse,
  */
 static inline uint8_t * pulse_get_top(struct pulse_inst* const pulse,
                                     struct mt_queue *const queue) {
-    FPC_CHECK(NULL, pulse != NULL, queue != NULL);
+    RCSW_FPC_NV(NULL, pulse != NULL, queue != NULL);
     return (uint8_t*)mt_queue_peek(queue);
 }
 
@@ -227,7 +228,7 @@ BEGIN_C_DECLS
  */
 struct pulse_inst *pulse_init(
     struct pulse_inst *pulse_in,
-    const struct pulse_params * params) __check_return;
+    const struct pulse_params * params) RCSW_CHECK_RET;
 
 /**
  * @brief  Shutdown a PULSE instance and deallocate its memory.
@@ -250,7 +251,7 @@ void pulse_destroy(struct pulse_inst *pulse);
  */
 struct mt_queue *pulse_rxq_init(struct pulse_inst * pulse,
                                 void * buf_p,
-                                uint32_t n_entries) __check_return;
+                                uint32_t n_entries) RCSW_CHECK_RET;
 
 /**
  * @brief Subscribe the specified RXQ to the specified packet ID.
@@ -324,7 +325,7 @@ status_t pulse_publish_release(struct pulse_inst* pulse, uint32_t pid,
  * @return A reference to the first item in the queue, or NULL if an ERROR
  * occurred.
  */
-void *pulse_wait_front(struct mt_queue * queue) __check_return;
+void *pulse_wait_front(struct mt_queue * queue) RCSW_CHECK_RET;
 
 /**
  * @brief Wait (until a timeout) until the given receive queue is not empty.
@@ -336,7 +337,7 @@ void *pulse_wait_front(struct mt_queue * queue) __check_return;
  * timeout occurred.
  */
 void *pulse_timedwait_front(struct mt_queue * queue,
-                            struct timespec * to) __check_return;
+                            struct timespec * to) RCSW_CHECK_RET;
 
 /**
  * @brief Remove the front element from the selected receive queue.

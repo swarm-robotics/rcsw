@@ -32,7 +32,7 @@ BEGIN_C_DECLS
 /*******************************************************************************
  * API Functions
  ******************************************************************************/
-void rbtree_insert_fixup(struct bstree *const tree, struct bstree_node *node) {
+void rbtree_insert_fixup(struct bstree* const tree, struct bstree_node* node) {
   /*
    * If the parent node is black we are all set, if it is red we have
    * the following possible cases to deal with.  We iterate through
@@ -57,7 +57,7 @@ void rbtree_insert_fixup(struct bstree *const tree, struct bstree_node *node) {
    * need to worry about replacing the root.
    */
   while (node->parent->red) {
-    struct bstree_node *uncle;
+    struct bstree_node* uncle;
     if (node->parent == node->parent->parent->left) {
       uncle = node->parent->parent->right;
       if (uncle->red) {
@@ -94,8 +94,8 @@ void rbtree_insert_fixup(struct bstree *const tree, struct bstree_node *node) {
   } /* while() */
 } /* rbtree_insert_fixup() */
 
-void rbtree_delete_fixup(struct bstree *const tree, struct bstree_node *node) {
-  struct bstree_node *sibling;
+void rbtree_delete_fixup(struct bstree* const tree, struct bstree_node* node) {
+  struct bstree_node* sibling;
 
   while (node->red == 0) {
     if (node == node->parent->left) {
@@ -151,7 +151,7 @@ void rbtree_delete_fixup(struct bstree *const tree, struct bstree_node *node) {
   node->red = FALSE;
 } /* rbtree_delete_fixup() */
 
-__pure int rbtree_node_black_height(const struct bstree_node *const node) {
+int rbtree_node_black_height(const struct bstree_node* const node) {
   /*
    * Sentinel to detect when we have fallen off the tree
    */

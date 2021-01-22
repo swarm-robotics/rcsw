@@ -89,7 +89,7 @@ BEGIN_C_DECLS
  */
 static inline void* static_adj_matrix_access(const struct static_adj_matrix* const matrix,
                                        size_t u, size_t v) {
-  FPC_CHECK(NULL, NULL != matrix, u < matrix->n_vertices,
+  RCSW_FPC_NV(NULL, NULL != matrix, u < matrix->n_vertices,
             v < matrix->n_vertices);
   return static_matrix_access(&matrix->matrix, u, v);
 }
@@ -119,7 +119,7 @@ static inline size_t static_adj_matrix_space(size_t n_vertices, bool_t is_weight
  */
 static inline bool_t static_adj_matrix_edge_query(struct static_adj_matrix* const matrix,
                                             size_t u, size_t v) {
-  FPC_CHECK(ERROR, NULL != matrix, u < matrix->n_vertices,
+  RCSW_FPC_NV(ERROR, NULL != matrix, u < matrix->n_vertices,
             v < matrix->n_vertices);
   if (matrix->is_weighted) {
     return (bool_t)(!isnan(*(double*)static_adj_matrix_access(matrix, u, v)));
@@ -138,7 +138,7 @@ static inline bool_t static_adj_matrix_edge_query(struct static_adj_matrix* cons
  */
 static inline size_t adj_matrix_n_edges(
     const struct static_adj_matrix *const matrix) {
-  FPC_CHECK(0, NULL != matrix);
+  RCSW_FPC_NV(0, NULL != matrix);
   return matrix->n_edges;
 }
 
@@ -160,7 +160,7 @@ static inline void static_adj_matrix_print(const struct static_adj_matrix* const
  * @return \ref bool_t.
  */
 static inline bool_t static_adj_matrix_isempty(const struct static_adj_matrix* matrix) {
-  FPC_CHECK(FALSE, NULL != matrix);
+  RCSW_FPC_NV(FALSE, NULL != matrix);
   return (bool_t)(0 == matrix->n_edges);
 }
 
@@ -190,7 +190,7 @@ static inline status_t static_adj_matrix_transpose(struct static_adj_matrix* con
  * @return The initialized adjacency matrix, or NULL if an error occurred.
  */
 struct static_adj_matrix* static_adj_matrix_init(struct static_adj_matrix* matrix_in,
-                                     const struct ds_params* params) __check_return;
+                                     const struct ds_params* params) RCSW_CHECK_RET;
 
 /**
  * @brief Destroy an adjacency matrix. Any further use of the provided handle is

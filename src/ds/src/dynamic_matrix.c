@@ -37,18 +37,20 @@ BEGIN_C_DECLS
 /*******************************************************************************
  * API Functions
  ******************************************************************************/
-struct dynamic_matrix *
-dynamic_matrix_init(struct dynamic_matrix *const matrix_in,
-                    const struct ds_params *const params) {
-  FPC_CHECK(NULL, NULL != params, params->tag == DS_DYNAMIC_MATRIX,
-            params->type.dmat.n_rows > 0, params->type.dmat.n_cols > 0)
-  struct dynamic_matrix *matrix = NULL;
+struct dynamic_matrix* dynamic_matrix_init(struct dynamic_matrix* const matrix_in,
+                                           const struct ds_params* const params) {
+  RCSW_FPC_NV(NULL,
+            NULL != params,
+            params->tag == DS_DYNAMIC_MATRIX,
+            params->type.dmat.n_rows > 0,
+            params->type.dmat.n_cols > 0)
+  struct dynamic_matrix* matrix = NULL;
   if (params->flags & DS_APP_DOMAIN_HANDLE) {
-    CHECK_PTR(matrix_in);
+    RCSW_CHECK_PTR(matrix_in);
     matrix = matrix_in;
   } else {
     matrix = calloc(1, sizeof(struct dynamic_matrix));
-    CHECK_PTR(matrix);
+    RCSW_CHECK_PTR(matrix);
   }
   matrix->flags = params->flags;
   matrix->el_size = params->el_size;
@@ -56,18 +58,17 @@ dynamic_matrix_init(struct dynamic_matrix *const matrix_in,
   matrix->n_rows = params->type.dmat.n_rows;
   matrix->n_cols = params->type.dmat.n_cols;
 
-  struct ds_params handle_params = {
-      .type = {.da = {.init_size = matrix->n_rows}},
-      .cmpe = NULL,
-      .printe = NULL,
-      .nodes = NULL,
-      .elements = NULL,
-      .tag = DS_DARRAY,
-      .el_size = sizeof(struct darray),
-      .max_elts = -1,
-      .flags = 0};
+  struct ds_params handle_params = {.type = {.da = {.init_size = matrix->n_rows}},
+                                    .cmpe = NULL,
+                                    .printe = NULL,
+                                    .nodes = NULL,
+                                    .elements = NULL,
+                                    .tag = DS_DARRAY,
+                                    .el_size = sizeof(struct darray),
+                                    .max_elts = -1,
+                                    .flags = 0};
   matrix->rows = darray_init(NULL, &handle_params);
-  CHECK_PTR(matrix->rows);
+  RCSW_CHECK_PTR(matrix->rows);
 
   struct ds_params row_params = {.type = {.da = {.init_size = matrix->n_cols}},
                                  .cmpe = NULL,
@@ -80,7 +81,7 @@ dynamic_matrix_init(struct dynamic_matrix *const matrix_in,
                                  .flags = DS_APP_DOMAIN_HANDLE};
 
   for (size_t i = 0; i < matrix->n_rows; ++i) {
-    CHECK_PTR(darray_init(darray_data_get(matrix->rows, i), &row_params));
+    RCSW_CHECK_PTR(darray_init(darray_data_get(matrix->rows, i), &row_params));
   } /* for(i..) */
 
   return matrix;
@@ -90,8 +91,8 @@ error:
   return NULL;
 } /* dynamic_matrix_init() */
 
-void dynamic_matrix_destroy(struct dynamic_matrix *const matrix) {
-  FPC_CHECKV(FPC_VOID, NULL != matrix);
+void dynamic_matrix_destroy(struct dynamic_matrix* const matrix) {
+  RCSW_FPC_V(NULL != matrix);
 
   for (size_t i = 0; i < matrix->n_rows; ++i) {
     darray_destroy(darray_data_get(matrix->rows, i));
@@ -103,11 +104,13 @@ void dynamic_matrix_destroy(struct dynamic_matrix *const matrix) {
   }
 } /* dynamic_matrix_destroy() */
 
-status_t dynamic_matrix_set(struct dynamic_matrix *const matrix, size_t u,
-                            size_t v, const void *const w) {
-  FPC_CHECK(ERROR, NULL != matrix);
+status_t dynamic_matrix_set(struct dynamic_matrix* const matrix,
+                            size_t u,
+                            size_t v,
+                            const void* const w) {
+  RCSW_FPC_NV(ERROR, NULL != matrix);
   if (u >= matrix->n_rows || v >= matrix->n_cols) {
-    CHECK(OK == dynamic_matrix_resize(matrix, u + 1, v + 1));
+    RCSW_CHECK(OK == dynamic_matrix_resize(matrix, u + 1, v + 1));
   }
   ds_elt_copy(dynamic_matrix_access(matrix, u, v), w, matrix->el_size);
   return OK;
@@ -116,32 +119,35 @@ error:
   return ERROR;
 } /* dynamic_matrix_set() */
 
-status_t dynamic_matrix_resize(struct dynamic_matrix *const matrix, size_t u,
+status_t dynamic_matrix_resize(struct dynamic_matrix* const matrix,
+                               size_t u,
                                size_t v) {
-  FPC_CHECK(ERROR, NULL != matrix);
-  DBGD("Resizing matrix [%zu x %zu] -> [%zu x %zu]\n", matrix->n_rows,
-       matrix->n_cols, MAX(matrix->n_rows, u), MAX(matrix->n_cols, v));
+  RCSW_FPC_NV(ERROR, NULL != matrix);
+  DBGD("Resizing matrix [%zu x %zu] -> [%zu x %zu]\n",
+       matrix->n_rows,
+       matrix->n_cols,
+       RCSW_MAX(matrix->n_rows, u),
+       RCSW_MAX(matrix->n_cols, v));
   if (u >= matrix->n_rows) {
-    CHECK(OK == darray_resize(matrix->rows, u));
-    struct ds_params row_params = {
-        .type = {.da = {.init_size = matrix->n_cols}},
-        .cmpe = NULL,
-        .printe = NULL,
-        .nodes = NULL,
-        .elements = NULL,
-        .tag = DS_DARRAY,
-        .el_size = matrix->el_size,
-        .max_elts = -1,
-        .flags = DS_APP_DOMAIN_HANDLE};
+    RCSW_CHECK(OK == darray_resize(matrix->rows, u));
+    struct ds_params row_params = {.type = {.da = {.init_size = matrix->n_cols}},
+                                   .cmpe = NULL,
+                                   .printe = NULL,
+                                   .nodes = NULL,
+                                   .elements = NULL,
+                                   .tag = DS_DARRAY,
+                                   .el_size = matrix->el_size,
+                                   .max_elts = -1,
+                                   .flags = DS_APP_DOMAIN_HANDLE};
 
     for (size_t i = matrix->n_rows; i < u; ++i) {
-      CHECK_PTR(darray_init(darray_data_get(matrix->rows, i), &row_params));
+      RCSW_CHECK_PTR(darray_init(darray_data_get(matrix->rows, i), &row_params));
     } /* for(i..) */
     matrix->n_rows = u;
   }
   if (v >= matrix->n_cols) {
     for (size_t i = 0; i < matrix->n_rows; ++i) {
-      CHECK(OK == darray_resize(darray_data_get(matrix->rows, i), v));
+      RCSW_CHECK(OK == darray_resize(darray_data_get(matrix->rows, i), v));
     } /* for(i..) */
     matrix->n_cols = v;
   }
@@ -151,8 +157,8 @@ error:
   return ERROR;
 } /* dynamic_matrix_resize() */
 
-status_t dynamic_matrix_transpose(struct dynamic_matrix *const matrix) {
-  FPC_CHECK(ERROR, NULL != matrix, matrix->n_rows == matrix->n_cols);
+status_t dynamic_matrix_transpose(struct dynamic_matrix* const matrix) {
+  RCSW_FPC_NV(ERROR, NULL != matrix, matrix->n_rows == matrix->n_cols);
 
   /*
    * Assuming matrix is square, the simple algorithm can be used. First and
@@ -162,14 +168,15 @@ status_t dynamic_matrix_transpose(struct dynamic_matrix *const matrix) {
   for (size_t i = 1; i < matrix->n_rows; ++i) {
     for (size_t j = 0; j < i; ++j) {
       ds_elt_swap(dynamic_matrix_access(matrix, i, j),
-                  dynamic_matrix_access(matrix, j, i), matrix->el_size);
+                  dynamic_matrix_access(matrix, j, i),
+                  matrix->el_size);
     } /* for(j..) */
   }   /* for(i..) */
   return OK;
 } /* dynamic_matrix_transpose() */
 
-void dynamic_matrix_print(const struct dynamic_matrix *const matrix) {
-  FPC_CHECKV(FPC_VOID, NULL != matrix, NULL != matrix->printe);
+void dynamic_matrix_print(const struct dynamic_matrix* const matrix) {
+  RCSW_FPC_V(NULL != matrix, NULL != matrix->printe);
 
   DPRINTF("{");
   for (size_t i = 0; i < matrix->n_rows; ++i) {

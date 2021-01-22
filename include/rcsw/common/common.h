@@ -26,48 +26,60 @@
 /*******************************************************************************
  * Includes
  ******************************************************************************/
+#include <sys/cdefs.h>
 #include "rcsw/common/types.h"
+#include "rcsw/common/compilers.h"
 
 /*******************************************************************************
  * Constants
  ******************************************************************************/
-#define NS_PER_MS 100000
-#define MS_PER_SEC 1000
-#define ONEE9 1000000000 /* 1E9 */
-#define ONEE6 1000000    /* 1E6 */
-#define ONEE3 1000       /* 1E3 */
-#define RCSW_FLOAT_EPSILON 0.00000001 /* for comparison with 0.0 */
-#define RCSW_DOUBLE_EPSILON 0.00000001 /* for comparison with 0.0 */
+/** 1E9 */
+#define ONEE9 1000000000
+
+/** 1E6 */
+#define ONEE6 1000000
+
+/** 1E3 */
+#define ONEE3 1000
+
+/** RCSW_FLOAT_EPSILON Epsilon for comparison with 0.0 for floats */
+#define RCSW_FLOAT_EPSILON 0.00000001
+
+/** RCSW_DOUBLE_EPSILON Epsilon for comparison with 0.0 for doubles */
+#define RCSW_DOUBLE_EPSILON 0.00000000001
 
 /*******************************************************************************
  * String Macros
  ******************************************************************************/
-/**
- * @brief Stringification. Use when you need to stringify the result of a macro
- * expansion. CAT() and XSTR() are equivalent.
- */
-#define CAT_(x) #x /* don't use this one */
-#define CAT(x) CAT_(x)
-#define XSTR(X) CAT(X)
+#define RCSW_XSTR_(x) #x /* don't use this one */
+#define RCSW_JOIN_(x, y) x##y /* don't use this one */
 
 /**
- * @brief Stringification. Use when you need to join two tokens together
+ * @def RCSW_XSTR(X) Stringification. Use when you need to stringify the result
+ * of a macro expansion.
  */
-#define JOIN_(x, y) x##y /* don't use this one */
-#define JOIN(x, y) JOIN_(x, y)
+#define RCSW_XSTR(X) RCSW_XSTR_(X)
 
 /**
- * @def UNIQUE_ID(prefix)
+ * @def RCSW_JOIN(x, y) Stringification. Use when you need to join two tokens
+ * ``x`` and ``y`` together.
+ */
+#define RCSW_JOIN(x, y) RCSW_JOIN_(x, y)
+
+/**
+ * @def RCSW_UNIQUE_ID(prefix)
  *
  * Generate a translation unit unique identifier using gcc's __COUNTER__.
  */
-#define UNIQUE_ID(prefix) JOIN(JOIN(__UNIQUE_ID_, prefix), __COUNTER__)
+#define RCSW_UNIQUE_ID(prefix) RCSW_JOIN(RCSW_JOIN(__UNIQUE_ID_,        \
+                                                   prefix),             \
+                                         __COUNTER__)
 
 /*******************************************************************************
  * Comparison Macros
  ******************************************************************************/
 /**
- * @def MIN_(t1, t2, min1, min2, a, b)
+ * @def RCSW_MIN_(t1, t2, min1, min2, a, b)
  *
  * Gets the minimum of (\a a, \a b) while also performing a type comparison. If
  * the arguments do not have the same type, a compiler warning will be
@@ -75,14 +87,14 @@
  * weird behavior when taking the max/min of different types.The type checking
  * will be compiled away at high optimization levels.
  */
-#define MIN_(t1, t2, min1, min2, a, b) ({\
+#define RCSW_MIN_(t1, t2, min1, min2, a, b) ({\
       t1 min1 = (a);\
       t2 min2 = (b);\
       (void) (&(min1) == &(min2));              \
       (min1) < (min2) ? (min1) : (min2); })
 
 /**
- * @def MAX_(t1, t2, min1, min2, a, b)
+ * @def RCSW_MAX_(t1, t2, min1, min2, a, b)
  *
  * Gets the maximum of (\a a, \a b) while also performing a type comparison. If
  * the arguments do not have the same type, a compiler warning will be
@@ -90,66 +102,65 @@
  * weird behavior when taking the max/min of different types.The type checking
  * will be compiled away at high optimization levels.
  */
-#define MAX_(t1, t2, max1, max2, a, b) ({       \
+#define RCSW_MAX_(t1, t2, max1, max2, a, b) ({       \
       t1 max1 = (a);                            \
       t2 max2 = (b);                            \
       (void) (&(max1) == &(max2));                  \
       (max1) > (max2) ? (max1) : (max2); })
 
 /**
- * @def MIN(a, b) Returns a type-same minimum of its arguments (compiler
+ * @def RCSW_MIN(a, b) Returns a type-same minimum of its arguments (compiler
  * warnings for unsafe comparisons of different types).
  */
-#define MIN(a, b)                          \
-  MIN_(typeof(a), typeof(b),               \
-        UNIQUE_ID(min1_), UNIQUE_ID(min2_), \
+#define RCSW_MIN(a, b)                          \
+  RCSW_MIN_(typeof(a), typeof(b),               \
+        RCSW_UNIQUE_ID(min1_), RCSW_UNIQUE_ID(min2_), \
         a, b)
 
 /**
- * @def MIN(a, b, c) Returns a type-same minimum of its arguments (compiler
+ * @def RCSW_MIN(a, b, c) Returns a type-same minimum of its arguments (compiler
  * warnings for unsafe comparisons of different types).
  */
-
-#define MIN3(a, b, c) MIN((typeof(a))MIN(a, b), c)
+#define RCSW_MIN3(a, b, c) RCSW_MIN((typeof(a))RCSW_MIN(a, b), c)
 
 /**
- * @def MAX(a, b) Returns a type-same maximum of its arguments (compiler
+ * @def RCSW_MAX(a, b) Returns a type-same maximum of its arguments (compiler
  * warnings for unsafe comparisons of different types).
  */
-#define MAX(a, b)                               \
-  MAX_(typeof(a), typeof(b),                    \
-       UNIQUE_ID(max1_), UNIQUE_ID(max2_),      \
+#define RCSW_MAX(a, b)                                    \
+  RCSW_MAX_(typeof(a), typeof(b),                         \
+       RCSW_UNIQUE_ID(max1_), RCSW_UNIQUE_ID(max2_),      \
        a, b)
 
 
 /**
- * @def MAX(a, b, c) Returns a type-same maximum of its arguments (compiler
+ * @def RCSW_MAX(a, b, c) Returns a type-same maximum of its arguments (compiler
  * warnings for unsafe comparisons of different types).
  */
-#define MAX3(a, b, c) MAX((typeof(a))MAX(a, b), c)
+#define RCSW_MAX3(a, b, c) RCSW_MAX((typeof(a))RCSW_MAX(a, b), c)
 
 /**
- * @def IS_ODD(n)
+ * @def RCSW_IS_ODD(n)
  *
  * Readability macro for determining if something is odd.
  *
  * You can obviously do this without a macro, but this is (1) more self
  * documenting, and (2) less error prone.
  */
-#define IS_ODD(n) ((n)&1)
+#define RCSW_IS_ODD(n) ((n)&1U)
 
 /**
- * @def IS_EVEN(n)
+ * @def RCSW_IS_EVEN(n)
  *
  * Readability macro for determining if something is even.
  *
  * You can obviously do this without a macro, but this is (1) more self
  * documenting, and (2) less error prone.
  */
-#define IS_EVEN(n) (!IS_ODD((n)))
+#define RCSW_IS_EVEN(n) (!RCSW_IS_ODD((n)))
 
 /**
- * @def IS_BETWEEN(n, low, high)
+ * @def RCSW_IS_BETWEEN(n, low, high)
  *
  * Readability macro for determining if something is between an upper and lower
  * bound (inclusive).
@@ -157,47 +168,42 @@
  * You can obviously do this without a macro, but this is (1) more self
  * documenting, and (2) less error prone.
  */
-#define IS_BETWEEN(n, low, high) ((n) >= (low) && (n) <= (high))
+#define RCSW_IS_BETWEEN(n, low, high) ((n) >= (low) && (n) <= (high))
 
 /*******************************************************************************
  * Other Macros
  ******************************************************************************/
-/* g++ does not define this for some reason... */
-#ifndef isnan
-#define isnan(d) __builtin_isnan(d)
-#endif
-
 /**
- * @def LIKELY(x)
+ * @def RCSW_LIKELY(x)
  *
  * Inform the compiler that a conditional branch is almost certain to be taken,
  * for optimization purposes.
  */
-#define LIKELY(x) __builtin_expect((x), 1)
+#define RCSW_LIKELY(x) __builtin_expect((x), 1)
 
 /**
- * @def UNLIKELY(x)
+ * @def RCSW_UNLIKELY(x)
  *
  * Inform the compiler that a conditional branch is almost certain not to be
  * taken, for optimization purposes.
  */
-#define UNLIKELY(x) __builtin_expect((x), 0)
+#define RCSW_UNLIKELY(x) __builtin_expect((x), 0)
 
 /**
- * @def ARRAY_SIZE(arr) Get the size of an array (NOT a pointer to an array) in
+ * @def RCSW_ARRAY_SIZE(arr) Get the size of an array (NOT a pointer to an array) in
  * bytes.
  */
-#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
+#define RCSW_ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
 
-#define CONTAINER_OF(ptr, type, member) ({                      \
+#define RCSW_CONTAINER_OF(ptr, type, member) ({                      \
         const typeof(((type *)0)->member) *__mptr = (ptr);      \
         (type *)( (char *)__mptr - offsetof(type, member) );})
 
 /**
- * @def FIELD_SIZEOF(t, f)
+ * @def RCSW_FIELD_SIZEOF(t, f)
  * Get the size of a field in a struct \a t named \a f.
  */
-#define FIELD_SIZEOF(t, f) (sizeof(((t *)0)->f))
+#define RCSW_FIELD_SIZEOF(t, f) (sizeof(((t *)0)->f))
 
 /**
  * @brief Masking macros. Get the upper/lower 16 or 32 bits of a 32 or 64 bit
@@ -206,45 +212,45 @@
  * Note that these macros cast their arguments as UNSIGNED integers, so using
  * negative ints will likely behave oddly.
  */
-#define UPPER16(n) ((uint32_t)((n) >> 16))
-#define LOWER16(n) ((uint16_t)((n)))
-#define UPPER32(n) ((uint64_t)((n) >> 32))
-#define LOWER32(n) ((uint32_t)((n)))
+#define RCSW_UPPER16(n) ((uint32_t)((n) >> 16))
+#define RCSW_LOWER16(n) ((uint16_t)((n)))
+#define RCSW_UPPER32(n) ((uint64_t)((n) >> 32))
+#define RCSW_LOWER32(n) ((uint32_t)((n)))
 
 /**
- * @def CHECK(cond) Check a condition in a function.
+ * @def RCSW_CHECK(cond) Check a condition in a function.
  *
  * If condition is not true, go to the error/bailout section for function (you
  * must have a label called \c error in your function).
  */
-#define CHECK(cond)                             \
-  if (UNLIKELY(!(cond))) {                      \
+#define RCSW_CHECK(cond)                             \
+  if (RCSW_UNLIKELY(!(cond))) {                      \
         goto error;                             \
     }
 
 /**
- * @CHECK_PTR(ptr) Check a pointer \a ptr in a function.
+ * @def RCSW_CHECK_PTR(ptr) Check a pointer \a ptr in a function.
  *
  * If \a ptr is NULL, go to the error/bailout section for function (you
  * must have a label called \c error in your function).
  */
-#define CHECK_PTR(ptr) CHECK(NULL != (ptr))
+#define RCSW_CHECK_PTR(ptr) RCSW_CHECK(NULL != (ptr))
 
 /**
- * @CHECK_FD(fd) Check a file descriptor \a fdin a function.
+ * @def RCSW_CHECK_FD(fd) Check a file descriptor \a fdin a function.
  *
  * If the descriptor \a fdis invalid (i.e. < 0), go to the error/bailout section
  * for function (you must have a label called \c error in your function).
  */
-#define CHECK_FD(fd) CHECK((fd) >= 0)
+#define RCSW_CHECK_FD(fd) RCSW_CHECK((fd) >= 0)
 
 /*******************************************************************************
  * Tricky Variadac Macro Manipulation
  ******************************************************************************/
 /* @cond INTERNAL */
 /* 3 Helper macros--don't use them */
-#define VAR_NARG_(...) VAR_ARG_N(__VA_ARGS__)
-#define VAR_ARG_N(                                                      \
+#define RCSW_VAR_NARG_(...) VAR_ARG_N(__VA_ARGS__)
+#define RCSW_VAR_ARG_N(                                                      \
     _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, \
     _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, \
     _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, \
@@ -253,7 +259,7 @@
     _77, _78, _79, _80, _81, _82, _83, _84, _85, _86, _87, _88, _89, _90, _91, \
     _92, _93, _94, _95, _96, _97, _98, _99, _100, N, ...)               \
 
-#define VAR_RSEQ_N()                                                    \
+#define RCSW_VAR_RSEQ_N()                                                    \
     100, 99, 98, 97, 96, 95, 94, 93, 92, 91, 90, 89, 88, 87, 86, 85, 84, 83, \
         82, 81, 80, 79, 78, 77, 76, 75, 74, 73, 72, 71, 70, 69, 68, 67, 66, \
         65, 64, 63, 62, 61, 60, 59, 58, 57, 56, 55, 54, 53, 52, 51, 50, 49, \
@@ -266,122 +272,122 @@
  *
  * WHAT is the name of the macro/function that each arg of __VA_ARGS__ is
  * successively passed to.
- * XFE1 = X For Each that for which the macro/function takes 1 argument.
+ * RCSW_XFE1 = X For Each that for which the macro/function takes 1 argument.
  */
-#define XFE1_1(WHAT, X) WHAT(X)
-#define XFE1_2(WHAT, X, ...) WHAT(X) XFE1_1(WHAT, __VA_ARGS__)
-#define XFE1_3(WHAT, X, ...) WHAT(X) XFE1_2(WHAT, __VA_ARGS__)
-#define XFE1_4(WHAT, X, ...) WHAT(X) XFE1_3(WHAT, __VA_ARGS__)
-#define XFE1_5(WHAT, X, ...) WHAT(X) XFE1_4(WHAT, __VA_ARGS__)
-#define XFE1_6(WHAT, X, ...) WHAT(X) XFE1_5(WHAT, __VA_ARGS__)
-#define XFE1_7(WHAT, X, ...) WHAT(X) XFE1_6(WHAT, __VA_ARGS__)
-#define XFE1_8(WHAT, X, ...) WHAT(X) XFE1_7(WHAT, __VA_ARGS__)
-#define XFE1_9(WHAT, X, ...) WHAT(X) XFE1_8(WHAT, __VA_ARGS__)
-#define XFE1_10(WHAT, X, ...) WHAT(X) XFE1_9(WHAT, __VA_ARGS__)
-#define XFE1_11(WHAT, X, ...) WHAT(X) XFE1_10(WHAT, __VA_ARGS__)
-#define XFE1_12(WHAT, X, ...) WHAT(X) XFE1_11(WHAT, __VA_ARGS__)
-#define XFE1_13(WHAT, X, ...) WHAT(X) XFE1_12(WHAT, __VA_ARGS__)
-#define XFE1_14(WHAT, X, ...) WHAT(X) XFE1_13(WHAT, __VA_ARGS__)
-#define XFE1_15(WHAT, X, ...) WHAT(X) XFE1_14(WHAT, __VA_ARGS__)
-#define XFE1_16(WHAT, X, ...) WHAT(X) XFE1_15(WHAT, __VA_ARGS__)
-#define XFE1_17(WHAT, X, ...) WHAT(X) XFE1_16(WHAT, __VA_ARGS__)
-#define XFE1_18(WHAT, X, ...) WHAT(X) XFE1_17(WHAT, __VA_ARGS__)
-#define XFE1_19(WHAT, X, ...) WHAT(X) XFE1_18(WHAT, __VA_ARGS__)
-#define XFE1_20(WHAT, X, ...) WHAT(X) XFE1_19(WHAT, __VA_ARGS__)
-#define XFE1_21(WHAT, X, ...) WHAT(X) XFE1_20(WHAT, __VA_ARGS__)
-#define XFE1_22(WHAT, X, ...) WHAT(X) XFE1_21(WHAT, __VA_ARGS__)
-#define XFE1_23(WHAT, X, ...) WHAT(X) XFE1_22(WHAT, __VA_ARGS__)
-#define XFE1_24(WHAT, X, ...) WHAT(X) XFE1_23(WHAT, __VA_ARGS__)
-#define XFE1_25(WHAT, X, ...) WHAT(X) XFE1_24(WHAT, __VA_ARGS__)
-#define XFE1_26(WHAT, X, ...) WHAT(X) XFE1_25(WHAT, __VA_ARGS__)
-#define XFE1_27(WHAT, X, ...) WHAT(X) XFE1_26(WHAT, __VA_ARGS__)
-#define XFE1_28(WHAT, X, ...) WHAT(X) XFE1_27(WHAT, __VA_ARGS__)
-#define XFE1_29(WHAT, X, ...) WHAT(X) XFE1_28(WHAT, __VA_ARGS__)
-#define XFE1_30(WHAT, X, ...) WHAT(X) XFE1_29(WHAT, __VA_ARGS__)
-#define XFE1_31(WHAT, X, ...) WHAT(X) XFE1_30(WHAT, __VA_ARGS__)
-#define XFE1_32(WHAT, X, ...) WHAT(X) XFE1_31(WHAT, __VA_ARGS__)
-#define XFE1_33(WHAT, X, ...) WHAT(X) XFE1_32(WHAT, __VA_ARGS__)
-#define XFE1_34(WHAT, X, ...) WHAT(X) XFE1_33(WHAT, __VA_ARGS__)
-#define XFE1_35(WHAT, X, ...) WHAT(X) XFE1_34(WHAT, __VA_ARGS__)
-#define XFE1_36(WHAT, X, ...) WHAT(X) XFE1_35(WHAT, __VA_ARGS__)
-#define XFE1_37(WHAT, X, ...) WHAT(X) XFE1_36(WHAT, __VA_ARGS__)
-#define XFE1_38(WHAT, X, ...) WHAT(X) XFE1_37(WHAT, __VA_ARGS__)
-#define XFE1_39(WHAT, X, ...) WHAT(X) XFE1_38(WHAT, __VA_ARGS__)
-#define XFE1_40(WHAT, X, ...) WHAT(X) XFE1_39(WHAT, __VA_ARGS__)
-#define XFE1_41(WHAT, X, ...) WHAT(X) XFE1_40(WHAT, __VA_ARGS__)
-#define XFE1_42(WHAT, X, ...) WHAT(X) XFE1_41(WHAT, __VA_ARGS__)
-#define XFE1_43(WHAT, X, ...) WHAT(X) XFE1_42(WHAT, __VA_ARGS__)
-#define XFE1_44(WHAT, X, ...) WHAT(X) XFE1_43(WHAT, __VA_ARGS__)
-#define XFE1_45(WHAT, X, ...) WHAT(X) XFE1_44(WHAT, __VA_ARGS__)
-#define XFE1_46(WHAT, X, ...) WHAT(X) XFE1_45(WHAT, __VA_ARGS__)
-#define XFE1_47(WHAT, X, ...) WHAT(X) XFE1_46(WHAT, __VA_ARGS__)
-#define XFE1_48(WHAT, X, ...) WHAT(X) XFE1_47(WHAT, __VA_ARGS__)
-#define XFE1_49(WHAT, X, ...) WHAT(X) XFE1_48(WHAT, __VA_ARGS__)
-#define XFE1_50(WHAT, X, ...) WHAT(X) XFE1_49(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_1(WHAT, X) WHAT(X)
+#define RCSW_XFE1_2(WHAT, X, ...) WHAT(X) RCSW_XFE1_1(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_3(WHAT, X, ...) WHAT(X) RCSW_XFE1_2(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_4(WHAT, X, ...) WHAT(X) RCSW_XFE1_3(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_5(WHAT, X, ...) WHAT(X) RCSW_XFE1_4(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_6(WHAT, X, ...) WHAT(X) RCSW_XFE1_5(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_7(WHAT, X, ...) WHAT(X) RCSW_XFE1_6(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_8(WHAT, X, ...) WHAT(X) RCSW_XFE1_7(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_9(WHAT, X, ...) WHAT(X) RCSW_XFE1_8(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_10(WHAT, X, ...) WHAT(X) RCSW_XFE1_9(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_11(WHAT, X, ...) WHAT(X) RCSW_XFE1_10(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_12(WHAT, X, ...) WHAT(X) RCSW_XFE1_11(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_13(WHAT, X, ...) WHAT(X) RCSW_XFE1_12(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_14(WHAT, X, ...) WHAT(X) RCSW_XFE1_13(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_15(WHAT, X, ...) WHAT(X) RCSW_XFE1_14(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_16(WHAT, X, ...) WHAT(X) RCSW_XFE1_15(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_17(WHAT, X, ...) WHAT(X) RCSW_XFE1_16(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_18(WHAT, X, ...) WHAT(X) RCSW_XFE1_17(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_19(WHAT, X, ...) WHAT(X) RCSW_XFE1_18(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_20(WHAT, X, ...) WHAT(X) RCSW_XFE1_19(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_21(WHAT, X, ...) WHAT(X) RCSW_XFE1_20(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_22(WHAT, X, ...) WHAT(X) RCSW_XFE1_21(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_23(WHAT, X, ...) WHAT(X) RCSW_XFE1_22(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_24(WHAT, X, ...) WHAT(X) RCSW_XFE1_23(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_25(WHAT, X, ...) WHAT(X) RCSW_XFE1_24(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_26(WHAT, X, ...) WHAT(X) RCSW_XFE1_25(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_27(WHAT, X, ...) WHAT(X) RCSW_XFE1_26(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_28(WHAT, X, ...) WHAT(X) RCSW_XFE1_27(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_29(WHAT, X, ...) WHAT(X) RCSW_XFE1_28(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_30(WHAT, X, ...) WHAT(X) RCSW_XFE1_29(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_31(WHAT, X, ...) WHAT(X) RCSW_XFE1_30(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_32(WHAT, X, ...) WHAT(X) RCSW_XFE1_31(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_33(WHAT, X, ...) WHAT(X) RCSW_XFE1_32(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_34(WHAT, X, ...) WHAT(X) RCSW_XFE1_33(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_35(WHAT, X, ...) WHAT(X) RCSW_XFE1_34(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_36(WHAT, X, ...) WHAT(X) RCSW_XFE1_35(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_37(WHAT, X, ...) WHAT(X) RCSW_XFE1_36(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_38(WHAT, X, ...) WHAT(X) RCSW_XFE1_37(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_39(WHAT, X, ...) WHAT(X) RCSW_XFE1_38(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_40(WHAT, X, ...) WHAT(X) RCSW_XFE1_39(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_41(WHAT, X, ...) WHAT(X) RCSW_XFE1_40(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_42(WHAT, X, ...) WHAT(X) RCSW_XFE1_41(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_43(WHAT, X, ...) WHAT(X) RCSW_XFE1_42(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_44(WHAT, X, ...) WHAT(X) RCSW_XFE1_43(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_45(WHAT, X, ...) WHAT(X) RCSW_XFE1_44(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_46(WHAT, X, ...) WHAT(X) RCSW_XFE1_45(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_47(WHAT, X, ...) WHAT(X) RCSW_XFE1_46(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_48(WHAT, X, ...) WHAT(X) RCSW_XFE1_47(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_49(WHAT, X, ...) WHAT(X) RCSW_XFE1_48(WHAT, __VA_ARGS__)
+#define RCSW_XFE1_50(WHAT, X, ...) WHAT(X) RCSW_XFE1_49(WHAT, __VA_ARGS__)
 
 /**
  * @brief XFOR_EACH2() macro helpers. (You should never ever use these)
  *
  * WHAT is the name of the macro/function that each arg of __VA_ARGS__ is
  * successively passed to.
- * XFE2 = X For Each for which the macro/function takes 2 arguments.
+ * RCSW_XFE2 = X For Each for which the macro/function takes 2 arguments.
  */
-#define XFE2_1(WHAT, v, X) WHAT(X, v)
-#define XFE2_2(WHAT, v, X, ...) WHAT(X, v) XFE2_1(WHAT, v, __VA_ARGS__)
-#define XFE2_3(WHAT, v, X, ...) WHAT(X, v) XFE2_2(WHAT, v, __VA_ARGS__)
-#define XFE2_4(WHAT, v, X, ...) WHAT(X, v) XFE2_3(WHAT, v, __VA_ARGS__)
-#define XFE2_5(WHAT, v, X, ...) WHAT(X, v) XFE2_4(WHAT, v, __VA_ARGS__)
-#define XFE2_6(WHAT, v, X, ...) WHAT(X, v) XFE2_5(WHAT, v, __VA_ARGS__)
-#define XFE2_7(WHAT, v, X, ...) WHAT(X, v) XFE2_6(WHAT, v, __VA_ARGS__)
-#define XFE2_8(WHAT, v, X, ...) WHAT(X, v) XFE2_7(WHAT, v, __VA_ARGS__)
-#define XFE2_9(WHAT, v, X, ...) WHAT(X, v) XFE2_8(WHAT, v, __VA_ARGS__)
-#define XFE2_10(WHAT, v, X, ...) WHAT(X, v) XFE2_9(WHAT, v, __VA_ARGS__)
-#define XFE2_11(WHAT, v, X, ...) WHAT(X, v) XFE2_10(WHAT, v, __VA_ARGS__)
-#define XFE2_12(WHAT, v, X, ...) WHAT(X, v) XFE2_11(WHAT, v, __VA_ARGS__)
-#define XFE2_13(WHAT, v, X, ...) WHAT(X, v) XFE2_12(WHAT, v, __VA_ARGS__)
-#define XFE2_14(WHAT, v, X, ...) WHAT(X, v) XFE2_13(WHAT, v, __VA_ARGS__)
-#define XFE2_15(WHAT, v, X, ...) WHAT(X, v) XFE2_14(WHAT, v, __VA_ARGS__)
-#define XFE2_16(WHAT, v, X, ...) WHAT(X, v) XFE2_15(WHAT, v, __VA_ARGS__)
-#define XFE2_17(WHAT, v, X, ...) WHAT(X, v) XFE2_16(WHAT, v, __VA_ARGS__)
-#define XFE2_18(WHAT, v, X, ...) WHAT(X, v) XFE2_17(WHAT, v, __VA_ARGS__)
-#define XFE2_19(WHAT, v, X, ...) WHAT(X, v) XFE2_18(WHAT, v, __VA_ARGS__)
-#define XFE2_20(WHAT, v, X, ...) WHAT(X, v) XFE2_19(WHAT, v, __VA_ARGS__)
-#define XFE2_21(WHAT, v, X, ...) WHAT(X, v) XFE2_20(WHAT, v, __VA_ARGS__)
-#define XFE2_22(WHAT, v, X, ...) WHAT(X, v) XFE2_21(WHAT, v, __VA_ARGS__)
-#define XFE2_23(WHAT, v, X, ...) WHAT(X, v) XFE2_22(WHAT, v, __VA_ARGS__)
-#define XFE2_24(WHAT, v, X, ...) WHAT(X, v) XFE2_23(WHAT, v, __VA_ARGS__)
-#define XFE2_25(WHAT, v, X, ...) WHAT(X, v) XFE2_24(WHAT, v, __VA_ARGS__)
-#define XFE2_26(WHAT, v, X, ...) WHAT(X, v) XFE2_25(WHAT, v, __VA_ARGS__)
-#define XFE2_27(WHAT, v, X, ...) WHAT(X, v) XFE2_26(WHAT, v, __VA_ARGS__)
-#define XFE2_28(WHAT, v, X, ...) WHAT(X, v) XFE2_27(WHAT, v, __VA_ARGS__)
-#define XFE2_29(WHAT, v, X, ...) WHAT(X, v) XFE2_28(WHAT, v, __VA_ARGS__)
-#define XFE2_30(WHAT, v, X, ...) WHAT(X, v) XFE2_29(WHAT, v, __VA_ARGS__)
-#define XFE2_31(WHAT, v, X, ...) WHAT(X, v) XFE2_30(WHAT, v, __VA_ARGS__)
-#define XFE2_32(WHAT, v, X, ...) WHAT(X, v) XFE2_31(WHAT, v, __VA_ARGS__)
-#define XFE2_33(WHAT, v, X, ...) WHAT(X, v) XFE2_32(WHAT, v, __VA_ARGS__)
-#define XFE2_34(WHAT, v, X, ...) WHAT(X, v) XFE2_33(WHAT, v, __VA_ARGS__)
-#define XFE2_35(WHAT, v, X, ...) WHAT(X, v) XFE2_34(WHAT, v, __VA_ARGS__)
-#define XFE2_36(WHAT, v, X, ...) WHAT(X, v) XFE2_35(WHAT, v, __VA_ARGS__)
-#define XFE2_37(WHAT, v, X, ...) WHAT(X, v) XFE2_36(WHAT, v, __VA_ARGS__)
-#define XFE2_38(WHAT, v, X, ...) WHAT(X, v) XFE2_37(WHAT, v, __VA_ARGS__)
-#define XFE2_39(WHAT, v, X, ...) WHAT(X, v) XFE2_38(WHAT, v, __VA_ARGS__)
-#define XFE2_40(WHAT, v, X, ...) WHAT(X, v) XFE2_39(WHAT, v, __VA_ARGS__)
-#define XFE2_41(WHAT, v, X, ...) WHAT(X, v) XFE2_40(WHAT, v, __VA_ARGS__)
-#define XFE2_42(WHAT, v, X, ...) WHAT(X, v) XFE2_41(WHAT, v, __VA_ARGS__)
-#define XFE2_43(WHAT, v, X, ...) WHAT(X, v) XFE2_42(WHAT, v, __VA_ARGS__)
-#define XFE2_44(WHAT, v, X, ...) WHAT(X, v) XFE2_43(WHAT, v, __VA_ARGS__)
-#define XFE2_45(WHAT, v, X, ...) WHAT(X, v) XFE2_44(WHAT, v, __VA_ARGS__)
-#define XFE2_46(WHAT, v, X, ...) WHAT(X, v) XFE2_45(WHAT, v, __VA_ARGS__)
-#define XFE2_47(WHAT, v, X, ...) WHAT(X, v) XFE2_46(WHAT, v, __VA_ARGS__)
-#define XFE2_48(WHAT, v, X, ...) WHAT(X, v) XFE2_47(WHAT, v, __VA_ARGS__)
-#define XFE2_49(WHAT, v, X, ...) WHAT(X, v) XFE2_48(WHAT, v, __VA_ARGS__)
-#define XFE2_50(WHAT, v, X, ...) WHAT(X, v) XFE2_49(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_1(WHAT, v, X) WHAT(X, v)
+#define RCSW_XFE2_2(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_1(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_3(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_2(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_4(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_3(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_5(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_4(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_6(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_5(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_7(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_6(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_8(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_7(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_9(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_8(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_10(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_9(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_11(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_10(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_12(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_11(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_13(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_12(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_14(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_13(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_15(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_14(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_16(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_15(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_17(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_16(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_18(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_17(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_19(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_18(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_20(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_19(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_21(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_20(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_22(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_21(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_23(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_22(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_24(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_23(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_25(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_24(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_26(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_25(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_27(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_26(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_28(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_27(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_29(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_28(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_30(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_29(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_31(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_30(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_32(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_31(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_33(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_32(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_34(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_33(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_35(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_34(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_36(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_35(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_37(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_36(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_38(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_37(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_39(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_38(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_40(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_39(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_41(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_40(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_42(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_41(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_43(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_42(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_44(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_43(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_45(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_44(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_46(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_45(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_47(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_46(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_48(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_47(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_49(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_48(WHAT, v, __VA_ARGS__)
+#define RCSW_XFE2_50(WHAT, v, X, ...) WHAT(X, v) RCSW_XFE2_49(WHAT, v, __VA_ARGS__)
 
 /**
  * @brief Helper macro to get the name of the XFOR_EACH[1,2]() helper macro for the
  * current iteration. Don't ever use it.
  */
-#define XGET_MACRO(                                                     \
+#define RCSW_XGET_MACRO(                                                     \
     _1, _2, _3, _4, _5, _6, _7, _8, _9, _10,                            \
     _11, _12, _13, _14, _15, _16, _17, _18, _19, _20,                   \
     _21, _22, _23, _24, _25, _26, _27, _28, _29, _30,                   \
@@ -389,24 +395,34 @@
     _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, NAME, ...)        \
     NAME
 
-#define XFOR_EACH1(action, ...)                                         \
-    XGET_MACRO(                                                         \
+#define RCSW_XFOR_EACH1(action, ...)                                         \
+    RCSW_XGET_MACRO(                                                         \
         __VA_ARGS__,                                                    \
-        XFE1_50, XFE1_49, XFE1_48, XFE1_47, XFE1_46, XFE1_45, XFE1_44,XFE1_43, XFE1_42, XFE1_41, \
-        XFE1_40, XFE1_39, XFE1_38, XFE1_37, XFE1_36, XFE1_35,XFE1_34, XFE1_33, XFE1_32, XFE1_31, \
-        XFE1_30, XFE1_29, XFE1_28, XFE1_27, XFE1_26, XFE1_25, XFE1_24, XFE1_23, XFE1_22, XFE1_21, \
-        XFE1_20, XFE1_19, XFE1_18, XFE1_17, XFE1_16, XFE1_15, XFE1_14, XFE1_13, XFE1_12, XFE1_11, \
-        XFE1_10, XFE1_9, XFE1_8, XFE1_7, XFE1_6, XFE1_5, XFE1_4, XFE1_3, XFE1_2, XFE1_1) \
+        RCSW_XFE1_50, RCSW_XFE1_49, RCSW_XFE1_48, RCSW_XFE1_47, RCSW_XFE1_46, \
+        RCSW_XFE1_45, RCSW_XFE1_44,RCSW_XFE1_43, RCSW_XFE1_42, RCSW_XFE1_41, \
+        RCSW_XFE1_40, RCSW_XFE1_39, RCSW_XFE1_38, RCSW_XFE1_37, RCSW_XFE1_36, \
+        RCSW_XFE1_35,RCSW_XFE1_34, RCSW_XFE1_33, RCSW_XFE1_32, RCSW_XFE1_31, \
+        RCSW_XFE1_30, RCSW_XFE1_29, RCSW_XFE1_28, RCSW_XFE1_27, RCSW_XFE1_26, \
+        RCSW_XFE1_25, RCSW_XFE1_24, RCSW_XFE1_23, RCSW_XFE1_22, RCSW_XFE1_21, \
+        RCSW_XFE1_20, RCSW_XFE1_19, RCSW_XFE1_18, RCSW_XFE1_17, RCSW_XFE1_16, \
+        RCSW_XFE1_15, RCSW_XFE1_14, RCSW_XFE1_13, RCSW_XFE1_12, RCSW_XFE1_11, \
+        RCSW_XFE1_10, RCSW_XFE1_9, RCSW_XFE1_8, RCSW_XFE1_7, RCSW_XFE1_6, \
+        RCSW_XFE1_5, RCSW_XFE1_4, RCSW_XFE1_3, RCSW_XFE1_2, RCSW_XFE1_1) \
     (action, __VA_ARGS__)
 
-#define XFOR_EACH2(action, v, ...)                                      \
-  XGET_MACRO(                                                           \
+#define RCSW_XFOR_EACH2(action, v, ...)                                      \
+  RCSW_XGET_MACRO(                                                           \
       __VA_ARGS__,                                                      \
-      XFE2_50, XFE2_49, XFE2_48, XFE2_47, XFE2_46, XFE2_45, XFE2_44,XFE2_43, XFE2_42, XFE2_41, \
-      XFE2_40, XFE2_39, XFE2_38, XFE2_37, XFE2_36, XFE2_35,XFE2_34, XFE2_33, XFE2_32, XFE2_31, \
-      XFE2_30, XFE2_29, XFE2_28, XFE2_27, XFE2_26, XFE2_25, XFE2_24, XFE2_23, XFE2_22, XFE2_21, \
-      XFE2_20, XFE2_19, XFE2_18, XFE2_17, XFE2_16, XFE2_15, XFE2_14, XFE2_13, XFE2_12, XFE2_11, \
-      XFE2_10, XFE2_9, XFE2_8, XFE2_7, XFE2_6, XFE2_5, XFE2_4, XFE2_3, XFE2_2, XFE2_1) \
+      RCSW_XFE2_50, RCSW_XFE2_49, RCSW_XFE2_48, RCSW_XFE2_47, RCSW_XFE2_46, \
+      RCSW_XFE2_45, RCSW_XFE2_44,RCSW_XFE2_43, RCSW_XFE2_42, RCSW_XFE2_41, \
+      RCSW_XFE2_40, RCSW_XFE2_39, RCSW_XFE2_38, RCSW_XFE2_37, RCSW_XFE2_36, \
+      RCSW_XFE2_35,RCSW_XFE2_34, RCSW_XFE2_33, RCSW_XFE2_32, RCSW_XFE2_31, \
+      RCSW_XFE2_30, RCSW_XFE2_29, RCSW_XFE2_28, RCSW_XFE2_27, RCSW_XFE2_26, \
+      RCSW_XFE2_25, RCSW_XFE2_24, RCSW_XFE2_23, RCSW_XFE2_22, RCSW_XFE2_21, \
+      RCSW_XFE2_20, RCSW_XFE2_19, RCSW_XFE2_18, RCSW_XFE2_17, RCSW_XFE2_16, \
+      RCSW_XFE2_15, RCSW_XFE2_14, RCSW_XFE2_13, RCSW_XFE2_12, RCSW_XFE2_11, \
+      RCSW_XFE2_10, RCSW_XFE2_9, RCSW_XFE2_8, RCSW_XFE2_7, RCSW_XFE2_6, \
+      RCSW_XFE2_5, RCSW_XFE2_4, RCSW_XFE2_3, RCSW_XFE2_2, RCSW_XFE2_1)  \
       (action, v, __VA_ARGS__)
 /* @endcond */
 
@@ -418,27 +434,27 @@
  * arguments to determine an offset within the list of #'s that corresponds to
  * the # of arguments passed to the macro. Works with up to 100 arguments.
  */
-#define VAR_NARG(...) VAR_NARG_(__VA_ARGS__, VAR_RSEQ_N())
+#define RCSW_VAR_NARG(...) RCSW_VAR_NARG_(__VA_ARGS__, RCSW_VAR_RSEQ_N())
 
 /*******************************************************************************
  * Enum Generation Macros
  ******************************************************************************/
 /**
- * @brief An XTABLE_STR is a string representation of a token passed to
- * XFOR_EACH().  An \ref XTABLE_ENUM is just an entry within an enum.
+ * @brief RCSW_XTABLE_STR(X) is a string representation of a token passed to
+ * RCSW_XFOR_EACH().  An \ref RCSW_XTABLE_ENUM is just an entry within an enum.
  *
  * Don't use these.
  */
-#define XTABLE_STR(X) STR(X),
-#define XTABLE_ENUM(X) X,
+#define RCSW_XTABLE_STR(X) STR(X),
+#define RCSW_XTABLE_ENUM(X) X,
 
 /**
- * @brief The actual table generation macros. These are VERY useful if you want
- * to generate a table of strings from a set of tokens and/or a table of enums
- * from a set of tokens.
+ * @brief RCSW_XGEN_STRS(...) The actual table generation macros. These are VERY
+ * useful if you want to generate a table of strings from a set of tokens and/or
+ * a table of enums from a set of tokens.
  *
  * If you have a define like this:
- * #define myents A,B,C,D,E,F,G,H
+ * \#define myents A,B,C,D,E,F,G,H
  *
  * Then you can use it to generate either of the two table types like so:
  *
@@ -453,93 +469,9 @@
  *
  * Pretty neat, huh?
  */
-#define XGEN_STRS(...) XFOR_EACH1(XTABLE_STR, __VA_ARGS__)
-#define XGEN_ENUMS(...) XFOR_EACH1(XTABLE_ENUM, __VA_ARGS__)
-#define XGEN_MASKABLE_ENUMS(...) XFOR_EACH1(XTABLE_MASKABLE_ENUM, __VAR_ARGS__)
-
-/*******************************************************************************
- * Attribute Macros
- ******************************************************************************/
-#if defined(__unused)
-#undef __unused
-#endif /* __unused */
-
-/**
- * @def __unused Shorthand for declaring something unused (I'm lazy).
- */
-#define __unused __attribute__((unused))
-
-#if defined(__check_return)
-#undef __check_return
-#endif /* __check_return */
-
-/**
- * @def __check_return Shorthand for enhancing compile checking of return value usage.
- */
-#define __check_return __attribute__((warn_unused_result))
-
-#if defined(__deprecated)
-#undef __deprecated
-#endif /* __deprecated */
-
-/**
- * @def __deprecated Shorthand for marking a function as deprecated so that
- * compile warning is issued if it is used.
- */
-#define __deprecated __attribute__((deprecated))
-
-#if defined(__const)
-#undef __const
-#endif /* __const */
-
-/**
- * @def __const Shorthand for marked a function as purely function of its input
- * parameters only (no global memory access allowed).
- */
-#define __const __attribute__((const))
-
-#if defined(__pure)
-#undef __pure
-#endif /* __pure */
-
-/**
- * @def __pure Shorthand for marked a function as purely function of its input
- * parameters and (possibly) global data.
- */
-#define __pure __attribute__((pure))
-
-#if defined(__noreturn)
-#undef __noreturn
-#endif /* __noreturn */
-
-/**
- * @def __noreturn Shorthand for marked a function as one that will not return.
- */
-#define __noreturn __attribute__((noreturn))
-
-#ifdef __cplusplus
-/**
- * @def BEGIN_C_DECLS Convenience macros for wrapping all C function, variable
- * declarations for C/C++ interoperability.
- */
-#ifndef BEGIN_C_DECLS
-#define BEGIN_C_DECLS extern "C" {
-#endif
-
-/***
- * @def END_C_DECLS Convenience macros for wrapping all C function, variable
- * declarations for C/C++ interoperability.
- */
-#ifndef END_C_DECLS
-#define END_C_DECLS }
-#endif
-
-#else
-
-#define BEGIN_C_DECLS
-#define END_C_DECLS
-
-#endif
+#define RCSW_XGEN_STRS(...) RCSW_XFOR_EACH1(RCSW_XTABLE_STR, __VA_ARGS__)
+#define RCSW_XGEN_ENUMS(...) RCSW_XFOR_EACH1(RCSW_XTABLE_ENUM, __VA_ARGS__)
+#define RCSW_XGEN_MASKABLE_ENUMS(...) RCSW_XFOR_EACH1(RCSW_XTABLE_MASKABLE_ENUM, __VAR_ARGS__)
 
 /*******************************************************************************
  * General Macros
@@ -560,7 +492,7 @@
  *
  * STATIC_ASSERT(foo != 0, A_failure_message);`
  */
-#define STATIC_ASSERT(expr, msg)                                        \
+#define RCSW_STATIC_ASSERT(expr, msg)                                   \
     extern int(*assert_function__(void))[STATIC_ASSERT_HELPER(expr, msg)]
 
 #endif /* INCLUDE_RCSW_COMMON_COMMON_H_ */

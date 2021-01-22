@@ -22,12 +22,12 @@
  * Includes
  ******************************************************************************/
 #include "rcsw/ds/int_tree.h"
+#include <limits.h>
 #include "rcsw/common/dbg.h"
 #include "rcsw/common/fpc.h"
 #include "rcsw/ds/bstree_node.h"
 #include "rcsw/ds/int_tree_node.h"
 #include "rcsw/utils/utils.h"
-#include <limits.h>
 
 /*******************************************************************************
  * Forward Declarations
@@ -42,34 +42,35 @@ BEGIN_C_DECLS
  *
  * @return TRUE if intervals overlap, FALSE otherwise
  */
-static bool_t int_tree_cmp_overlap(const void *a, const void *b);
+static bool_t int_tree_cmp_overlap(const void* a, const void* b);
 
 /*******************************************************************************
  * API Functions
  ******************************************************************************/
-__pure int int_tree_cmp_key(const void *a, const void *b) {
-  const int *a_p = a;
-  const int *b_p = b;
+int int_tree_cmp_key(const void* a, const void* b) {
+  const int* a_p = a;
+  const int* b_p = b;
   return (*a_p - *b_p);
 } /* int_tree_cmp_key() */
 
-void int_tree_init_helper(const struct bstree *tree) {
+void int_tree_init_helper(const struct bstree* tree) {
   struct interval_data nil_data = {.low = INT_MIN, .high = INT_MIN};
   ds_elt_copy(tree->nil->data, &nil_data, tree->el_size);
   ds_elt_copy(tree->root->data, &nil_data, tree->el_size);
-  ((struct int_tree_node *)tree->nil)->max_high = INT_MIN;
-  ((struct int_tree_node *)tree->root)->max_high = INT_MIN;
+  ((struct int_tree_node*)tree->nil)->max_high = INT_MIN;
+  ((struct int_tree_node*)tree->root)->max_high = INT_MIN;
 } /* int_tree_init_helper() */
 
-struct int_tree_node *
-int_tree_overlap_search(const struct bstree *tree, struct int_tree_node *root,
-                        const struct interval_data *interval) {
-  FPC_CHECK(NULL, NULL != tree, NULL != root, NULL != interval);
+struct int_tree_node* int_tree_overlap_search(
+    const struct bstree* tree,
+    struct int_tree_node* root,
+    const struct interval_data* interval) {
+  RCSW_FPC_NV(NULL, NULL != tree, NULL != root, NULL != interval);
 
   /*
    * Not found in an empty subtree (obviously)
    */
-  if (root == (struct int_tree_node *)tree->nil) {
+  if (root == (struct int_tree_node*)tree->nil) {
     return NULL;
   }
   /*
@@ -84,7 +85,7 @@ int_tree_overlap_search(const struct bstree *tree, struct int_tree_node *root,
    * the given interval, then the interval MIGHT overlap with an interval
    * somewhere in the left subtree.
    */
-  if (root->left != (struct int_tree_node *)tree->nil &&
+  if (root->left != (struct int_tree_node*)tree->nil &&
       root->left->max_high >= interval->low) {
     return int_tree_overlap_search(tree, root->left, interval);
   } else { /* otherwise, any overlap can only reside in the right subtree */
@@ -92,10 +93,9 @@ int_tree_overlap_search(const struct bstree *tree, struct int_tree_node *root,
   }
 } /* int_tree_overlap_search() */
 
-void int_tree_high_fixup(const struct bstree *tree,
-                         struct int_tree_node *node) {
-  node->max_high = ((struct interval_data *)node->data)->high;
-  while (node != (struct int_tree_node *)tree->root) {
+void int_tree_high_fixup(const struct bstree* tree, struct int_tree_node* node) {
+  node->max_high = ((struct interval_data*)node->data)->high;
+  while (node != (struct int_tree_node*)tree->root) {
     int_tree_node_update_max(node);
     node = node->parent;
   } /* while() */
@@ -104,9 +104,9 @@ void int_tree_high_fixup(const struct bstree *tree,
 /*******************************************************************************
  * Static Functions
  ******************************************************************************/
-static bool_t int_tree_cmp_overlap(const void *a, const void *b) {
-  const struct interval_data *a_p = a;
-  const struct interval_data *b_p = b;
+static bool_t int_tree_cmp_overlap(const void* a, const void* b) {
+  const struct interval_data* a_p = a;
+  const struct interval_data* b_p = b;
   if (a_p->low <= b_p->low) {
     return (bool_t)(b_p->low <= a_p->high);
   } else {

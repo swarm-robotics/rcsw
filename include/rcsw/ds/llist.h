@@ -116,7 +116,7 @@ struct llist {
  * @return \ref bool_t
  */
 static inline bool_t llist_isfull(const struct llist* const list) {
-    FPC_CHECK(FALSE, NULL != list);
+    RCSW_FPC_NV(FALSE, NULL != list);
     return (bool_t)(list->current == (size_t)list->max_elts);
 }
 
@@ -128,7 +128,7 @@ static inline bool_t llist_isfull(const struct llist* const list) {
  * @return \ref bool_t
  */
 static inline bool_t llist_isempty(const struct llist* const list) {
-    FPC_CHECK(FALSE, NULL != list);
+    RCSW_FPC_NV(FALSE, NULL != list);
     return (bool_t)(list->current == 0);
 }
 
@@ -141,7 +141,7 @@ static inline bool_t llist_isempty(const struct llist* const list) {
  */
 
 static inline size_t llist_n_elts(const struct llist* const list) {
-    FPC_CHECK(0, NULL != list);
+    RCSW_FPC_NV(0, NULL != list);
     return list->current;
 }
 
@@ -188,7 +188,7 @@ BEGIN_C_DECLS
  * @return The initialized list, or NULL if an error occured.
  */
 struct llist *llist_init(
-    struct llist *list_in, const struct ds_params *params) __check_return;
+    struct llist *list_in, const struct ds_params *params) RCSW_CHECK_RET;
 
 /**
  * @brief Destroy a linked list

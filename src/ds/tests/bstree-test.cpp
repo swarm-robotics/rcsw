@@ -21,7 +21,7 @@
 /*******************************************************************************
  * Includes
  ******************************************************************************/
-#include <mutex>
+extern "C" {
 #include "rcsw/ds/rbtree.h"
 #include "rcsw/ds/int_tree.h"
 #include "rcsw/ds/ostree.h"
@@ -29,6 +29,8 @@
 #include "rcsw/common/dbg.h"
 #include "rcsw/utils/utils.h"
 #include "tests/ds_test.h"
+}
+
 #define CATCH_CONFIG_MAIN
 #define CATCH_CONFIG_PREFIX_ALL
 #include <catch.hpp>

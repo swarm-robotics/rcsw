@@ -64,7 +64,7 @@ BEGIN_C_DECLS
  * @return The number of FLOPs.
  */
 size_t simple_image_kernel2d_flops(simple_image_t const * image,
-                                size_t kernel_dim);
+                                size_t kernel_dim) RCSW_PURE;
 
 /**
  * @brief Load an image from a file. The image can be JPEG, PNG, or BMP.

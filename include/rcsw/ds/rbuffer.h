@@ -62,7 +62,7 @@ struct rbuffer {
  * @return \ref bool_t
  */
 static inline bool_t rbuffer_isfull(const struct rbuffer* const rb) {
-    FPC_CHECK(FALSE, NULL != rb);
+    RCSW_FPC_NV(FALSE, NULL != rb);
     return (bool_t)(rb->current == rb->max_elts);
 }
 
@@ -74,7 +74,7 @@ static inline bool_t rbuffer_isfull(const struct rbuffer* const rb) {
  * @return \ref bool_t
  */
 static inline bool_t rbuffer_isempty(const struct rbuffer* const rb) {
-    FPC_CHECK(FALSE, NULL != rb);
+    RCSW_FPC_NV(FALSE, NULL != rb);
     return (bool_t)(rb->current == 0);
 }
 
@@ -86,7 +86,7 @@ static inline bool_t rbuffer_isempty(const struct rbuffer* const rb) {
  * @return # elements in ringbuffer, or 0 on ERROR.
  */
 static inline size_t rbuffer_n_elts(const struct rbuffer* const rb) {
-    FPC_CHECK(0, NULL != rb);
+    RCSW_FPC_NV(0, NULL != rb);
     return rb->current;
 }
 
@@ -98,7 +98,7 @@ static inline size_t rbuffer_n_elts(const struct rbuffer* const rb) {
  * @return The capacity of the ringbuffer, or 0 on ERROR.
  */
 static inline size_t rbuffer_capacity(const struct rbuffer* const rb) {
-    FPC_CHECK(0, NULL != rb);
+    RCSW_FPC_NV(0, NULL != rb);
     return rb->max_elts;
 }
 
@@ -132,7 +132,7 @@ BEGIN_C_DECLS
  * @return The initialized ringbuffer, or NULL if an error occurred.
  */
 struct rbuffer *rbuffer_init(struct rbuffer *rb_in,
-    const struct ds_params * params) __check_return;
+    const struct ds_params * params) RCSW_CHECK_RET;
 
 /**
  * @brief Delete a ringbuffer.

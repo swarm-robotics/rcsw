@@ -70,7 +70,7 @@ struct mt_queue {
  * @return \ref bool_t
  */
 static inline bool_t mt_queue_isfull(const struct mt_queue* const queue) {
-    FPC_CHECK(FALSE, NULL != queue);
+    RCSW_FPC_NV(FALSE, NULL != queue);
     return fifo_isfull(&queue->fifo);
 }
 
@@ -82,7 +82,7 @@ static inline bool_t mt_queue_isfull(const struct mt_queue* const queue) {
  * @return \ref bool_t
  */
 static inline bool_t mt_queue_isempty(const struct mt_queue* const queue) {
-    FPC_CHECK(FALSE, NULL != queue);
+    RCSW_FPC_NV(FALSE, NULL != queue);
     return fifo_isempty(&queue->fifo);
 }
 
@@ -96,7 +96,7 @@ static inline bool_t mt_queue_isempty(const struct mt_queue* const queue) {
  * @return # elements in queue, or 0 on ERROR.
  */
 static inline size_t mt_queue_n_elts(const struct mt_queue* const queue) {
-    FPC_CHECK(0, NULL != queue);
+    RCSW_FPC_NV(0, NULL != queue);
     return fifo_n_elts(&queue->fifo);
 }
 
@@ -110,7 +110,7 @@ static inline size_t mt_queue_n_elts(const struct mt_queue* const queue) {
  * @return Queue capacity, or 0 on ERROR.
  */
 static inline size_t mt_queue_capacity(const struct mt_queue* const queue) {
-    FPC_CHECK(0, NULL != queue);
+    RCSW_FPC_NV(0, NULL != queue);
     return fifo_capacity(&queue->fifo);
 }
 
@@ -123,7 +123,7 @@ static inline size_t mt_queue_capacity(const struct mt_queue* const queue) {
  * @return # free slots, or 0 on ERROR.
  */
 static inline size_t mt_queue_n_free(const struct mt_queue* const queue) {
-    FPC_CHECK(0, NULL != queue);
+    RCSW_FPC_NV(0, NULL != queue);
     return mt_queue_capacity(queue) - mt_queue_n_elts(queue);
 }
 
@@ -143,7 +143,7 @@ BEGIN_C_DECLS
  */
 struct mt_queue * mt_queue_init(
     struct mt_queue *mt_queue_in,
-    const struct mt_queue_params * params) __check_return;
+    const struct mt_queue_params * params) RCSW_CHECK_RET;
 
 /**
  * @brief Destroy a producer-consumer queue. Any further use of the queue handle

@@ -63,7 +63,7 @@ void rbtree_insert_fixup(struct bstree* tree, struct bstree_node * node);
  * @return The height or 0 if the node is NULL.
  *
  **/
-int rbtree_node_black_height(const struct bstree_node *node);
+int rbtree_node_black_height(const struct bstree_node *node) RCSW_PURE;
 
 END_C_DECLS
 

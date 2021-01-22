@@ -21,8 +21,8 @@
  */
 
 
-#ifndef INCLUDE_RCSW_MULTIPROCESS_OMP_RADIX_SORT_H_
-#define INCLUDE_RCSW_MULTIPROCESS_OMP_RADIX_SORT_H_
+#ifndef INCLUDE_RCSW_MULTITHREAD_OMP_RADIX_SORT_H_
+#define INCLUDE_RCSW_MULTITHREAD_OMP_RADIX_SORT_H_
 
 /*******************************************************************************
  * Includes
@@ -33,6 +33,9 @@
 /*******************************************************************************
  * Structure Definitions
  ******************************************************************************/
+/**
+ * @brief Parameters for \ref omp_radix_sorter.
+ */
 struct omp_radix_sorter_params {
     size_t* data;      /// Data to sort.
     size_t n_elts;     /// # elements to sort.
@@ -40,6 +43,9 @@ struct omp_radix_sorter_params {
     size_t n_threads;  /// # OpenMP threads to use for sorting.
 };
 
+/**
+ * @brief Handle for OMP implementation of radix sort.
+ */
 struct omp_radix_sorter {
     size_t* data;       /// The data to sort.
     size_t n_elts;      /// Total # elements.
@@ -60,14 +66,14 @@ struct omp_radix_sorter {
 BEGIN_C_DECLS
 
 /**
- * @brief Initialize a multi-process radix sorter.
+ * @brief Initialize a multi-thread radix sorter.
  *
  * @param params Initialization parameters.
  *
  * @return The initialized sorter, or NULL if an error occurred.
  */
 struct omp_radix_sorter* omp_radix_sorter_init(
-    const struct omp_radix_sorter_params* const params) __check_return;
+    const struct omp_radix_sorter_params* const params) RCSW_CHECK_RET;
 
 /**
  * @brief Deallocate/destroy a sorter after use.
@@ -87,4 +93,4 @@ status_t omp_radix_sorter_exec(struct omp_radix_sorter* const sorter);
 
 END_C_DECLS
 
-#endif /* INCLUDE_RCSW_MULTIPROCESS_OMP_RADIX_SORT_H_ */
+#endif /* INCLUDE_RCSW_MULTITHREAD_OMP_RADIX_SORT_H_ */

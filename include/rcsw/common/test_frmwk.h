@@ -57,8 +57,8 @@ enum test_type { TEST_FP0, TEST_FP1, TEST_FP2, TEST_FP3, TEST_FP4, TEST_FP5 };
  * endless array of function pointers. The down side to doing things this way is
  * that you need zero parameter checking help from the compiler.
  */
-#pragma GCC diagnostic ignored "-Wstrict-prototypes"
-#pragma GCC diagnostic push
+RCSW_WARNING_DISABLE_PUSH()
+RCSW_WARNING_DISABLE_STRICT_PROTO()
 struct test_inst {
     char name[32];
     enum test_type tag;
@@ -68,8 +68,7 @@ struct test_inst {
     status_t (*setup)(status_t (*)());
     status_t (*teardown)(status_t (*)());
 };
-
-#pragma GCC diagnostic pop
+RCSW_WARNING_DISABLE_POP()
 
 /**
  * @brief The test framework, which contains all registered tests, as well as a
@@ -90,21 +89,21 @@ struct test_frmwk {
 /**
  * @brief A checkpoint/condition check
  *
- * Like the CHECK() macro, but also prints if something was OK. Very useful in
+ * Like the RCSW_CHECK() macro, but also prints if something was OK. Very useful in
  * unit tests so you can see the progress of the test, instead of it just
  * sitting there. Should really only be used in unit tests.
  *
  * @param cond The condition to check
  */
-#define CHECKPOINT(cond)                                                \
+#define RCSW_CHECKPOINT(cond)                                                \
     if (!(cond)) {                                                      \
         PRINTF(                                                         \
-            __FILE__ ":%s:%d CHECKPOINT %sFAILED%s: " STR(cond) "\n", __func__, \
+            __FILE__ ":%s:%d RCSW_CHECKPOINT %sFAILED%s: " STR(cond) "\n", __func__, \
             __LINE__, DBG_FAILC, DBG_ENDC);                             \
         goto error;                                                     \
     } else {                                                            \
         PRINTF(                                                         \
-            __FILE__ ":%s:%d CHECKPOINT %sOK%s: " STR(cond) "\n", __func__, \
+            __FILE__ ":%s:%d RCSW_CHECKPOINT %sOK%s: " STR(cond) "\n", __func__, \
             __LINE__, DBG_OKC, DBG_ENDC);                               \
     }
 /**
@@ -115,8 +114,8 @@ struct test_frmwk {
  *
  * Comment it out if it makes you uncomfortable.
  */
-#pragma GCC diagnostic ignored "-Wstrict-prototypes"
-#pragma GCC diagnostic push
+RCSW_WARNING_DISABLE_PUSH()
+RCSW_WARNING_DISABLE_STRICT_PROTO()
 
 /**
  * @brief Initialize a test
@@ -145,7 +144,7 @@ struct test_frmwk {
         (tests)->test_insts[(index)].teardown = NULL;               \
         strcpy((tests)->test_insts[(index)].name, (name_in));       \
     } while (0);
-#pragma GCC diagnostic pop
+RCSW_WARNING_DISABLE_POP()
 
 /**
  * @brief Define a setup function for a test
